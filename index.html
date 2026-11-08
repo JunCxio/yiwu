@@ -1,0 +1,1330 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>弈武 · 电脑对战</title>
+<style>
+:root{--bg:#142c29;--panel:#203c36;--line:#3e5a50;--text:#edf0e7;--muted:#b6c7bb;--wood:#d0b78a;--wood-line:#7c6849;--red:#993c3b;--black:#30485f;--gold:#e5c983;--focus:#fff0b0;--ink:#293a31}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.6 "Microsoft YaHei","PingFang SC",sans-serif}button,select{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.4}button:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid var(--focus);outline-offset:3px}button{border:1px solid var(--line);border-radius:5px;padding:9px 15px;background:#2b4940;color:var(--text)}button:hover:not(:disabled){background:#395b4e}.primary{background:var(--gold);border-color:var(--gold);color:#22392e;font-weight:700}.primary:hover:not(:disabled){background:#f1d99f}.quiet{background:transparent}.small{font-size:13px;padding:5px 10px}.muted{color:var(--muted)}
+.app{max-width:1370px;margin:auto;padding:24px 30px 32px}header{display:flex;align-items:center;gap:22px;border-bottom:1px solid var(--line);padding-bottom:17px}h1{font:700 38px/1.1 "STSong","SimSun",serif;letter-spacing:8px;margin:0}.subtitle{font-size:13px;color:var(--muted)}.header-tools{margin-left:auto;display:flex;gap:9px;align-items:center}select{max-width:180px;background:#203c36;border:1px solid var(--line);color:var(--text);border-radius:5px;padding:9px}.status{display:flex;align-items:center;justify-content:space-between;gap:15px;margin:20px 0 16px}.status strong{font-size:20px}.tag{display:inline-block;padding:2px 9px;border:1px solid #809282;border-radius:20px;font-size:12px;color:var(--muted);margin-right:8px}.layout{display:grid;grid-template-columns:minmax(190px,230px) minmax(360px,650px) minmax(230px,285px);gap:24px;align-items:start}.panel{background:var(--panel);border:1px solid var(--line);padding:18px;border-radius:7px}h2{font-size:16px;margin:0 0 12px}h3{font-size:15px;margin:0 0 8px}p{margin:8px 0 12px}.team{margin-bottom:14px;border-left:3px solid #a95d55;padding-left:12px}.team.black{border-color:#7b9bb9}.team-head{display:flex;align-items:center;justify-content:space-between}.team-number{font-size:23px;font-weight:600}.thin{font-size:12px;color:var(--muted)}.meter{height:4px;background:#10241f;margin-top:7px}.meter i{display:block;height:100%;background:#cdb379}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:15px 0}.stats>div{border-top:1px solid var(--line);padding-top:8px}.stats b{display:block;font-size:21px;font-weight:500}.stats small{font-size:12px;color:var(--muted)}.steps{font-size:13px;color:var(--muted);padding-left:18px;margin:0}.steps li{margin:9px 0}.separator{border:0;border-top:1px solid var(--line);margin:17px 0}.wide{width:100%}.tip{font-size:13px;line-height:1.8;color:var(--muted)}.notice{min-height:26px;margin-top:11px;font-size:13px;color:var(--gold)}
+.board-frame{padding:16px 18px 12px;background:#23483b;border:1px solid #53705a;border-radius:9px;box-shadow:0 12px 30px #081b1555}.board{position:relative;aspect-ratio:9/10;background:var(--wood);border:1px solid #b09b72;border-radius:3px;overflow:hidden}.board-lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}.board-grid{position:absolute;inset:0;display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(10,1fr)}.cell{position:relative;display:flex;align-items:center;justify-content:center;background:none;border:0;border-radius:0;padding:0;min-width:0;outline-offset:-3px!important}.cell:hover:not(:disabled){background:#f9e5b433}.cell:disabled{opacity:1;cursor:default}.cell.last{background:#ffeea54a}.cell.legal:after{content:"";position:absolute;width:16%;aspect-ratio:1;border-radius:50%;background:#315a43aa}.cell.capture:after{content:"";position:absolute;inset:5%;border:2px dashed #8b3537;border-radius:50%;z-index:2}.piece{position:relative;width:82%;height:82%;max-width:59px;max-height:59px;aspect-ratio:1;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#ece4ca;box-shadow:0 2px 0 #887951,0 3px 6px #473b3440;border:2px solid #c5b990;color:var(--red);font:700 clamp(17px,2.3vw,31px)/1 "SimSun",serif;z-index:1}.piece:before{content:"";position:absolute;inset:3px;border:1px solid currentColor;border-radius:50%;opacity:.6}.piece.black{color:var(--black)}.cell.selected .piece{outline:3px solid #fff5c7;outline-offset:2px;box-shadow:0 0 0 6px #344b37}.cell.support .piece{outline:2px solid #b07922;outline-offset:2px}.piece .life{position:absolute;bottom:3px;left:22%;right:22%;height:3px;background:#c7bfa9;border-radius:2px;overflow:hidden}.life i{display:block;height:100%;background:currentColor}.piece .marks{position:absolute;top:-3px;right:-3px;font:700 10px/16px "Microsoft YaHei",sans-serif;color:white;background:#516b48;min-width:16px;border-radius:10px;border:1px solid #e5d7a7}.piece .marks.tired{background:#83704f}.river{fill:#7e6c4a;font:24px "SimSun",serif;letter-spacing:12px}.board-caption{display:flex;justify-content:space-between;font-size:12px;color:#c2cfb9;padding-top:9px}.legend{display:flex;justify-content:center;gap:20px;font-size:12px;color:var(--muted);padding-top:12px}.legend i{display:inline-block;width:7px;height:7px;border-radius:50%;background:#a7bd88;margin-right:5px}.legend i.exhausted{background:#a89264}.piece-title{display:flex;align-items:center;gap:12px;margin-bottom:14px}.seal{height:48px;width:48px;border-radius:50%;display:grid;place-items:center;background:#e4d7b9;color:var(--red);font:700 29px "SimSun",serif}.seal.black{color:var(--black)}.piece-title h2{margin:0}.health-row{display:flex;justify-content:space-between;font-size:13px}.health-track{height:7px;background:#10271e;margin-top:6px;border-radius:5px;overflow:hidden}.health-track i{display:block;height:100%;background:#adc298}.card{border:1px solid #64735a;border-radius:5px;padding:11px;margin:10px 0;background:#29443a}.card.exhausted{border-style:dashed;opacity:.7}.card-head{display:flex;justify-content:space-between;align-items:center;gap:7px}.card-type{font-size:11px;border:1px solid #7d8b70;border-radius:3px;padding:0 5px;margin-right:7px;color:#d3d5b7}.card p{font-size:12px;color:#c4d0bd;line-height:1.65;margin:7px 0 0}.card button{flex-shrink:0}.log{padding-left:19px;font-size:12px;color:#c4d0bd;max-height:clamp(280px,50dvh,560px);overflow:auto;line-height:1.8}.log li{margin-bottom:8px}.log li:first-child{color:#e6e7c9}.footer{display:flex;justify-content:space-between;gap:20px;border-top:1px solid var(--line);padding-top:14px;margin-top:24px;font-size:12px;color:var(--muted)}
+dialog{border:1px solid #69816a;border-radius:10px;background:#1b3730;color:var(--text);padding:0;max-width:min(760px,calc(100vw - 28px));width:760px;max-height:calc(100dvh - 30px);overflow:auto;box-shadow:0 25px 70px #0008}dialog::backdrop{background:#071512cf}.modal{padding:27px 30px}.modal h2{font-size:24px;font-family:"SimSun",serif}.modal-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:20px}.result-actions{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-top:18px}.rules{font-size:14px;line-height:1.9}.rules li{margin:8px 0}.rules table{width:100%;border-collapse:collapse;font-size:13px}.rules td,.rules th{text-align:left;border-bottom:1px solid var(--line);padding:7px}
+@media(min-width:1450px){.piece{font-size:31px}}@media(max-width:1100px){.layout{grid-template-columns:minmax(360px,1fr) 270px;gap:20px}.left-panel{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr 1.25fr;gap:20px;padding:14px 18px}.left-panel .separator,.left-panel .steps,.left-panel h2{display:none}.left-panel .team{margin-bottom:0}.left-panel .start-wrap{grid-column:3;grid-row:1/3}.left-panel .teams{grid-column:1/3;display:grid;grid-template-columns:1fr 1fr;gap:15px}.left-panel .balance-note{grid-column:1/3;font-size:12px;margin:0}.board-frame{grid-column:1}.detail-panel{grid-column:2}.app{max-width:950px}.piece{font-size:clamp(20px,3vw,32px)}}@media(max-width:780px){.log{max-height:min(280px,40dvh)}.app{padding:17px 14px}header{gap:10px;align-items:flex-start;flex-wrap:wrap}h1{font-size:32px}.header-tools{gap:6px}.header-tools select{max-width:130px;font-size:12px}.header-tools button{padding:7px 10px;font-size:12px}.subtitle{max-width:170px;font-size:12px}.layout{grid-template-columns:1fr;gap:16px}.left-panel{display:block;grid-column:1;padding:13px}.left-panel .teams{gap:10px}.left-panel .balance-note{display:none}.start-wrap{margin-top:11px;display:flex;gap:8px}.start-wrap button{width:auto;flex:1}.start-wrap .tip{display:none}.detail-panel{grid-column:1}.board-frame{padding:10px}.board{max-height:none}.piece{font-size:clamp(18px,5.8vw,29px)}.status strong{font-size:17px}.status{align-items:start;margin:15px 0}.status .muted{font-size:12px;max-width:145px}.modal{padding:20px 17px}.actions{gap:6px}.action{padding:12px 9px}.footer{display:block}.fighters{gap:7px;grid-template-columns:1fr 28px 1fr}.fighters small{font-size:11px}.team-number{font-size:19px}.stats{margin:10px 0}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+@media(min-width:1101px){.board-frame{max-width:min(100%,max(390px,calc((100dvh - 245px)*.9 + 36px)));margin-inline:auto}}
+#fight{width:1060px;max-width:min(1060px,calc(100vw - 24px));border-color:#89957b}#fight .modal{padding:20px 24px}#fight .modal-head{margin-bottom:10px}#fight .modal-head h2{font-size:25px;margin:0}.round-badge{font-size:13px;color:#e4d4a8;border:1px solid #7d8060;border-radius:20px;padding:3px 12px}.duel-progress{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:12px}.duel-progress span{text-align:center;padding:5px;border-bottom:2px solid #456054;color:#aebfb2;font-size:12px}.duel-progress .now{color:#fff1bd;border-color:#e5c983;background:#e5c98310}.duel-progress .red.now{color:#ffd1c4;border-color:#d67b6c}.duel-progress .black.now{color:#d4e8ff;border-color:#8faacb}.duel-fighters{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}.duel-fighter{--team:#d47c6b;--team-soft:#f5ccbf;min-width:0;border:1px solid #a46b5f;border-radius:7px;padding:9px 12px;background:#49312f}.duel-fighter.black{--team:#9cb5d3;--team-soft:#d9e7f6;background:#263647;border-color:#6884a2}.duel-fighter.active{outline:2px solid var(--team);outline-offset:2px}.duel-side{display:flex;align-items:center;justify-content:space-between;color:var(--team-soft);line-height:20px}.duel-side strong{font-size:15px}.duel-side span{font-size:11px}.duel-identity{display:flex;align-items:center;gap:9px;margin:5px 0}.duel-seal{display:grid;place-items:center;width:38px;height:38px;border:2px solid var(--team);border-radius:50%;font:700 25px "SimSun",serif;color:var(--team-soft);flex-shrink:0}.duel-identity b{font-size:16px;line-height:1.2}.duel-identity small{display:block;font-size:11px;color:#d1d6cb}.duel-identity .duel-hp{margin-left:auto;font-size:27px;font-weight:500;font-variant-numeric:tabular-nums}.duel-hp small{display:inline;font-size:12px}.duel-health{height:5px;border-radius:3px;background:#0f231f;overflow:hidden}.duel-health i{display:block;height:100%;background:var(--team);transition:width .25s}.duel-resources{display:flex;align-items:center;justify-content:space-between;margin-top:6px;color:#d1d6cb}.duel-resources>small,.duel-support{font-size:11px}.duel-support{color:#becbbf;margin-top:2px}.force-pips{display:inline-flex;align-items:center;gap:4px}.force-pips i{width:9px;height:9px;border:1px solid #bea970;transform:rotate(45deg);margin-right:2px}.force-pips i.full{background:#ebce7f;box-shadow:0 0 6px #e2b95e55}.force-pips small{font-size:11px;margin-left:3px}.handoff{text-align:center;border:1px solid #956255;border-radius:7px;background:#4c302b80;padding:18px 10px;margin:12px 0}.handoff.black{border-color:#6d8aac;background:#273a4d99}.handoff h3{font:700 25px "SimSun",serif;margin:13px 0}.handoff p{font-size:13px;margin:8px 0 15px}.side-ribbon{font-size:13px;color:#ffdbcb;letter-spacing:2px}.black .side-ribbon{color:#d7eaff}.side-button{background:#ad5548;border-color:#d08270;color:#fff3e6;min-width:210px;font-weight:700}.side-button.black{background:#435f7b;border-color:#92b1d2;color:#edf5ff}.side-button:hover:not(:disabled){filter:brightness(1.15);background:#ad5548}.side-button.black:hover:not(:disabled){background:#435f7b}.choice-heading{border-left:4px solid #d47c6b;padding:4px 10px;display:flex;align-items:center;gap:12px;margin:12px 0 7px;color:#ffd8cd}.choice-heading.black{border-color:#9cb5d3;color:#d7e9ff}.choice-heading strong{font-size:18px}.choice-heading span{font-size:12px;color:#c5d1c4}.combat-legend{display:flex;flex-wrap:wrap;gap:5px 17px;margin:0 0 8px;font-size:11px;color:#b6c7bb}.actions{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.action{display:flex;flex-direction:column;align-items:flex-start;text-align:left;position:relative;min-height:109px;padding:11px;gap:3px;border-color:#7b7060;background:#39483c}.actions.red .action,.skill-actions.red .action{border-color:#9c7564}.actions.black .action,.skill-actions.black .action{border-color:#748da1}.action>svg{width:23px;height:23px;position:absolute;right:10px;top:11px;color:#e8d3a0}.action strong{font-size:17px;padding-right:28px;line-height:1.4}.action strong .card-type{font-size:10px;margin-left:7px;margin-right:0;display:inline-block}.action span{font-size:11px;margin-top:2px;line-height:1.65}.action small{font-size:10px;color:#d0c493;margin-top:auto;padding-top:4px}.action.skill{min-height:91px;background:#364c36}.learned-heading{display:flex;justify-content:space-between;font-size:12px;color:#d5d9be;margin-top:10px}.learned-heading span{color:#a9bbaa;font-size:11px}.skill-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:5px}.retreat-row{display:flex;justify-content:space-between;gap:12px;align-items:center;border-top:1px solid #4a6553;padding-top:10px;margin-top:12px}.retreat-row span{font-size:11px;color:#c0c8b5}.retreat-row button{white-space:nowrap;color:#edcfaa;border-color:#8e7d5a}.reveal-verdict{text-align:center;font:700 21px "SimSun",serif;color:#ead59e;margin:13px 0}.reveal-verdict.red{color:#ffc9b9}.reveal-verdict.black{color:#d0e5ff}.reveal-verdict small{display:block;font:11px "Microsoft YaHei",sans-serif;color:#bdcaba;margin-top:5px}.revealed-pair{display:grid;grid-template-columns:1fr 1fr;gap:14px}.reveal-card{border:1px solid #b47766;border-radius:7px;background:#52372e;overflow:hidden;animation:show-move .28s ease-out}.reveal-card.black{border-color:#809db9;background:#293e50}.reveal-label{display:flex;justify-content:space-between;padding:8px 13px;background:#a458433b;font-size:13px;font-weight:700;color:#ffdbca}.black .reveal-label{background:#80a8d322;color:#e1efff}.reveal-label span{font-size:11px;font-weight:400}.reveal-move{display:flex;align-items:center;justify-content:center;gap:10px;padding:16px 10px 13px;color:#fff0d7}.reveal-move svg{width:35px;height:35px;color:#f0c79d}.black .reveal-move svg{color:#b5d3ed}.reveal-move h3{font:700 34px/1.2 "SimSun",serif;margin:0}.reveal-move>span{font-size:11px;border-left:1px solid #a28d6c;padding-left:9px;color:#d9d5bf}.reveal-damage{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #bc94723b;border-bottom:1px solid #bc94723b;padding:9px 0;text-align:center}.reveal-damage strong{font-size:36px;font-weight:600;color:#ffddb5;line-height:1.1}.black .reveal-damage strong{color:#cee5fa}.reveal-damage b{font-size:25px;font-weight:500;color:#f0e3d5}.reveal-damage span{display:block;font-size:10px;color:#d7d7c9;margin-top:4px}.damage-detail{font-size:11px;line-height:1.7;margin:9px 12px;color:#e2dfc8;min-height:36px}.force-change{font-size:10px;color:#dacda9;margin:7px 12px 11px;min-height:17px}.combat-summary{background:#3b5038;border:1px solid #87905c;border-radius:5px;padding:10px 14px;margin-top:13px;font-size:14px;color:#f1e4b7}.combat-history{font-size:11px;color:#b9c9ba;border-top:1px solid #46614e;margin-top:13px;padding-top:8px}.combat-history summary{cursor:pointer}.combat-history ol{max-height:100px;overflow:auto;padding-left:18px}.combat-history li{margin:5px 0}#fight .result-actions{margin-top:13px}#fight .result-actions .tip{font-size:11px;margin:0}#fight>.modal>.tip{font-size:11px;margin:9px 0 0}@keyframes show-move{from{opacity:.3;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:650px){#fight .modal{padding:14px}.duel-fighters{gap:8px}.duel-fighter{padding:8px}.duel-side span{font-size:10px}.duel-identity{gap:6px}.duel-seal{width:30px;height:30px;font-size:21px}.duel-identity b{font-size:13px}.duel-identity .duel-hp{font-size:23px}.duel-identity small{font-size:9px}.duel-resources{flex-wrap:wrap;gap:4px}.duel-support{font-size:10px}.choice-heading{flex-wrap:wrap;gap:4px}.choice-heading strong{font-size:17px}.actions{grid-template-columns:1fr 1fr}.revealed-pair{gap:8px}.reveal-move{gap:5px;padding:14px 5px}.reveal-move h3{font-size:27px}.reveal-move svg{width:25px;height:25px}.reveal-move>span{display:none}.reveal-label{padding:7px 8px;font-size:12px}.reveal-damage strong{font-size:30px}.damage-detail,.force-change{margin-left:8px;margin-right:8px}.retreat-row{align-items:flex-start}.duel-progress span{font-size:11px}.reveal-verdict{font-size:18px}.side-button{min-width:180px}}
+@media(prefers-reduced-motion:reduce){.reveal-card{animation:none}.duel-health i{transition:none}}
+.header-tools{flex-wrap:wrap;justify-content:flex-end}.cell.suggested{box-shadow:inset 0 0 0 3px #fff0b0}.coach{border-left:3px solid var(--gold);background:#e5c9830d;padding:9px 12px;margin:10px 0;font-size:12px;color:#efdfb5}.coach p{margin:6px 0 0}.coach button{margin-top:7px}.notice{line-height:1.8}.subtitle{flex-shrink:0}
+.pick-layout{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(290px,.9fr);gap:18px;align-items:start}.pick-options .actions{grid-template-columns:1fr 1fr}.pick-options .action{min-height:87px;padding:9px 11px}.action.chosen{outline:2px solid #f3d78f;outline-offset:1px;background:#4d563c}.pick-review{background:#132c26;border:1px solid #66725a;border-radius:6px;padding:13px}.pick-review h3{font-size:18px;color:#f2dcac;margin-bottom:4px}.pick-review .tip{font-size:12px;margin:5px 0 9px}.preview-table{border-collapse:collapse;width:100%;font-size:13px;margin:9px 0}.preview-table th{font-weight:400;color:#adc0af;font-size:11px}.preview-table th,.preview-table td{padding:6px 4px;border-bottom:1px solid #3c5444;text-align:right}.preview-table th:first-child,.preview-table td:first-child{text-align:left}.preview-table small{font-size:11px;color:#b4c3b3;display:block}.preview-table td.loss{color:#e8b5a4}.preview-risk{font-size:12px;color:#efb9a5;border-left:2px solid #bd7966;padding-left:8px;margin:10px 0}.pick-review .coach{padding:7px 9px;margin:10px 0}.pick-review .coach p{font-size:11px;line-height:1.6}.review-empty{font-size:12px;color:#bccbba;padding:8px 0}.review-empty p{margin:8px 0}.pick-options>.tip{font-size:11px;margin:9px 0 0}@media(max-width:760px){.pick-layout{grid-template-columns:1fr;gap:12px}.pick-review{padding:12px}.pick-options .action{min-height:98px}.preview-table td,.preview-table th{padding:6px}.pick-options .skill-actions{gap:8px}}
+body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
+#fight{max-height:calc(100dvh - 24px);overflow:hidden}#fight>.modal{display:flex;flex-direction:column;max-height:calc(100dvh - 26px);padding:0;overflow:hidden}.fight-header{flex:none;padding:12px 18px 10px;border-bottom:1px solid #4b6255;background:#1b3730}.fight-header .modal-head{margin-bottom:7px!important}.fight-header .modal-head h2{font-size:22px!important}.fight-header .duel-progress{margin-bottom:8px}.fight-header .duel-progress span{padding:2px}.fight-header .duel-fighters{margin:0;gap:10px}.fight-header .duel-fighter{padding:7px 10px}.fight-header .duel-identity{margin:3px 0}.fight-body{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:10px 18px 14px;scrollbar-gutter:stable}.fight-body .choice-heading{margin-top:0}.fight-footer{flex:none;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 18px;border-top:1px solid #61715a;background:#19342c;box-shadow:0 -5px 16px #0a211a44}.fight-footer .tip{margin:0;font-size:12px}.pick-confirm-info{min-width:0}.pick-confirm-info strong{display:block;font-size:15px;color:#ffd5c5}.pick-confirm-info.black strong{color:#d4e8ff}.pick-confirm-info span{display:block;font-size:11px;color:#bbcebf}.fight-controls{display:flex;gap:8px;flex-shrink:0}.fight-footer button{min-height:42px}.fight-controls [data-fight="commit"]{min-width:150px}.pick-review .coach{margin-bottom:0}.pick-review .coach p{margin:0}.pick-options .action span{font-size:12px;line-height:1.5}.pick-options>.tip{font-size:12px}.action:disabled{opacity:.65}.fight-body .reveal-verdict{margin-top:0}.fight-body .combat-summary:first-child{margin-top:0}.piece .wound{position:absolute;left:-3px;bottom:-2px;min-width:19px;padding:2px 3px;background:#6c3531;color:#fff2dc;border:1px solid #ecd2a6;border-radius:5px;font:700 11px/1.1 "Microsoft YaHei",sans-serif}
+@media(max-width:760px){.fight-header{padding:10px}.fight-header .duel-fighter{padding:6px}.fight-body{padding:10px}.fight-footer{padding:9px 10px;flex-wrap:wrap;gap:7px}.pick-confirm-info{width:100%;display:flex;justify-content:space-between;gap:8px;align-items:center}.pick-confirm-info strong{font-size:13px}.pick-confirm-info span{display:none}.pick-confirm-info .review-jump{display:block;min-height:32px;padding:3px 9px;font-size:12px;margin-left:auto}.fight-controls{width:100%;display:flex}.fight-controls button{flex:1;padding:8px;min-width:0!important;font-size:13px}.fight-controls [data-fight="commit"]{flex:1.5}.fight-footer>.primary{margin-left:auto}.fight-footer>.tip{max-width:65%}.fight-body .pick-layout{gap:10px}.fight-header .duel-support{font-size:10px}.fight-body .choice-heading span{font-size:11px}.fight-body .pick-review{padding:10px}.preview-table th{font-size:10px}.preview-table small{font-size:10px}}
+@media(max-width:360px){.fight-header .duel-identity{gap:4px}.fight-header .duel-seal{width:24px;height:24px;font-size:18px}.fight-header .duel-identity b{font-size:12px}.fight-header .duel-hp{font-size:21px!important;white-space:nowrap}.fight-header .duel-hp small{font-size:9px}.fight-header .duel-side strong{font-size:12px}.fight-header .duel-side span{font-size:9px}}
+@media(max-height:640px){.fight-header{padding:6px 10px}.fight-header .duel-progress,.fight-header .duel-support{display:none}.fight-header .duel-identity{margin:0}.fight-header .duel-seal{width:26px;height:26px;font-size:18px}.fight-header .duel-hp{font-size:22px}.fight-header .duel-resources{margin-top:3px}.fight-footer{padding-top:6px;padding-bottom:6px}}
+.lesson-panel{border:2px solid #efd18e;background:#f0dcac;border-radius:7px;margin-bottom:18px;box-shadow:0 8px 24px #071c1744}.lesson-panel[hidden]{display:none}.lesson-copy{padding:17px 20px;color:#213b30}.lesson-heading{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.lesson-heading>span{font-size:12px;font-weight:700;border:1px solid #a38a51;padding:2px 8px;border-radius:3px;white-space:nowrap}.lesson-heading>strong{font:700 24px/1.4 "SimSun",serif}.lesson-copy p{font-size:17px;font-weight:600;line-height:1.75;margin:10px 0 7px}.lesson-copy small{display:block;color:#526045;font-size:12px}.lesson-copy button{margin-top:12px}.lesson-progress{display:flex;gap:7px;list-style:none;padding:0;margin:12px 0 0}.lesson-progress li{flex:1;border-bottom:3px solid #c8b582;padding-bottom:4px;font-size:12px;color:#596348}.lesson-progress li.current{border-color:#234b38;color:#173f2b;font-weight:700}.lesson-progress li.done{border-color:#7b905f}.fight-lesson{flex:none;background:#f0dcac;border-bottom:2px solid #ebc779}.fight-lesson .lesson-copy{padding:9px 18px}.fight-lesson .lesson-heading{gap:8px}.fight-lesson .lesson-heading>strong{font-size:18px}.fight-lesson .lesson-copy p{font-size:14px;line-height:1.6;margin:5px 0 0}.lesson-target{position:relative;outline:3px solid #ffe09b!important;outline-offset:2px!important;box-shadow:0 0 0 5px #d0a95733}.lesson-target:not(.cell):after{content:"本步操作";position:absolute;top:-10px;left:10px;z-index:3;padding:1px 6px;background:#ffe09b;color:#213b30;border-radius:3px;font:700 10px/1.6 "Microsoft YaHei",sans-serif;white-space:nowrap}.action.lesson-target{border-color:#ffe09b;background:#46543c;scroll-margin-block:12px}.cell.lesson-target{z-index:3;background:#ffe09b55;outline-offset:-3px!important;box-shadow:inset 0 0 0 3px #644e25}.cell.lesson-target:before{content:"点此";position:absolute;top:0;right:0;z-index:4;padding:0 3px;background:#ffe09b;color:#213b30;border-radius:2px;font:700 9px/1.5 "Microsoft YaHei",sans-serif}.start-wrap{flex-wrap:wrap}.start-wrap>.tip{flex-basis:100%}@media(max-width:650px){.header-tools{margin-left:0;justify-content:flex-start}.header-tools select{max-width:155px}.lesson-copy{padding:12px}.lesson-heading{gap:6px}.lesson-heading>strong{font-size:21px}.lesson-copy p{font-size:15px}.lesson-progress{gap:5px}.fight-lesson .lesson-copy{padding:8px 10px}.fight-lesson .lesson-heading>strong{font-size:16px}.fight-lesson .lesson-copy p{font-size:13px}.fight-lesson .lesson-heading>span{font-size:11px;padding:1px 5px}}
+@media(max-width:650px){.team-head{gap:5px;align-items:baseline}.team-head strong{font-size:12px}.team-number{font-size:17px;white-space:nowrap}.status strong{display:block;font-size:16px}.status .muted{max-width:100px;font-size:11px}}
+.notice:empty,.last-action:empty{display:none}.notice:not(:empty){margin:0 0 12px;padding:9px 12px;border-left:3px solid var(--gold);background:#e5c98312}.last-action{margin-top:12px;padding:10px 13px;border:1px solid var(--line);border-radius:6px;background:var(--panel);font-size:13px}.last-action strong{font-size:12px;color:#e6c4b4}.last-action strong.black{color:#b8d1ee}.last-action p{margin:4px 0 0;color:var(--text);line-height:1.7}.cell.last-from{box-shadow:inset 0 0 0 2px #47675499;border:1px dashed #476754}.cell.last-to{box-shadow:inset 0 0 0 2px #476754}.cell.last-from:before,.cell.last-to:before{position:absolute;left:1px;top:1px;z-index:3;padding:0 3px;background:#254b3e;color:#fff0c8;font:700 10px/1.5 "Microsoft YaHei",sans-serif;border-radius:2px}.cell.last-from:before{content:"起"}.cell.last-to:before{content:"落"}.last-move-trace{stroke-width:3;stroke-dasharray:5 4;stroke-linecap:round}.last-move-trace.red{stroke:#973f39}.last-move-trace.black{stroke:#304e6a}
+#preview{width:520px;overflow:hidden}#preview-content{padding:0;display:flex;flex-direction:column;max-height:calc(100dvh - 32px)}.preview-header{flex:none;padding:18px 22px 12px;border-bottom:1px solid var(--line)}.preview-header h2{margin:0;font:700 25px/1.5 "SimSun",serif}.preview-header p{margin:4px 0 0;font-size:14px;color:var(--muted)}.preview-body{min-height:0;overflow-y:auto;padding:0 22px 12px;overscroll-behavior:contain}.preview-actions{display:flex;gap:10px;flex:none;padding:12px 22px;border-top:1px solid var(--line);background:#19342c}.preview-actions button{flex:1;min-height:44px}.preview-actions .primary{flex:1.5}@media(max-width:650px){.preview-header{padding:12px 14px}.preview-body{padding:0 14px 10px}.preview-actions{padding:10px 14px}.preview-body .card{margin:8px 0;padding:9px}.preview-body .tip{font-size:12px}.last-action{font-size:12px}.cell.last-from:before,.cell.last-to:before{font-size:9px}}
+.decision-facts{display:grid;gap:5px;border-left:3px solid var(--gold);background:#e5c9830c;padding:8px 10px;margin:10px 0;font-size:12px;color:#f0ddb0}.public-cards{border-top:1px solid #526649;margin-top:12px;padding-top:10px}.public-cards h4{font-size:13px;color:#dce7da;margin:0 0 4px}.public-cards>p{font-size:11px;color:var(--muted);margin:3px 0 8px}.public-cards ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}.public-card{border:1px solid #566b55;border-radius:5px;padding:8px 10px;background:#213d32}.public-card.unavailable{border-style:dashed;background:#1b332c}.public-card>div{display:flex;align-items:center;flex-wrap:wrap;gap:6px}.public-card strong{font-size:13px}.public-card .card-type{margin:0}.public-card small{font-size:11px;color:#d7c8a2;margin-left:auto}.public-card.unavailable small{color:#c4b8ac}.public-card p{font-size:12px;line-height:1.65;color:#c5d2c2;margin:5px 0 0}
+.review-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px}.review-head h3{margin:0;min-width:0}.review-head .card-type{white-space:nowrap;font-size:10px;padding:0 4px;margin:0 0 0 5px}.public-jump{flex:none;padding:7px 8px;min-height:40px;font-size:12px}.public-cards ul{grid-template-columns:repeat(2,minmax(0,1fr))}@media(max-width:760px){.public-cards ul{grid-template-columns:1fr}}@media(max-width:360px){.review-head h3{font-size:16px}}
+.position-info:empty{display:none}.position-info{display:flex;flex-wrap:wrap;gap:3px 14px;margin-top:12px;padding:9px 12px;border-left:3px solid var(--gold);background:#e5c9830d;font-size:12px;color:#d9d8bd}.position-info strong{font-size:13px;color:#f1dfae}.cell.inspect-target:not(.capture):after{content:"";position:absolute;inset:5%;border:2px dashed #426b80;border-radius:50%;z-index:2}.cell.inspect-threat .piece{outline:2px solid #95602e;outline-offset:1px}@media(min-width:361px){.cell:has(.position-mark).last-from:before,.cell:has(.position-mark).last-to:before{display:none}}.position-mark{position:absolute;top:0;left:0;z-index:3;padding:0 1px;border-radius:2px;background:#365969;color:#fff5d7;font:700 9px/1.4 "Microsoft YaHei",sans-serif;pointer-events:none}.inspect-threat .position-mark{background:#77512c}.movement-note{font-size:13px;color:#d5dfcd;border-left:2px solid #7e9575;padding-left:9px;margin:12px 0}.position-analysis{margin:14px 0;padding:12px 10px;border:1px solid #6d785c;border-radius:5px;background:#19342c}.position-analysis h3{color:#ead59e;margin-bottom:9px}.position-count{font-size:12px;color:#c9d5c4;margin:0 0 7px}.position-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:5px}.position-link{width:100%;min-height:44px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:2px 8px;padding:6px 9px;font-size:12px;text-align:left}.position-link small{font-size:11px;color:#becdbb}.position-link>span{display:flex;flex-wrap:wrap;gap:3px 8px}.position-link>b{font-size:11px;color:#f0d49d}.position-analysis>.tip{font-size:11px;line-height:1.7;margin:10px 0 0}
+.position-small-legend{display:none}@media(max-width:360px){.position-mark,.position-legend{display:none}.position-small-legend{display:inline}.cell.inspect-target{background:#466e7e25}.cell.inspect-threat{background:#b9824830}.legend{flex-wrap:wrap;gap:5px 12px}.legend>span{white-space:nowrap}}
+.endgame[hidden]{display:none}.endgame{margin:0 0 20px;padding:20px 22px;border:1px solid #b6a36a;border-radius:8px;background:#293f31}.endgame.red{border-color:#c28a73}.endgame.black{border-color:#86a2bc}.endgame-head{display:flex;align-items:center;gap:15px}.endgame-seal{flex:none;width:56px;height:56px;display:grid;place-items:center;border:2px solid #e2ce91;border-radius:50%;color:#f0dfae;font:700 30px "SimSun",serif}.endgame.red .endgame-seal{border-color:#d9937d;color:#ffd1c1}.endgame.black .endgame-seal{border-color:#9ab7d4;color:#d0e5ff}.endgame-copy{min-width:0;flex:1}.endgame-copy>span{font-size:12px;color:var(--muted)}.endgame h2{font:700 28px/1.4 "SimSun",serif;margin:2px 0}.endgame-copy p{font-size:14px;margin:2px 0;color:#d5e1cf}.endgame-head>button{min-height:44px}.endgame-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:17px;border-top:1px solid #6c7d5b;padding-top:12px}.endgame-stats b{display:block;font-size:25px;font-weight:500;font-variant-numeric:tabular-nums}.endgame-stats span{font-size:12px;color:var(--muted)}.endgame>.tip{margin:12px 0 0;font-size:12px}#endgame-title{scroll-margin-top:20px;width:fit-content;max-width:100%}#endgame-title:focus{outline:2px solid var(--focus);outline-offset:4px}.match-verdict{padding:10px 13px;margin-bottom:13px;border:1px solid #b6a36a;border-radius:5px;background:#384d34;color:#f0dfae}.match-verdict.red{border-color:#c28a73;color:#ffd1c1}.match-verdict.black{border-color:#86a2bc;color:#d0e5ff}.match-verdict strong{display:block;font-size:18px}.match-verdict span{display:block;font-size:12px;margin-top:3px}@media(max-width:650px){.endgame{padding:14px}.endgame-head{flex-wrap:wrap;gap:10px}.endgame-seal{width:43px;height:43px;font-size:25px}.endgame h2{font-size:24px}.endgame-head>button{width:100%}.endgame-stats{gap:8px}.endgame-stats b{font-size:22px}.endgame-stats span{font-size:11px}}
+[hidden]{display:none!important}.home-page{max-width:1040px;margin:48px auto 32px;display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,400px);gap:70px;align-items:center}.home-eyebrow{display:block;font-size:13px;letter-spacing:3px;color:var(--gold)}.home-intro h2{font:700 clamp(48px,5.5vw,76px)/1.2 "STSong","SimSun",serif;letter-spacing:8px;margin:20px 0}.home-intro>p{color:#c6d4c6;line-height:1.9}.home-steps{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:17px}.home-steps li{display:flex;gap:16px;align-items:center}.home-steps b{width:36px;height:36px;display:grid;place-items:center;border:1px solid #7b8769;border-radius:50%;font:20px "SimSun",serif;color:var(--gold)}.home-steps span{font-size:15px}.home-steps small{display:block;font-size:12px;color:var(--muted)}.home-settings{padding:26px 28px}.home-settings h2{font:700 26px "SimSun",serif;margin-bottom:8px}.home-settings>label{display:block;font-size:13px;margin:17px 0 6px;color:#d7e0d1}.home-settings select{display:block;width:100%;max-width:none;min-height:46px;background:#19342c}.mode-description{font-size:13px;line-height:1.8;color:#ddd5b6;min-height:48px;padding:10px 0;margin:9px 0}.home-settings button{min-height:46px}.home-settings>#help{margin-top:10px}.home-settings>#load{font-size:17px}.resume-wrap{margin-top:15px;border-top:1px solid var(--line);padding-top:3px}.resume-wrap p{margin:10px 0;font-size:12px}.home-save-note{margin:12px 0 0;text-align:center}.home-page~.footer{margin-top:32px}#game-setting{max-width:300px;text-align:right}#back-home{min-height:44px}.fight-home{padding:4px 8px;font-size:12px;min-height:44px;white-space:nowrap}.fight-header .round-badge{margin-left:auto}
+@media(max-width:760px){.home-page{margin:28px auto;gap:28px;grid-template-columns:minmax(0,1fr) minmax(280px,1fr)}.home-intro h2{font-size:50px}.home-settings{padding:22px}.home-intro>p{font-size:13px}.home-steps{gap:14px}#game-setting{max-width:180px}}
+@media(max-width:650px){.home-page{display:block;max-width:420px;margin:24px auto}.home-intro{margin-bottom:24px}.home-intro h2{font-size:43px;letter-spacing:5px;line-height:1.2;margin:10px 0}.home-intro h2 br{display:none}.home-intro>p{margin-bottom:0}.home-steps{display:none}.home-settings{padding:20px}.home-settings>label{margin-top:13px}.home-eyebrow{font-size:11px;letter-spacing:2px}.mode-description{min-height:0}#game-tools{width:100%;justify-content:space-between}#game-setting{max-width:none;text-align:left}.fight-header .modal-head{gap:6px}.fight-header .round-badge{font-size:11px;padding:2px 7px}.fight-header .modal-head h2{font-size:18px!important}.fight-home{font-size:11px;padding:4px 6px}}
+.save-warning{color:#f4c69b!important}#save-status{max-width:750px}#home-save-note{line-height:1.8}
+.advice{border:1px solid #a28e5d;border-left:3px solid var(--gold);border-radius:5px;background:#e5c9830c;padding:12px;margin:0 0 16px;font-size:13px;overflow-wrap:anywhere}.advice h3{font-size:16px;color:#f2dcac;margin:0 0 7px}.advice h4{font-size:12px;color:#d7d8bb;margin:10px 0 3px}.advice ul{padding-left:18px;margin:0}.advice li{margin:5px 0}.advice .advice-risks{color:#f1c3ad}.advice .advice-note{font-size:12px;color:var(--muted);line-height:1.7;margin:10px 0 0}.pick-review .advice{margin:0 0 12px}.pick-review .advice h3{font-size:16px}#notice button{margin-left:8px;min-height:44px}
+#review{width:900px;max-width:min(900px,calc(100vw - 28px))}.endgame-actions{display:flex;gap:9px;flex-wrap:wrap}.review-intro{color:#d5d6bd;font-size:13px;line-height:1.8}.review-teams{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}.review-team{border:1px solid #a46b5f;background:#49312f;padding:12px;border-radius:6px}.review-team.black{border-color:#6884a2;background:#263647}.review-team h3{color:#ffd1c4}.review-team.black h3{color:#d4e8ff}.review-team p{font-size:13px;margin:5px 0}.review-battle{border:1px solid var(--line);border-radius:6px;padding:15px;margin-top:14px;overflow-wrap:anywhere}.review-battle h3{color:var(--gold)}.review-battle>p{font-size:13px}.review-losses{display:grid;grid-template-columns:1fr 1fr;gap:9px;font-size:13px}.review-losses>div{border-left:3px solid #bc796b;padding-left:10px}.review-losses>.black{border-color:#9cb5d3}.review-losses b,.review-losses span{display:block}.review-losses span{color:var(--muted)}.review-tip{margin-top:13px;padding-top:12px;border-top:1px solid var(--line)}.review-tip h4{margin:0 0 8px;font-size:13px}.review-compare{display:grid;grid-template-columns:1fr 1fr;gap:8px}.review-compare>div{padding:9px;background:#112a24;border:1px solid transparent;border-radius:4px;font-size:12px;min-width:0}.review-compare>div:last-child{border-color:#8c8057;background:#283e2d}.review-compare strong,.review-compare b,.review-compare small{display:block}.review-compare strong{font-size:11px;color:var(--muted);margin-bottom:5px}.review-compare span{font-size:15px;color:var(--gold)}.review-compare b{margin:5px 0;font-size:13px}.review-compare small{color:var(--muted)}#review button{min-height:44px}@media(max-width:480px){.review-teams,.review-losses,.review-compare{grid-template-columns:1fr}.review-battle{padding:12px}.endgame-actions{width:100%}.endgame-actions button{flex:1}.review-teams{gap:8px}.review-team{padding:10px}}
+.card .card-plan{padding:9px 10px;background:#dfca8a12;border-left:3px solid #cfb774;color:#dedec1}.card-plan b{display:block;color:#eed69a;font-size:12px;margin-bottom:3px}.card-plan span{display:block;margin-top:5px;color:#bfcfbe}
+.cell.card-target{background:#f5df8a66;box-shadow:inset 0 0 0 3px #426d36}.card-guide{padding:10px 13px;border:1px solid #baaa6c;border-radius:6px;background:#d4bd6d15;margin-bottom:12px}.card-guide strong{display:block}.card-guide p{margin:5px 0;font-size:12px}.card-guide button{margin-top:5px;min-height:44px}.card-plan{font-size:12px;line-height:1.65;margin:7px 0 0}.card-plan button{margin-top:8px;min-height:44px;width:100%}.challenge-info{border:1px solid #9f9564;border-left:4px solid var(--gold);border-radius:6px;background:#d4bd6d10;padding:14px 18px;margin-bottom:18px}.challenge-info h2{color:#eed69a;margin-bottom:5px}.challenge-info p{margin:4px 0;font-size:13px}.challenge-info small{color:var(--muted)}@media(max-width:780px){.challenge-info{padding:12px}.card-guide{font-size:13px}}
+.cell.move-candidate{background:#d6d3ad77;box-shadow:inset 0 0 0 3px #345e74}.scout-note{font-size:12px;color:#e9d59f;border-left:3px solid var(--gold);padding-left:9px}.move-preview{margin-top:14px;border:1px solid #91a6b1;border-radius:6px;padding:12px;background:#203d3b}.move-preview .advice{margin:0;border:0;padding:0;background:none}.move-preview-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.move-preview-actions button{min-height:44px;flex:1}.challenge-feedback{margin-top:16px;padding:13px;border:1px solid #bc8c77;border-left:4px solid #d59b80;border-radius:5px;background:#4a383022;overflow-wrap:anywhere}.challenge-feedback h3{color:#ffd0b8;margin:0 0 7px}.challenge-feedback h4{font-size:13px;margin:12px 0 3px;color:#eddaa9}.challenge-feedback p{font-size:13px;margin:4px 0}.challenge-feedback small{display:block;font-size:12px;color:var(--muted);margin-top:9px}@media(max-width:480px){.move-preview-actions{flex-direction:column}}
+.damage-breakdown{margin:9px 12px;border-top:1px solid #d4c99a44;color:#eee9d6;font-size:12px;overflow-wrap:anywhere}.damage-breakdown summary{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:4px 10px;min-height:44px;cursor:pointer;padding:6px 0}.damage-breakdown summary::before{content:'＋';color:var(--gold)}.damage-breakdown[open] summary::before{content:'−'}.damage-breakdown summary span{flex:1}.damage-breakdown summary b{font-weight:500;font-variant-numeric:tabular-nums}.damage-breakdown dl{margin:2px 0 9px}.damage-breakdown dl>div{display:flex;justify-content:space-between;gap:14px;padding:5px 0;border-bottom:1px solid #d4c99a22}.damage-breakdown dt{min-width:0}.damage-breakdown dd{margin:0;white-space:nowrap;font-variant-numeric:tabular-nums}.damage-breakdown .damage-total{font-weight:700;color:#ffe2a7;border-bottom:0}.damage-breakdown p{margin:7px 0;font-size:12px;line-height:1.7}.reveal-health{margin:9px 12px;font-size:12px;color:#eee3ce;line-height:1.7}.damage-history-pair{display:grid;grid-template-columns:1fr 1fr;gap:8px}.damage-history-pair .damage-breakdown{margin:3px 0}.combat-history ol{max-height:none}.combat-history li>p{margin:7px 0}.combat-history .damage-breakdown summary span{flex-basis:100%}@media(max-width:480px){.revealed-pair,.damage-history-pair{grid-template-columns:1fr}.damage-breakdown,.reveal-health{margin-left:10px;margin-right:10px}}
+.setup-roster{margin-top:16px;min-width:0}.setup-roster h3{margin-bottom:8px}.setup-sides{display:flex;gap:6px}.setup-sides button{flex:1;min-height:44px;padding:6px;font-size:12px}.setup-sides button[aria-pressed="true"]{border-color:var(--gold);color:var(--gold);background:#e5c98312}.setup-summary,.setup-help,.setup-message{font-size:12px;line-height:1.7;margin:8px 0;color:#d9dfcc}.setup-help{color:var(--muted)}.setup-list{display:grid;gap:5px;max-height:clamp(200px,34dvh,340px);overflow-y:auto;padding:3px;scroll-padding:3px;overscroll-behavior:contain}.setup-piece{min-height:52px;width:100%;padding:6px 8px;text-align:left;font-size:12px}.setup-piece[aria-pressed="true"]{border-color:var(--gold);box-shadow:inset 3px 0 var(--gold)}.setup-piece>span{display:flex;align-items:baseline;justify-content:space-between;gap:5px}.setup-piece small{font-size:10px;color:var(--muted);white-space:nowrap}.setup-piece em{display:block;font-size:11px;font-style:normal;color:#e6d6a8;overflow-wrap:anywhere}.setup-message{border-left:3px solid var(--gold);padding:7px 9px;background:#e5c9830d}.setup-message b{display:block;color:var(--gold)}.card-learn{min-height:44px}#piece-detail-title{scroll-margin-top:16px}#piece-detail-title:focus{outline:2px solid var(--focus);outline-offset:4px}@media(min-width:781px) and (max-width:1100px){.setup-roster{grid-column:1/-1;margin-top:0}.setup-list{grid-template-columns:repeat(3,minmax(0,1fr));max-height:180px}.setup-sides{max-width:300px}}@media(max-width:780px){.setup-list{grid-template-columns:repeat(2,minmax(0,1fr));max-height:220px}.setup-roster{margin-top:14px}.setup-message{font-size:12px}.start-wrap .setup-message{flex-basis:100%;margin:0}.start-wrap:has(.setup-message){flex-wrap:wrap}}
+.left-panel:has(.setup-roster:not([hidden]))>.separator,.left-panel:has(.setup-roster:not([hidden]))>.balance-note,.left-panel:has(.setup-roster:not([hidden]))>.steps,.left-panel:has(.setup-roster:not([hidden])) .start-wrap>.tip{display:none}.setup-message button{width:100%;min-height:44px;margin-top:7px}
+@media(min-width:1101px){.left-panel:has(.setup-roster:not([hidden])) .teams{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.left-panel:has(.setup-roster:not([hidden])) .team{padding-left:8px;margin-bottom:0}.left-panel:has(.setup-roster:not([hidden])) .team-head{display:block}.left-panel:has(.setup-roster:not([hidden])) .team-head strong{display:block;font-size:12px}.left-panel:has(.setup-roster:not([hidden])) .team-number{font-size:20px}.left-panel:has(.setup-roster:not([hidden])) .thin{font-size:11px}}
+.rest-options{margin-top:12px;min-width:0;width:100%;flex-basis:100%}.rest-options summary{cursor:pointer;min-height:44px;padding:9px 0;font-size:13px;color:var(--gold)}.rest-options p{font-size:12px;color:var(--muted);margin:3px 0 9px}.rest-list{display:grid;gap:6px;max-height:260px;overflow-y:auto;padding:3px}.rest-entry{width:100%;min-height:52px;padding:7px 9px;text-align:left;font-size:12px}.rest-entry b,.rest-entry small{display:block;overflow-wrap:anywhere}.rest-entry small{font-size:11px;color:var(--muted)}.rest-button{min-height:44px}#rest-confirm{width:500px;overflow:hidden}#rest-confirm>.rest-modal{display:flex;flex-direction:column;max-height:calc(100dvh - 32px)}#rest-confirm .preview-header h2{font-size:24px}#rest-confirm .preview-body{padding-top:10px}#rest-confirm .preview-actions{flex-wrap:wrap}#rest-confirm .preview-actions button{min-width:0;font-size:13px}.rest-cost{border-left:3px solid var(--gold);padding:8px 11px;color:#f0ddb0;font-size:14px}.rest-effect{font-size:13px;color:#c9d5c4}@media(max-width:780px){.start-wrap:has(.rest-options){flex-wrap:wrap}.rest-options{margin-top:0}}@media(max-width:360px){#rest-confirm .preview-actions{flex-direction:column}}
+</style>
+</head>
+<body>
+<main class="app">
+<header><h1>弈武</h1><div class="subtitle">象棋走位，招式交锋<br>卡牌武斗原型</div><div id="game-tools" class="header-tools" hidden><span id="game-setting" class="thin"></span><button id="back-home" class="quiet">返回首页</button></div></header>
+<section id="home-page" class="home-page" aria-labelledby="home-title">
+<div class="home-intro"><span class="home-eyebrow">象棋 × 卡牌 × 武斗</span><h2 id="home-title">先布局<br>再交锋</h2><p>用熟悉的棋子走位，以不同的招式交战。<br>同等培养预算，靠支援、克制与取舍争胜。</p><ol class="home-steps"><li><b>一</b><span>选择模式<small>人机练习或同机双人</small></span></li><li><b>二</b><span>布阵配牌<small>每子最多学习两张招式</small></span></li><li><b>三</b><span>走棋交锋<small>双方暗选，同时揭示</small></span></li></ol></div>
+<div class="panel home-settings"><h2>开始一局</h2><p class="tip">初次游玩可选择「分步教学」，按指引学习四课。</p><label for="opponent">对战方式</label><select id="opponent" aria-label="对战方式"><option value="computer">电脑对战 · 你执红</option><option value="local">同机双人</option></select><label for="difficulty">电脑难度</label><select id="difficulty" aria-label="电脑难度"><option value="practice">练习电脑</option><option value="standard">标准电脑</option></select><label for="scenario">选择棋局</label><select id="scenario" aria-label="选择棋局"><option value="quick">快速对局 · 各 8 子</option><option value="tutorial">分步教学 · 四课</option><option value="full">标准棋局</option><option value="challenge-support">残局一 · 借力破炮</option><option value="challenge-relay">残局二 · 主力轮换</option><option value="challenge-tempo">残局三 · 整备还是抢攻</option><option value="tactics">兵炮对决</option><option value="support">围攻试验</option><option value="attrition">连续进攻试验</option></select><p id="mode-description" class="mode-description" aria-live="polite"></p><button id="load" class="primary wide">开始游戏</button><div id="resume-wrap" class="resume-wrap" hidden><p id="resume-info" class="tip"></p><button id="resume" class="wide">继续本局</button></div><button id="help" class="quiet wide">查看玩法</button><p id="home-save-note" class="thin home-save-note" role="status">自动保存最近一局，刷新后可继续。</p></div>
+</section>
+<section id="game-page" aria-label="对局页面" hidden>
+<section class="status" aria-live="polite"><div><span class="tag" id="phase"></span><strong id="status"></strong></div><div class="muted" id="substatus"></div></section>
+<section class="endgame" id="endgame" aria-labelledby="endgame-title" hidden></section>
+<section class="lesson-panel" id="lesson" aria-label="教学指引" aria-live="polite" hidden></section>
+<section id="challenge-info" class="challenge-info" aria-label="残局挑战目标" hidden></section>
+<div class="layout">
+<aside class="panel left-panel"><h2>阵容</h2><div class="teams" id="teams"></div><hr class="separator"><p class="tip balance-note">伤势跨战斗保留。支援可抵消招式优势，整备招式需要让出一次走棋机会。</p><div class="start-wrap" id="start-wrap"></div><section id="setup-roster" class="setup-roster" aria-label="阵容配牌总览" hidden></section><hr class="separator"><ol class="steps"><li>点选己方棋子，再选择落点。</li><li>吃子时先查看双方支援。</li><li>双方暗选招式，同时揭示。</li></ol></aside>
+<section><div id="notice" class="notice" role="status"></div><div class="board-frame"><div class="board" id="board" aria-label="象棋棋盘"><svg class="board-lines" id="lines" viewBox="0 0 540 600" aria-hidden="true"></svg><div class="board-grid" id="grid" role="group" aria-label="棋盘交点"></div></div><div class="board-caption"><span>黑方</span><span>上标：未耗尽牌 · 下标：伤子生命</span><span>红方</span></div></div><div class="legend"><span><i></i>培养牌未耗尽</span><span><i class="exhausted"></i>有牌已耗尽</span><span>虚线圈：可交战</span></div><section id="move-preview" class="move-preview" aria-label="落点预览" aria-live="polite" hidden></section><div id="position-info" class="position-info" aria-live="polite"></div><div id="last-action" class="last-action" aria-live="polite"></div></section>
+<aside class="panel detail-panel" id="detail"></aside>
+</div>
+</section>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.17 · 整备清单与行动确认</span></footer>
+</main>
+<dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
+<dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
+<dialog id="review" aria-labelledby="review-title"><div class="modal" id="review-content"></div></dialog>
+<dialog id="rest-confirm" aria-labelledby="rest-title" aria-describedby="rest-target rest-cost"><div class="rest-modal"><div class="preview-header"><h2 id="rest-title">整备这张招式？</h2><p id="rest-target"></p></div><div class="preview-body" id="rest-content"></div><div class="preview-actions"><button id="cancel-rest" class="quiet">返回棋盘</button><button id="confirm-rest" class="primary">整备，消耗一次行动</button></div></div></dialog>
+<dialog id="rules" aria-labelledby="rules-title"><div class="modal rules"><div class="modal-head"><h2 id="rules-title">先布局，再交锋</h2><button id="close-rules" class="small">关闭玩法</button></div>
+<p>推荐在首页选择「分步教学」，完成克制、气势、撤回、支援四课。教学公开固定出招并限制操作，退出不会改变正式规则。快速对局与标准棋局均按将帅阵亡判胜负，伤害规则相同。练习电脑按可用招式类型等概率选择，不根据出招历史反制，走棋从评分靠前的三个候选中选择；标准电脑沿用混合策略。双方生命与伤害不因难度改变，揭示后可查看电脑选招说明。首页选择对战方式、电脑难度与棋局，点击「开始游戏」后进入配牌或教学。返回首页保留本局并暂停电脑；修改选项只影响下一局，点击「开始新局」并确认后才重置。</p><p>默认电脑对战：你执红，电脑执黑。红方先行，电脑自动走棋、整备和选招。武斗每轮在你选招前锁定电脑决定，不读取你的暗牌。先点选招式，查看面对各类招式时的伤害与损血范围，再点击「锁定并揭示」；点选阶段可更换，不会耗牌。「提示一步」和「选招建议」依据公开局面，不预知电脑的招式。也可选择同机双人，选招时另一方请暂时移开视线。用鼠标点选；棋盘也支持方向键移动焦点，Enter 选择。正式对局中，选子会标出交战目标、威胁来源或互攻关系；点棋子信息中的列表可查看对应棋子，不消耗行动。标记仅按当前站位与走法计算，不表示能击倒对手，也不预测下一步。可开启「落点预览」，点合法空位先看移动后的支援、交战目标、威胁和将帅暴露，再确认移动；关闭后恢复直接走棋。预览不消耗行动，返回首页或刷新会关闭。</p>
+<ol>
+<li><b>伤害拆解：</b>每轮揭示后，点击红方或黑方「伤害拆解」，查看基础、有效支援、克制或压制蓄势、培养牌、气势、首轮加成与对方减伤。结算伤害是本轮招式算出的数值；实际损血最多扣到生命为 0。前轮记录也可展开核对，查看不会再次扣血或耗牌。</li>
+<li><b>培养：</b>快速对局双方各 8 子、各 6 点，标准棋局各 16 子、各 12 点。每点学习一张招式。配牌总览列出各子的位置和已学招式，点击条目即可查看与调整；同名棋子按位置区分，电脑配牌只读。点数用完或本子已学两张时，需先撤回一张再学习。每类棋子有三种招式，每子最多学两种；未培养棋子仍可使用全部基础招式。开始后不能重配，培养不增加基础生命和攻击。</li>
+<li><b>走棋：</b>保留各棋子的走法、阻挡、九宫及不过河限制。不判将军或将死，允许飞将交战。将帅阵亡判负，双方将帅同轮阵亡判和。</li>
+<li><b>武斗：</b>基础生命 18、输出 3。双方暗选，同时揭示和结算伤害，阵亡者也会造成本轮伤害。斩击克破势，破势克架势，架势克斩击；基础招式不限次数。</li>
+<li><b>蓄势：</b>本轮不攻击，结算后获得 1 点气势，上限 2。对手用斩击或破势攻击蓄势者时，造成「输出＋2」；对手用架势或蓄势则双方均不造成伤害。气势满时不能继续蓄势。</li>
+<li><b>释放：</b>斩击、破势会自动消耗全部气势，未被克制时每点额外造成 1 伤害；被克制仍消耗，但不增伤。架势保留气势。气势只在当前武斗有效，离场归零。招式获得气势后，再结算对手的削势。</li>
+<li><b>伤害：</b>形成克制的一方造成「输出＋2」，被克制方造成 1。同类斩击或破势双方各造成输出伤害，架势相持不造成伤害。进攻方第一轮有效伤害加 1。招式增伤仅在未被克制时生效；减伤不能将有效伤害降至 0。</li>
+<li><b>支援：</b>发起交战前，除交战双方外，能按走法攻击目标交点的友军，每名提供 1 输出，最多计两名。支援固定，不移动支援者，不考虑将军限制。</li>
+<li><b>消耗：</b>培养牌使用后耗尽，伤势与耗尽状态跨战斗保留。轮到自己走棋时可展开「待整备招式」，查看本方全部耗尽牌；也可从棋子详情进入整备。先核对恢复的牌、生命和行动代价，确认后才花一次行动恢复一张牌，不回血、不移动。取消或刷新不执行整备；确认后的进度可续局。恢复后仍需满足招式使用条件。棋子阵亡，其牌不能转交。</li>
+<li><b>撤回：</b>第二轮起，进攻方可在自己选招前主动撤回。双方回到原来的位置，伤势与消耗保留，气势清零，行动机会交给对手。锁定本轮招式后不能撤回。</li>
+<li><b>结束：</b>进攻方存活且守方阵亡则占位；进攻方阵亡则移除；双方阵亡均移除。六轮后双方存活，进攻方退回，伤势和招式消耗保留。同一完整局面第三次出现，或连续 80 次棋盘行动没有造成伤害，判和。</li>
+<li><b>受阻：</b>没有任何合法移动或可整备招式时，跳过受阻方的一次行动；仍计入重复局面和无伤行动判和。</li>
+</ol>
+<table><thead><tr><th>选择</th><th>克制</th><th>被克制</th></tr></thead><tbody><tr><td>斩击</td><td>破势</td><td>架势</td></tr><tr><td>破势</td><td>架势</td><td>斩击</td></tr><tr><td>架势</td><td>斩击</td><td>破势</td></tr></tbody></table>
+<p class="muted">招式消耗需要在棋盘中整备；气势是短期资源。三选二可以侧重爆发、防守蓄势或削势反制，没有一套牌能同时兼顾全部。</p></div></dialog>
+<dialog id="confirm" aria-labelledby="confirm-title" aria-describedby="confirm-target confirm-note"><div class="modal"><h2 id="confirm-title">重开棋局？</h2><p id="confirm-target" class="coach"></p><p id="confirm-note">当前棋盘、伤势和配牌将重置，新局会替换本机续局。</p><div class="result-actions"><button id="cancel-load">保留当前棋局</button><button id="confirm-load" class="primary">确认重开</button></div></div></dialog>
+<script id="rules-engine">
+globalThis.Yiwu = (() => {
+  'use strict';
+  const SIDE={red:'红方',black:'黑方'}, OTHER={red:'black',black:'red'};
+  const NAMES={red:{rook:'車',horse:'馬',cannon:'炮',pawn:'兵',guard:'仕',elephant:'相',king:'帥'},black:{rook:'車',horse:'馬',cannon:'砲',pawn:'卒',guard:'士',elephant:'象',king:'將'}};
+  const BASE={strike:{name:'斩击',type:'strike',text:'克制破势；释放全部气势，打出额外伤害。'},guard:{name:'架势',type:'guard',text:'克制斩击；保留气势，等待反击时机。'},break:{name:'破势',type:'break',text:'克制架势；释放全部气势，打出额外伤害。'},focus:{name:'蓄势',type:'focus',text:'本轮不攻击，结算后气势加 1；遭到攻击时更易受伤。'}};
+  const TYPE={strike:'斩击',guard:'架势',break:'破势',focus:'蓄势'};
+  const CARDS={
+    rook_crush:{kind:'rook',name:'破阵',type:'strike',condition:'isolatedEnemy',damage:2,text:'对手没有支援时，增伤 2。'},
+    rook_hold:{kind:'rook',name:'固守',type:'guard',condition:'supported',reduce:2,text:'己方有支援时，减伤 2。'},
+    horse_join:{kind:'horse',name:'合击',type:'strike',condition:'supported',damage:2,text:'己方有支援时，增伤 2。'},
+    horse_evade:{kind:'horse',name:'游斗',type:'break',reduce:1,text:'本轮减伤 1。'},
+    cannon_screen:{kind:'cannon',name:'借架',type:'break',condition:'friendlyScreen',damage:2,text:'用己方棋子作炮架发起交战时，增伤 2。'},
+    cannon_hold:{kind:'cannon',name:'稳炮',type:'guard',condition:'unsupported',reduce:2,text:'己方没有支援时，减伤 2。'},
+    pawn_rank:{kind:'pawn',name:'并肩',type:'guard',condition:'adjacent',reduce:2,text:'与友军正交相邻时，减伤 2。'},
+    pawn_advance:{kind:'pawn',name:'奋进',type:'strike',condition:'crossed',damage:2,text:'自身已过河时，增伤 2。'},
+    guard_palace:{kind:'guard',name:'护宫',type:'guard',reduce:2,text:'本轮减伤 2。'},
+    guard_king:{kind:'guard',name:'协防',type:'break',condition:'nearKing',damage:2,text:'位于己方将帅周围一格内时，增伤 2。'},
+    elephant_hold:{kind:'elephant',name:'厚阵',type:'guard',condition:'supported',reduce:2,text:'己方有支援时，减伤 2。'},
+    elephant_step:{kind:'elephant',name:'震步',type:'strike',damage:2,text:'本轮增伤 2。'},
+    king_calm:{kind:'king',name:'定心',type:'guard',reduce:2,text:'本轮减伤 2。'},
+    king_lead:{kind:'king',name:'亲征',type:'break',condition:'isolatedEnemy',damage:2,text:'对手没有支援时，增伤 2。'},
+    rook_lock:{kind:'rook',name:'封锁',type:'break',suppress:1,text:'形成克制时，额外削去对手 1 点气势。'},
+    horse_turn:{kind:'horse',name:'回锋',type:'guard',gain:1,text:'结算后若存活，获得 1 点气势。'},
+    cannon_pressure:{kind:'cannon',name:'震慑',type:'strike',suppress:2,text:'形成克制时，削去对手最多 2 点气势，也能打断蓄势。'},
+    pawn_grit:{kind:'pawn',name:'韧劲',type:'guard',reduce:1,gain:1,text:'本轮减伤 1；结算后若存活，获得 1 点气势。'},
+    guard_order:{kind:'guard',name:'戒备',type:'focus',reduce:2,text:'本轮蓄势加 1，同时减伤 2。'},
+    elephant_store:{kind:'elephant',name:'沉势',type:'focus',gain:1,text:'本轮不攻击，结算后共获得 2 点气势。'},
+    king_command:{kind:'king',name:'号令',type:'break',condition:'supported',gain:1,text:'己方有支援时可用；结算后若存活，获得 1 点气势。'}
+  };
+  const CHALLENGES={
+    'challenge-support':{title:'借力破炮',goal:'让红兵在有支援的交战中击败目标黑炮，并保住红兵。',tip:'左侧红车已能攻击目标格，为红兵提供支援；先查看交战预览，再选择招式。',limit:8},
+    'challenge-relay':{title:'主力轮换',goal:'让红马击败目标黑卒，并保住红马和只剩 5 血的红车。',tip:'红车可以提供支援，培养牌已耗尽；考虑改由满血红马进攻。',limit:6},
+    'challenge-tempo':{title:'整备还是抢攻',goal:'在 4 次棋盘行动内击败目标黑卒，并保住红车。',tip:'破阵已耗尽。可以先整备，也可以直接交战；整备会让出一次走棋机会。',limit:4}
+  };
+  function challengeOutcome(s){
+    const spec=CHALLENGES[s.scenario];if(!spec)return null;
+    const hero=get(s,'hero'),veteran=get(s,'veteran'),target=get(s,'target');
+    if(!hero||!s.pieces.some(p=>p.side==='red'&&p.kind==='king')||s.scenario==='challenge-relay'&&!veteran)return {winner:'black',reason:'挑战未完成：需要保住的红方棋子已阵亡。'};
+    if(!target){
+      const ctx=s.lastCombat,participated=ctx&&(ctx.a==='hero'&&ctx.d==='target'||ctx.d==='hero'&&ctx.a==='target');
+      const supported=participated&&(ctx.a==='hero'?ctx.supportA:ctx.supportD).length>0;
+      const ok=participated&&(s.scenario!=='challenge-support'||supported);
+      return {winner:ok?'red':'black',reason:ok?'挑战完成：'+spec.goal:'挑战未完成：目标已被击败，但没有满足指定棋子或支援条件。'};
+    }
+    if(!s.pieces.some(p=>p.side==='black'&&p.kind==='king'))return {winner:'black',reason:'挑战未完成：交战已结束，但目标棋子尚未被击败。'};
+    if(s.ply>=spec.limit)return {winner:'black',reason:'挑战未完成：已达到 '+spec.limit+' 次棋盘行动的限制。'};
+    return null;
+  }
+  function require(ok,message){if(!ok)throw new Error(message);}
+  function piece(id,side,kind,x,y){return{id,side,kind,x,y,hp:18,learned:[],exhausted:[]};}
+  function get(s,id){return s.pieces.find(p=>p.id===id);}
+  function at(s,x,y){return s.pieces.find(p=>p.x===x&&p.y===y);}
+  function label(p){return SIDE[p.side]+NAMES[p.side][p.kind];}
+  function inside(x,y){return Number.isInteger(x)&&Number.isInteger(y)&&x>=0&&x<9&&y>=0&&y<10;}
+  function crossed(p){return p.side==='red'?p.y<=4:p.y>=5;}
+  function palace(p,x,y){return x>=3&&x<=5&&(p.side==='red'?y>=7&&y<=9:y>=0&&y<=2);}
+  function between(s,p,x,y){
+    if(p.x!==x&&p.y!==y)return null;
+    const dx=Math.sign(x-p.x),dy=Math.sign(y-p.y),out=[];
+    for(let xx=p.x+dx,yy=p.y+dy;xx!==x||yy!==y;xx+=dx,yy+=dy){const q=at(s,xx,yy);if(q)out.push(q);}
+    return out;
+  }
+  function geometry(s,p,x,y,capture){
+    if(!p||!inside(x,y)||(x===p.x&&y===p.y))return false;
+    const dx=x-p.x,dy=y-p.y,ax=Math.abs(dx),ay=Math.abs(dy);
+    if(p.kind==='rook')return (dx===0||dy===0)&&between(s,p,x,y).length===0;
+    if(p.kind==='cannon')return (dx===0||dy===0)&&between(s,p,x,y).length===(capture?1:0);
+    if(p.kind==='horse')return ((ax===2&&ay===1)&&!at(s,p.x+Math.sign(dx),p.y))||((ax===1&&ay===2)&&!at(s,p.x,p.y+Math.sign(dy)));
+    if(p.kind==='elephant')return ax===2&&ay===2&&(p.side==='red'?y>=5:y<=4)&&!at(s,p.x+dx/2,p.y+dy/2);
+    if(p.kind==='guard')return ax===1&&ay===1&&palace(p,x,y);
+    if(p.kind==='pawn')return (dx===0&&dy===(p.side==='red'?-1:1))||(crossed(p)&&ay===0&&ax===1);
+    if(p.kind==='king'){
+      const target=at(s,x,y);
+      if(capture&&dx===0&&target&&target.kind==='king'&&target.side!==p.side&&between(s,p,x,y).length===0)return true;
+      return ax+ay===1&&palace(p,x,y);
+    }
+    return false;
+  }
+  function canMove(s,p,x,y){const q=at(s,x,y);return !!p&&(!q||q.side!==p.side)&&geometry(s,p,x,y,!!q);}
+  function moves(s,p){const out=[];for(let y=0;y<10;y++)for(let x=0;x<9;x++)if(canMove(s,p,x,y))out.push({x,y,capture:!!at(s,x,y)});return out;}
+  function support(s,p,x,y,exclude){return s.pieces.filter(q=>q.side===p.side&&!exclude.includes(q.id)&&geometry(s,q,x,y,true));}
+  function context(s,a,d){
+    const exclude=[a.id,d.id],as=support(s,a,d.x,d.y,exclude),ds=support(s,d,d.x,d.y,exclude);
+    const screen=a.kind==='cannon'?between(s,a,d.x,d.y):[];
+    return{a:a.id,d:d.id,target:{x:d.x,y:d.y},origin:{x:a.x,y:a.y},supportA:as.map(p=>p.id),supportD:ds.map(p=>p.id),screen:screen?.[0]?.id||null,forceA:0,forceD:0,round:1,history:[],totalDamage:0};
+  }
+  function availability(s,p,id,ctx){
+    if(typeof id!=='string')return '无效招式';
+    const force=ctx?(p.id===ctx.a?ctx.forceA:ctx.forceD)||0:0;
+    if(Object.hasOwn(BASE,id))return id==='focus'&&force>=2?'气势已满，请保留或释放':'';
+    const card=Object.hasOwn(CARDS,id)?CARDS[id]:null;
+    if(!card||card.kind!==p.kind||!p.learned.includes(id))return '尚未学习';
+    if(p.exhausted.includes(id))return '已耗尽，需在棋盘整备';
+    if(!ctx)return '';
+    if(card.type==='focus'&&force>=2)return '气势已满，请保留或释放';
+    const isA=p.id===ctx.a,mine=isA?ctx.supportA:ctx.supportD,enemy=isA?ctx.supportD:ctx.supportA;
+    const conditions={
+      isolatedEnemy:()=>enemy.length===0,supported:()=>mine.length>0,unsupported:()=>mine.length===0,
+      friendlyScreen:()=>isA&&get(s,ctx.screen)?.side===p.side,
+      adjacent:()=>s.pieces.some(q=>q.side===p.side&&q.id!==p.id&&Math.abs(q.x-p.x)+Math.abs(q.y-p.y)===1),
+      crossed:()=>crossed(p),nearKing:()=>s.pieces.some(q=>q.side===p.side&&q.kind==='king'&&Math.max(Math.abs(q.x-p.x),Math.abs(q.y-p.y))<=1)
+    };
+    return card.condition&&!conditions[card.condition]()?'站位条件未满足':'';
+  }
+  function power(ctx,isA){return 3+Math.min(2,(isA?ctx.supportA:ctx.supportD).length);}
+  function roundDamage(ctx,aId,dId){
+    const lookup=id=>typeof id==='string'&&(Object.hasOwn(BASE,id)?BASE[id]:Object.hasOwn(CARDS,id)?CARDS[id]:null);
+    const a=lookup(aId),d=lookup(dId),beats={strike:'break',break:'guard',guard:'strike'};
+    require(a&&d,'无效招式');
+    const attacks=card=>card.type==='strike'||card.type==='break';
+    const focusRound=a.type==='focus'||d.type==='focus';
+    const outcome=focusRound?(attacks(a)?'a':attacks(d)?'d':'tie'):(a.type===d.type?'tie':beats[a.type]===d.type?'a':'d');
+    const forceA=ctx.forceA||0,forceD=ctx.forceD||0,spentA=attacks(a)?forceA:0,spentD=attacks(d)?forceD:0;
+    const calculate=(isA,card,target,force)=>{
+      const wins=outcome===(isA?'a':'d'),loses=outcome===(isA?'d':'a');
+      const base=focusRound?(attacks(card)?power(ctx,isA)+2:0):(outcome==='tie'?(card.type==='guard'?0:power(ctx,isA)):wins?power(ctx,isA)+2:1);
+      const skill=base>0&&!loses?(card.damage||0):0,burst=base>0&&!loses&&attacks(card)?force:0,opening=base>0&&isA&&ctx.round===1?1:0;
+      const before=base+skill+burst+opening,reduced=before>0?Math.max(1,before-(target.reduce||0)):0;
+      const parts=[base===0?'未出击 0':!focusRound&&loses?'被克制 1':'基础 3'+(power(ctx,isA)>3?'＋支援 '+(power(ctx,isA)-3):'')+(wins?'＋'+(focusRound?'压制蓄势':'克制')+' 2':'')];
+      if(skill)parts.push('招式 +'+skill);if(burst)parts.push('气势 +'+burst);if(opening)parts.push('突袭 +1');
+      if(before>0&&target.reduce){const reducedBy=before-reduced;parts.push(reducedBy?'对方减伤 −'+reducedBy:'保底伤害 1');}
+      return{total:reduced,detail:parts.join('；'),breakdown:{base:base===0?0:!focusRound&&loses?1:3,support:base>1?power(ctx,isA)-3:0,matchup:wins&&base>0?2:0,skill,burst,opening,reduction:before-reduced,reduceLimit:target.reduce||0}};
+    };
+    const hitA=calculate(true,a,d,spentA),hitD=calculate(false,d,a,spentD);
+    const gainA=(a.type==='focus'?1:0)+(a.gain||0),gainD=(d.type==='focus'?1:0)+(d.gain||0);
+    const suppressedA=outcome==='d'?(d.suppress||0):0,suppressedD=outcome==='a'?(a.suppress||0):0;
+    const afterA=Math.max(0,Math.min(2,forceA-spentA+gainA)-suppressedA),afterD=Math.max(0,Math.min(2,forceD-spentD+gainD)-suppressedD);
+    return{toA:hitD.total,toD:hitA.total,outcome,focusRound,aName:a.name,dName:d.name,aType:a.type,dType:d.type,detailA:hitA.detail,detailD:hitD.detail,breakdownA:hitA.breakdown,breakdownD:hitD.breakdown,forceBeforeA:forceA,forceBeforeD:forceD,forceAfterA:afterA,forceAfterD:afterD,spentA,spentD,gainA,gainD,suppressedA,suppressedD};
+  }
+  function preview(s,side,id){
+    require(s.phase==='duel'&&s.duel,'当前没有武斗');
+    const ctx=s.duel,a=get(s,ctx.a),d=get(s,ctx.d);require(side===a.side||side===d.side,'无效阵营');
+    const isA=side===a.side,mine=isA?a:d,enemy=isA?d:a;
+    require(!availability(s,mine,id,ctx),'当前招式不可用');
+    const groups=[];
+    for(const other of Object.keys(BASE).concat(enemy.learned).filter(card=>!availability(s,enemy,card,ctx))){
+      const c=BASE[other]||CARDS[other],r=roundDamage(ctx,isA?id:other,isA?other:id);
+      const damage=Math.min(enemy.hp,isA?r.toD:r.toA),loss=Math.min(mine.hp,isA?r.toA:r.toD);
+      let row=groups.find(row=>row.type===c.type);
+      if(!row){row={type:c.type,names:[],damageMin:damage,damageMax:damage,lossMin:loss,lossMax:loss};groups.push(row);}
+      row.names.push(c.name);row.damageMin=Math.min(row.damageMin,damage);row.damageMax=Math.max(row.damageMax,damage);row.lossMin=Math.min(row.lossMin,loss);row.lossMax=Math.max(row.lossMax,loss);
+    }
+    return groups;
+  }
+  function key(s){return JSON.stringify([s.turn,s.pieces.map(p=>[p.id,p.x,p.y,p.hp,[...p.learned].sort(),[...p.exhausted].sort()]).sort((a,b)=>a[0].localeCompare(b[0]))]);}
+  function remember(s){const k=key(s);s.repetitions[k]=(s.repetitions[k]||0)+1;if(s.repetitions[k]>=3){s.phase='ended';s.winner='draw';s.reason='同一完整局面第三次出现';}}
+  function log(s,text){s.log.unshift(text);s.log=s.log.slice(0,40);}
+  function endTurn(s,damaged){
+    s.ply++;s.quiet=damaged?0:s.quiet+1;
+    const challenge=challengeOutcome(s);if(challenge){s.phase='ended';Object.assign(s,challenge);return;}
+    const red=s.pieces.some(p=>p.side==='red'&&p.kind==='king'),black=s.pieces.some(p=>p.side==='black'&&p.kind==='king');
+    if(!red||!black){s.phase='ended';s.winner=!red&&!black?'draw':red?'red':'black';s.reason=!red&&!black?'双方将帅同时阵亡':'对方将帅阵亡';return;}
+    s.turn=OTHER[s.turn];
+    if(s.quiet>=80){s.phase='ended';s.winner='draw';s.reason='连续 80 次行动未造成伤害';return;}
+    remember(s);
+  }
+  function create(scenario='full'){
+    require(['full','quick','tutorial','tutorial-support','support','attrition','tactics'].includes(scenario)||Object.hasOwn(CHALLENGES,scenario),'未知局面');
+    const points=scenario==='quick'?6:12;
+    const s={phase:'setup',turn:'red',pieces:[],points,budget:{red:points,black:points},ply:0,quiet:0,duel:null,lastCombat:null,last:null,winner:null,reason:'',log:[],repetitions:{},scenario};
+    if(scenario==='quick'){
+      const army=[['king',3,9],['guard',4,9],['elephant',2,9],['rook',0,9],['horse',1,9],['cannon',0,7],['pawn',0,6],['pawn',4,6]];
+      for(const side of ['red','black'])army.forEach(([kind,x,y],i)=>s.pieces.push(piece(side+'_'+kind+'_'+i,side,kind,side==='red'?x:8-x,side==='red'?y:9-y)));
+      return s;
+    }
+    if(scenario==='full'){
+      const row=['rook','horse','elephant','guard','king','guard','elephant','horse','rook'];
+      for(const side of ['black','red']){
+        const y=side==='red'?9:0;
+        row.forEach((kind,x)=>s.pieces.push(piece(side+'_'+kind+'_'+x,side,kind,x,y)));
+        [1,7].forEach(x=>s.pieces.push(piece(side+'_cannon_'+x,side,'cannon',x,side==='red'?7:2)));
+        [0,2,4,6,8].forEach(x=>s.pieces.push(piece(side+'_pawn_'+x,side,'pawn',x,side==='red'?6:3)));
+      }
+      return s;
+    }
+    s.phase='board';s.budget={red:0,black:0};
+    if(Object.hasOwn(CHALLENGES,scenario)){
+      s.pieces=[piece('red_king','red','king',3,9),piece('black_king','black','king',5,0)];
+      if(scenario==='challenge-support'){
+        s.pieces.push(piece('hero','red','pawn',4,5),piece('helper','red','rook',1,4),piece('target','black','cannon',4,4),piece('enemy_rook','black','rook',0,4));
+        get(s,'hero').learned=['pawn_grit','pawn_rank'];get(s,'target').hp=8;
+      }else if(scenario==='challenge-relay'){
+        s.pieces.push(piece('hero','red','horse',2,5),piece('veteran','red','rook',4,5),piece('target','black','pawn',4,4));
+        get(s,'hero').learned=['horse_join'];get(s,'veteran').hp=5;get(s,'veteran').learned=['rook_crush','rook_hold'];get(s,'veteran').exhausted=['rook_crush','rook_hold'];get(s,'target').hp=9;
+      }else{
+        s.pieces.push(piece('hero','red','rook',4,5),piece('target','black','pawn',4,4));
+        get(s,'hero').hp=8;get(s,'hero').learned=['rook_crush'];get(s,'hero').exhausted=['rook_crush'];get(s,'target').hp=6;
+      }
+      log(s,'残局挑战：'+CHALLENGES[scenario].goal);remember(s);return s;
+    }
+    s.pieces=[piece('red_king','red','king',3,9),piece('black_king','black','king',5,0),piece('hero','red','rook',4,5),piece('target','black','pawn',4,4)];
+    get(s,'hero').learned=['rook_crush','rook_hold'];
+    if(scenario==='support'||scenario==='tutorial-support'){
+      s.pieces.push(piece('support_left','black','rook',0,4),piece('support_right','black','rook',8,4));
+      if(scenario==='tutorial-support')s.pieces.push(piece('helper','red','rook',1,5));
+    }else if(scenario==='tactics'||scenario==='tutorial'){
+      get(s,'hero').kind='pawn';get(s,'hero').learned=['pawn_rank','pawn_grit'];get(s,'target').kind='cannon';get(s,'target').learned=['cannon_hold','cannon_pressure'];s.pieces.push(piece('wing','red','pawn',3,5));
+    }else s.pieces.push(piece('second','black','pawn',4,2),piece('third','black','pawn',2,2));
+    log(s,scenario==='tutorial'?'分步教学：按指引练习克制、气势与撤回。':scenario==='tutorial-support'?'支援教学：先调动友军，再比较交战输出。':scenario==='support'?'测试局面：红车已学两张牌，黑卒有两名支援。':scenario==='tactics'?'兵炮对决：红兵有并肩与韧劲，黑炮有稳炮与震慑。试试蓄势、打断和撤回。':'测试局面：红车连续进攻，伤势和招式消耗不会重置。');
+    remember(s);return s;
+  }
+  function learn(s,id,cardId){
+    const p=get(s,id),card=Object.hasOwn(CARDS,cardId)?CARDS[cardId]:null;require(s.phase==='setup'&&p&&card&&card.kind===p.kind,'当前不能培养');
+    if(p.learned.includes(cardId)){p.learned=p.learned.filter(x=>x!==cardId);s.budget[p.side]++;return;}
+    require(s.budget[p.side]>0,'该方培养点已用完');require(p.learned.length<2,'每枚棋子最多学习两张招式');
+    p.learned.push(cardId);s.budget[p.side]--;
+  }
+  function auto(s,side){
+    require(s.phase==='setup'&&SIDE[side],'当前不能配牌');
+    const ps=s.pieces.filter(p=>p.side===side);ps.forEach(p=>{p.learned=[];p.exhausted=[];});s.budget[side]=s.points;
+    const priority=['rook','horse','cannon','guard','elephant','pawn'];
+    const sorted=ps.filter(p=>p.kind!=='king').sort((a,b)=>priority.indexOf(a.kind)-priority.indexOf(b.kind));
+    sorted.slice(0,s.points).forEach((p,i)=>{const ids=Object.keys(CARDS).filter(k=>CARDS[k].kind===p.kind);p.learned=[ids[i%ids.length]];s.budget[side]--;});
+  }
+  function start(s){require(s.phase==='setup','对局已开始');require(s.budget.red===0&&s.budget.black===0,'双方都需用完 '+s.points+' 点培养');s.phase='board';log(s,'对局开始：红方先行，招式和伤势跨战斗保留。');remember(s);}
+  function move(s,id,x,y){
+    const p=get(s,id);require(s.phase==='board'&&p&&p.side===s.turn,'当前不能行动');require(canMove(s,p,x,y),'不符合棋子走法');
+    const q=at(s,x,y);
+    if(q){s.duel=context(s,p,q);s.phase='duel';return;}
+    const old={x:p.x,y:p.y};p.x=x;p.y=y;s.last={type:'move',side:p.side,from:old,to:{x,y}};log(s,label(p)+'从 '+(old.x+1)+' 路 '+(10-old.y)+' 线移至 '+(x+1)+' 路 '+(10-y)+' 线。');endTurn(s,false);
+  }
+  function rest(s,id,cardId){
+    const p=get(s,id);require(s.phase==='board'&&p&&p.side===s.turn,'当前不能整备');require(p.learned.includes(cardId)&&p.exhausted.includes(cardId),'该招式无需整备');
+    p.exhausted=p.exhausted.filter(x=>x!==cardId);log(s,label(p)+'整备「'+CARDS[cardId].name+'」，消耗一次行动，生命不恢复。');s.last={type:'rest',side:p.side,from:{x:p.x,y:p.y},to:{x:p.x,y:p.y}};endTurn(s,false);
+  }
+  function pass(s){
+    require(s.phase==='board','当前不能跳过行动');
+    require(!s.pieces.some(p=>p.side===s.turn&&(p.exhausted.length||moves(s,p).length)),'仍有合法行动');
+    log(s,SIDE[s.turn]+'没有合法行动，跳过受阻回合。');s.last={type:'pass',side:s.turn};endTurn(s,false);
+  }
+  function resolve(s,aId,dId){
+    require(s.phase==='duel'&&s.duel,'当前没有武斗');
+    const ctx=s.duel,a=get(s,ctx.a),d=get(s,ctx.d);
+    require(!availability(s,a,aId,ctx),'进攻方招式不可用');require(!availability(s,d,dId,ctx),'守方招式不可用');
+    const result={...roundDamage(ctx,aId,dId),round:ctx.round,hpBeforeA:a.hp,hpBeforeD:d.hp};
+    if(CARDS[aId])a.exhausted.push(aId);if(CARDS[dId])d.exhausted.push(dId);
+    a.hp=Math.max(0,a.hp-result.toA);d.hp=Math.max(0,d.hp-result.toD);result.hpA=a.hp;result.hpD=d.hp;
+    ctx.forceA=a.hp>0?result.forceAfterA:0;ctx.forceD=d.hp>0?result.forceAfterD:0;result.forceAfterA=ctx.forceA;result.forceAfterD=ctx.forceD;
+    ctx.history.push(result);ctx.totalDamage+=result.toA+result.toD;
+    if(a.hp>0&&d.hp>0&&ctx.round<6){ctx.round++;return{...result,finished:false};}
+    finishBattle(s,ctx,a,d);
+    return{...result,finished:true,summary:ctx.summary};
+  }
+  function finishBattle(s,ctx,a,d,retreated=false){
+    ctx.forceA=0;ctx.forceD=0;
+    if(retreated)ctx.summary=label(a)+'主动撤回，伤势与消耗保留，气势归零。';
+    else if(a.hp>0&&d.hp===0){a.x=d.x;a.y=d.y;ctx.summary=label(a)+'获胜并占位。';}
+    else if(a.hp===0&&d.hp>0)ctx.summary=label(d)+'反杀，留在原位。';
+    else if(a.hp===0&&d.hp===0)ctx.summary='双方同归于尽，均从棋盘移除。';
+    else ctx.summary='六轮未分胜负，进攻方退回；伤势和招式消耗保留。';
+    s.pieces=s.pieces.filter(p=>p.hp>0);s.last={type:'battle',side:a.side,from:ctx.origin,to:ctx.target};
+    log(s,label(a)+'对阵'+label(d)+'：'+ctx.summary+' 生命 '+a.hp+' / '+d.hp+'。');
+    s.lastCombat=ctx;s.duel=null;s.phase='board';endTurn(s,ctx.totalDamage>0);
+  }
+  function retreat(s){
+    require(s.phase==='duel'&&s.duel&&s.duel.round>=2,'第二轮起可主动撤回');
+    const ctx=s.duel,a=get(s,ctx.a),d=get(s,ctx.d);require(a?.hp>0&&d?.hp>0,'当前不能撤回');
+    finishBattle(s,ctx,a,d,true);return{finished:true,retreated:true,summary:ctx.summary};
+  }
+  return{SIDE,OTHER,NAMES,BASE,TYPE,CARDS,CHALLENGES,piece,get,at,label,inside,crossed,palace,between,geometry,canMove,moves,support,context,availability,power,roundDamage,preview,key,create,learn,auto,start,move,rest,pass,resolve,retreat};
+})();
+</script>
+<script id="computer-player">
+globalThis.YiwuComputer = (() => {
+  'use strict';
+  const E=Yiwu,VALUE={king:60,rook:9,cannon:8,horse:8,pawn:6,guard:6,elephant:6};
+  function actions(s){
+    if(s.phase!=='board')return [];
+    const out=[];
+    for(const p of s.pieces.filter(p=>p.side===s.turn)){
+      for(const m of E.moves(s,p))out.push({type:'move',id:p.id,x:m.x,y:m.y});
+      for(const card of p.exhausted)out.push({type:'rest',id:p.id,card});
+    }
+    return out;
+  }
+  function choices(s,p,ctx){return Object.keys(E.BASE).concat(p.learned).filter(id=>!E.availability(s,p,id,ctx));}
+  function winningChoices(s,ctx,side){
+    const a=E.get(s,ctx.a),d=E.get(s,ctx.d),isA=a.side===side,mine=isA?a:d,enemy=isA?d:a;
+    if(enemy.kind!=='king')return [];
+    const replies=choices(s,enemy,ctx);
+    return choices(s,mine,ctx).filter(id=>replies.every(other=>{
+      const r=E.roundDamage(ctx,isA?id:other,isA?other:id);
+      return (isA?r.toD:r.toA)>=enemy.hp&&(mine.kind!=='king'||(isA?r.toA:r.toD)<mine.hp);
+    }));
+  }
+  function combatScore(s,ctx,aId,dId){
+    const a=E.get(s,ctx.a),d=E.get(s,ctx.d);
+    if(aId==='retreat')return -.6;
+    const r=E.roundDamage(ctx,aId,dId),wa=a.kind==='king'?3:1,wd=d.kind==='king'?3:1;
+    const deadA=r.toA>=a.hp,deadD=r.toD>=d.hp;
+    const casualty=(p,dead)=>dead?(p.kind==='king'?1000:8):0;
+    return Math.min(d.hp,r.toD)*wd-Math.min(a.hp,r.toA)*wa+casualty(d,deadD)-casualty(a,deadA)
+      +(ctx.round<6?1.1*((deadD?0:r.forceAfterD)*-1+(deadA?0:r.forceAfterA)):0)
+      +(E.CARDS[dId] ? .25 : 0)-(E.CARDS[aId] ? .25 : 0);
+  }
+  function distribution(regret){const sum=regret.reduce((n,r)=>n+Math.max(0,r),0);return regret.map(r=>sum?Math.max(0,r)/sum:1/regret.length);}
+  function combatPlan(s,side){
+    if(s.phase!=='duel'||!s.duel)throw new Error('当前没有武斗');
+    const ctx=s.duel,a=E.get(s,ctx.a),d=E.get(s,ctx.d);
+    if(side!==a.side&&side!==d.side)throw new Error('无效阵营');
+    const winning=winningChoices(s,ctx,side);
+    if(winning.length)return winning.map(id=>({id,weight:1/winning.length}));
+    const rows=choices(s,a,ctx),cols=choices(s,d,ctx);
+    if(ctx.round>=2)rows.push('retreat');
+    const matrix=rows.map(x=>cols.map(y=>combatScore(s,ctx,x,y))),ra=rows.map(()=>0),rd=cols.map(()=>0),sa=rows.map(()=>0),sd=cols.map(()=>0);
+    // shortcut: 只评估本轮收益和剩余气势；需要高难度对手时再搜索后续武斗轮次。
+    for(let n=0;n<160;n++){
+      const pa=distribution(ra),pd=distribution(rd),va=rows.map((_,i)=>cols.reduce((v,__,j)=>v+matrix[i][j]*pd[j],0));
+      const vd=cols.map((_,j)=>rows.reduce((v,__,i)=>v+matrix[i][j]*pa[i],0)),v=va.reduce((v,x,i)=>v+x*pa[i],0);
+      rows.forEach((_,i)=>{ra[i]+=va[i]-v;sa[i]+=pa[i];});cols.forEach((_,j)=>{rd[j]+=v-vd[j];sd[j]+=pd[j];});
+    }
+    const mine=side===a.side?rows:cols,weights=(side===a.side?sa:sd).map(n=>n/160);
+    const recent=ctx.history.slice(-2),typeKey=side===a.side?'dType':'aType';
+    if(recent.length===2&&recent[0][typeKey]===recent[1][typeKey]){
+      const enemy=side===a.side?cols:rows,seen=recent[1][typeKey];
+      const matching=enemy.map((id,i)=>({id,i})).filter(x=>(E.BASE[x.id]||E.CARDS[x.id])?.type===seen);
+      if(matching.length){
+        const response=mine.map((_,i)=>matching.reduce((n,x)=>n+(side===a.side?matrix[i][x.i]:-matrix[x.i][i]),0)/matching.length),best=Math.max(...response),ties=response.filter(v=>v>=best-.01).length;
+        weights.forEach((v,i)=>{weights[i]=v*.65+(response[i]>=best-.01 ? .35/ties : 0);});
+      }
+    }
+    return mine.map((id,i)=>({id,weight:weights[i]}));
+  }
+  function sample(list,rng){let roll=rng();for(const item of list){roll-=item.weight;if(roll<=0)return item.id;}return list[list.length-1].id;}
+  function practicePlan(s,side){
+    if(s.phase!=='duel'||!s.duel)throw new Error('当前没有武斗');
+    const ctx=s.duel,a=E.get(s,ctx.a),d=E.get(s,ctx.d);
+    if(side!==a.side&&side!==d.side)throw new Error('无效阵营');
+    const p=side===a.side?a:d;
+    if(p===a&&ctx.round>=2&&p.hp<=4)return [{id:'retreat',weight:1}];
+    const ids=choices(s,p,ctx),types=[...new Set(ids.map(id=>(E.BASE[id]||E.CARDS[id]).type))];
+    return ids.map(id=>({id,weight:1/types.length/ids.filter(other=>(E.BASE[other]||E.CARDS[other]).type===(E.BASE[id]||E.CARDS[id]).type).length}));
+  }
+  function combat(s,side,rng=Math.random,difficulty='standard'){return sample(difficulty==='practice'?practicePlan(s,side):combatPlan(s,side),rng);}
+  function explain(id,difficulty='standard'){
+    if(id==='retreat')return '进攻方生命较低，撤回可以保留棋子；伤势与耗尽牌仍然保留。';
+    const c=E.BASE[id]||E.CARDS[id];
+    return (difficulty==='practice'?'练习电脑在可用招式类型之间等概率选择，再从该类中选一招；不针对历史出招调整。':'标准电脑优先抓住可确认的获胜机会；其他局面依据公开状态评估本轮收益，并参考已揭示的出招历史。')+'本轮选择「'+c.name+'」：'+c.text;
+  }
+  function position(s,side){
+    let score=0;
+    for(const p of s.pieces){
+      const sign=p.side===side?1:-1,v=VALUE[p.kind],enemies=s.pieces.filter(q=>q.side!==p.side&&E.geometry(s,q,p.x,p.y,true));
+      const guards=E.support(s,p,p.x,p.y,[p.id]).length;
+      let value=v*(.5+p.hp/36)+.15*(p.learned.length-p.exhausted.length);
+      if(enemies.length)value-=v*(p.kind==='king'?.7:.14)*(1+Math.max(0,12-p.hp)/12)/(1+Math.min(2,guards)*.4);
+      if(['rook','horse','cannon','pawn'].includes(p.kind)){
+        const targets=s.pieces.filter(q=>q.side!==p.side);
+        const distance=targets.length?Math.min(...targets.map(q=>Math.abs(q.x-p.x)+Math.abs(q.y-p.y))):0;
+        value+=.07*(9-distance)+.025*(4-Math.abs(p.x-4))+.025*(p.side==='red'?9-p.y:p.y);
+      }
+      score+=sign*value;
+    }
+    return score;
+  }
+  function rankedActions(s){
+    const side=s.turn,base=position(s,side);
+    return actions(s).map(action=>{
+      const p=E.get(s,action.id),next={...s,pieces:s.pieces.map(q=>({...q})),turn:E.OTHER[side]},moved=E.get(next,p.id);
+      let score;
+      if(action.type==='rest'){
+        moved.exhausted=p.exhausted.filter(id=>id!==action.card);
+        score=position(next,side)-base+.05;
+      }else{
+        const target=E.at(s,action.x,action.y);
+        if(target){
+          const ctx=E.context(s,p,target),rateA=2.5+.7*(E.power(ctx,true)-3),rateD=2.5+.7*(E.power(ctx,false)-3);
+          const rounds=Math.min(6,Math.ceil(target.hp/rateA),Math.ceil(p.hp/rateD)),hurtD=Math.min(target.hp,rateA*rounds+.7),hurtA=Math.min(p.hp,rateD*rounds);
+          const valueA=VALUE[p.kind],valueD=VALUE[target.kind];
+          score=(hurtD*valueD-hurtA*valueA)/24+.8;
+          if(hurtD>=target.hp)score+=valueD*.5;
+          if(hurtA>=p.hp)score-=valueA*.5;
+          if(target.kind==='king'){score+=hurtD*1.3;if(winningChoices(s,ctx,side).length)score=1000;}
+        }else{
+          moved.x=action.x;moved.y=action.y;
+          score=position(next,side)-base;
+        }
+      }
+      const repeated=s.repetitions[E.key(next)]||0;
+      return {...action,score:score-repeated*3};
+    }).sort((a,b)=>b.score-a.score);
+  }
+  function board(s,rng=Math.random,difficulty='standard'){
+    if(s.phase!=='board')throw new Error('当前不能走棋');
+    const ranked=rankedActions(s);
+    if(!ranked.length)return {type:'pass'};
+    const near=difficulty==='practice'?ranked.filter(a=>a.score>=ranked[0].score-1.2).slice(0,3):ranked.filter(a=>a.score>=ranked[0].score-.06);
+    return near[Math.min(near.length-1,Math.floor(rng()*near.length))];
+  }
+  return {actions,choices,combatPlan,practicePlan,combat,explain,rankedActions,board};
+})();
+</script>
+<script>
+(() => {
+  'use strict';
+  const E={...Yiwu},C=YiwuComputer,$=id=>document.getElementById(id),esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const MOVE_RULES={
+    rook:'沿横线或竖线移动，中间不可有棋子。',
+    horse:'走日字；紧邻起点的直向一格若有棋子挡住，即为蹩马腿。',
+    cannon:'沿横线或竖线移动；移动不能隔子，发起武斗必须隔一枚棋子，双方棋子均可作炮架。',
+    pawn:'向前一格；过河后也可横移一格，不得后退。',
+    guard:'只在己方九宫内，沿对角移动一格。',
+    elephant:'走田字，不得过河；斜向中点有棋子时不能通过。',
+    king:'只在己方九宫内，横向或纵向移动一格；将帅同线且中间无子时可发起飞将武斗。'
+  };
+  // 规则数值或命令格式变化时，同步提升续局版本。
+  const SAVE_VERSION=1,SAVE_KEY='yiwu.autosave',BACKUP_KEY=SAVE_KEY+'.backup';
+  const COMMAND_LENGTH={create:2,learn:3,auto:2,start:1,move:4,rest:3,pass:1,resolve:3,retreat:1};
+  let commands=[],observedSave=null,lastGoodSave=null,saveBlocked='',saveError='',recoveryNote='',queuedSave=null,savePending=0,saveGeneration=0;
+  for(const name of Object.keys(COMMAND_LENGTH))E[name]=(...args)=>{
+    const result=Yiwu[name](...args);
+    if(name==='create')commands=[['create',...args]];else commands.push([name,...args.slice(1)]);
+    return result;
+  };
+  function decodeSave(raw){
+    const data=JSON.parse(raw),check=(ok)=>{if(!ok)throw new Error('续局内容不完整');};
+    if(data?.version!==SAVE_VERSION)throw new Error('续局版本暂不支持');
+    check(Array.isArray(data.commands)&&data.commands.length>0&&data.commands.length<=12000);
+    const ui=data.ui;check(ui&&['computer','local'].includes(ui.opponent)&&['practice','standard'].includes(ui.difficulty));
+    let state,battle=null,result=null,lastCommand='';
+    for(const command of data.commands){
+      check(Array.isArray(command)&&Object.hasOwn(COMMAND_LENGTH,command[0])&&command.length===COMMAND_LENGTH[command[0]]);
+      const [name,...args]=command;lastCommand=name;
+      check(args.every(value=>typeof value==='string'&&value.length<=80||Number.isInteger(value)));
+      if(name==='create'){check(!state);state=Yiwu.create(...args);continue;}
+      check(!!state);
+      if(name==='auto')check(['red','black'].includes(args[0]));
+      if(name==='move')check(typeof args[0]==='string'&&Number.isInteger(args[1])&&Number.isInteger(args[2])&&Yiwu.inside(args[1],args[2]));
+      result=Yiwu[name](state,...args);
+      if(name==='move'&&state.duel)battle={a:Yiwu.get(state,state.duel.a),d:Yiwu.get(state,state.duel.d),ctx:state.duel};
+    }
+    check(['red','black'].includes(ui.setupSide)&&Number.isInteger(ui.focusIndex)&&ui.focusIndex>=0&&ui.focusIndex<90);
+    const stages=['attack','counter','store','release','retreat','withdrawn','support-move','support-preview','complete'];
+    check(ui.lesson===null||stages.includes(ui.lesson));
+      check((ui.lesson!==null)===['tutorial','tutorial-support'].includes(state.scenario));
+      if(Object.hasOwn(Yiwu.CHALLENGES,state.scenario))check(ui.opponent==='computer');
+    if(ui.lesson!==null)check(ui.opponent==='computer');
+    check(ui.selected===null||typeof ui.selected==='string');check(ui.preview===null||typeof ui.preview==='string');
+    if(ui.preview){const a=Yiwu.get(state,ui.selected),d=Yiwu.get(state,ui.preview);check(state.phase==='board'&&a&&d&&a.side===state.turn&&Yiwu.canMove(state,a,d.x,d.y));}
+    let restoredFight=null;
+    if(ui.fight){
+      const f=ui.fight,selecting=['handoffA','pickA','handoffD','pickD'].includes(f.step);
+      check(battle&&(selecting||['result','retreated'].includes(f.step)));
+      check(selecting?state.phase==='duel':lastCommand===(f.step==='result'?'resolve':'retreat'));
+      const validChoice=id=>typeof id==='string'&&(Object.hasOwn(Yiwu.BASE,id)||Object.hasOwn(Yiwu.CARDS,id));
+      check(f.pending===null||validChoice(f.pending));check(f.first===null||validChoice(f.first));
+      check(f.computerChoice===null||f.computerChoice==='retreat'||validChoice(f.computerChoice));
+      if(selecting){
+        const who=f.step==='pickD'?battle.d:battle.a;
+        if(f.pending)check(['pickA','pickD'].includes(f.step)&&!Yiwu.availability(state,who,f.pending,battle.ctx));
+        if(ui.opponent==='local'){
+          check(['handoffD','pickD'].includes(f.step)?f.first&&!Yiwu.availability(state,battle.a,f.first,battle.ctx):f.first===null);
+          check(f.computerChoice===null);
+        }else{
+          const computer=battle.a.side==='black'?battle.a:battle.d;
+          check(f.step===(battle.a.side==='red'?'pickA':'pickD')&&validChoice(f.computerChoice)&&!Yiwu.availability(state,computer,f.computerChoice,battle.ctx));
+        }
+      }
+      restoredFight={...battle,step:f.step,first:f.first,pending:f.pending,computerChoice:f.computerChoice,hint:'',result:selecting?null:result,computerReason:ui.opponent==='computer'&&f.computerChoice?C.explain(f.computerChoice,ui.difficulty):''};
+    }else check(state.phase!=='duel');
+    return {data,state,fight:restoredFight};
+  }
+  function paintSaveStatus(){
+    const text=saveBlocked==='conflict'?'其他页面已更新续局，本页自动保存已暂停；当前对局仍可在本页继续。':saveBlocked?'本机续局无法读取，已保留原记录。开始新局前会确认替换。':saveError?'暂时无法自动保存，进度仅在当前页保留。请检查浏览器的存储权限或空间。':savePending?'正在保存本机续局，请稍候。':recoveryNote||(s?'已自动保存在本机。刷新后可在首页继续本局。':'自动保存最近一局，刷新或重新打开后可在首页继续。');
+    $('save-status').textContent=text;$('home-save-note').textContent=text;
+    $('save-status').className=saveBlocked||saveError?'save-warning':'';
+    $('home-save-note').className='thin home-save-note'+(saveBlocked||saveError?' save-warning':'');
+  }
+  function saveProgress(){
+    if(commands.length>12000){saveError='本局操作数量超过续局容量';paintSaveStatus();return;}
+    if(s&&!saveBlocked){
+      const step=fightUI?.step,raw=JSON.stringify({version:SAVE_VERSION,commands,ui:{opponent,difficulty,selected,preview,setupSide,focusIndex,lesson:lesson?.stage||null,fight:fightUI?{step,first:['handoffD','pickD'].includes(step)?fightUI.first:null,pending:['pickA','pickD'].includes(step)?fightUI.pending:null,computerChoice:fightUI.computerChoice}:null}});
+      if(raw!==queuedSave){
+        queuedSave=raw;savePending++;const generation=saveGeneration;
+        try{
+          // 同源页面串行写入，检查与写入期间不允许另一页插入保存。
+          navigator.locks.request(SAVE_KEY,()=>{
+            try{
+              if(generation!==saveGeneration||saveBlocked)return;
+              const current=localStorage.getItem(SAVE_KEY);
+              if(current!==observedSave)saveBlocked='conflict';
+              else if(raw!==lastGoodSave||current!==raw){
+                if(lastGoodSave)localStorage.setItem(BACKUP_KEY,lastGoodSave);
+                localStorage.setItem(SAVE_KEY,raw);observedSave=raw;lastGoodSave=raw;saveError='';
+              }
+            }catch(error){saveError=error.message;queuedSave=null;}
+            finally{savePending--;paintSaveStatus();}
+          }).catch(error=>{savePending--;saveError=error.message;queuedSave=null;paintSaveStatus();});
+        }catch(error){savePending--;saveError=error.message;queuedSave=null;}
+      }
+    }
+    paintSaveStatus();
+  }
+  function loadProgress(){
+    try{
+      observedSave=localStorage.getItem(SAVE_KEY);
+      if(observedSave){try{if(JSON.parse(observedSave)?.version!==SAVE_VERSION){saveBlocked='unreadable';return;}}catch{}}
+      const backup=localStorage.getItem(BACKUP_KEY);
+      for(const raw of [observedSave,backup]){
+        if(!raw)continue;
+        try{
+          const restored=decodeSave(raw),ui=restored.data.ui;
+          s=restored.state;commands=restored.data.commands;fightUI=restored.fight;opponent=ui.opponent;difficulty=ui.difficulty;selected=ui.selected;preview=ui.preview;setupSide=ui.setupSide;focusIndex=ui.focusIndex;lesson=ui.lesson?{stage:ui.lesson}:null;lastGoodSave=raw;
+          if(raw!==observedSave)recoveryNote='已从上一次完整记录恢复续局，最近一次操作可能需要重做。';
+          return;
+        }catch{}
+      }
+      if(observedSave||backup)saveBlocked='unreadable';
+    }catch(error){saveError=error.message;}
+  }
+  let cardGuide=null,scoutMode=false,movePreview=null;
+  let pendingRest=null;
+  let screen='home',s,selected=null,preview=null,notice='',fightUI=null,setupSide='red',focusIndex=85,opponent='computer',difficulty='practice',computerTimer=null,computerError='',hint=null,lesson=null,pendingNewGame=null;
+  const fight=$('fight'),rules=$('rules'),confirmDialog=$('confirm'),previewDialog=$('preview'),restDialog=$('rest-confirm');
+  function init(mode){
+    pendingRest=null;if(restDialog.open)restDialog.close();
+    saveGeneration++;queuedSave=null;
+    pendingNewGame=null;cardGuide=null;movePreview=null;scoutMode=false;clearTimeout(computerTimer);computerTimer=null;computerError='';hint=null;opponent=$('opponent').value;difficulty=$('difficulty').value;
+    lesson=mode==='tutorial'?{stage:'attack'}:null;
+    if(lesson||E.CHALLENGES[mode]){opponent='computer';$('opponent').value=opponent;}
+    if(fight.open)fight.close();fightUI=null;preview=null;notice='';setupSide='red';s=E.create(mode);$('scenario').value=mode;
+    if($('review').open)$('review').close();$('review-content').innerHTML='';
+    if(s.phase==='setup'){E.auto(s,'red');E.auto(s,'black');selected=s.pieces.find(p=>p.side==='red'&&p.kind==='rook').id;}
+    else selected='hero';
+    focusIndex=E.get(s,selected).y*9+E.get(s,selected).x;showScreen('game');
+  }
+  function act(fn){try{notice='';fn();}catch(e){notice=e.message;}render();}
+  function requestNewGame(mode,settings={opponent,difficulty}){
+    pendingNewGame={mode,opponent:mode==='tutorial'||E.CHALLENGES[mode]?'computer':settings.opponent,difficulty:settings.difficulty};
+    const name=Array.from($('scenario').options).find(option=>option.value===mode).textContent;
+    const setting=mode==='tutorial'?'电脑对战 · 固定演示':pendingNewGame.opponent==='local'?'同机双人':pendingNewGame.difficulty==='practice'?'电脑对战 · 练习电脑':'电脑对战 · 标准电脑';
+    $('confirm-target').textContent='将载入：'+name+'；'+setting+'。';$('confirm-note').textContent=saveBlocked?'确认开始新局后，将替换现有本机续局。':'当前棋盘、伤势和配牌将重置，新局会替换本机续局。';confirmDialog.showModal();
+  }
+  function cancelNewGame(){pendingNewGame=null;}
+  function renderHome(){
+    paintSaveStatus();
+    document.title='弈武 · 开始游戏';document.querySelector('.subtitle').innerHTML='象棋走位，招式交锋<br>卡牌武斗原型';
+    const mode=$('scenario').value,tutorial=mode==='tutorial',challenge=E.CHALLENGES[mode];
+    if(tutorial||challenge)$('opponent').value='computer';
+    $('opponent').disabled=tutorial||!!challenge;$('difficulty').disabled=tutorial||$('opponent').value==='local';
+    $('mode-description').textContent=challenge?challenge.goal+' '+challenge.limit+' 次棋盘行动内完成，双方行动均计数。预置残局，培养点与阵容不对等。':{quick:'双方各 8 子、6 点培养。已准备好分散配牌，适合先熟悉对局。',full:'双方各 16 子、12 点培养。完整阵容，先配牌再进入对局。',tutorial:'克制、气势、撤回、支援四课。电脑固定演示，按步骤学习。',tactics:'兵与炮的交战试验。阵容与预算不对等，用于理解招式克制。',support:'围攻试验。调动友军，观察支援对双方输出的影响。',attrition:'连续进攻试验。观察保留的伤势与耗尽牌如何影响后续交战。'}[mode];
+    $('load').textContent=s?'开始新局':'开始游戏';$('resume-wrap').hidden=!s;
+    if(s){
+      const name=Array.from($('scenario').options).find(option=>option.value===(lesson?'tutorial':s.scenario)).textContent;
+      const setting=lesson?'固定教学':opponent==='local'?'同机双人':difficulty==='practice'?'练习电脑':'标准电脑';
+      $('resume-info').textContent='已保留：'+name+' · '+setting+' · '+(s.phase==='setup'?'配牌中':s.phase==='ended'?'已结束':s.phase==='duel'?'武斗中':'对局中')+'。';
+      $('resume').textContent=s.phase==='ended'?'查看终局':'继续本局';
+    }
+  }
+  function showScreen(next){
+    cardGuide=null;movePreview=null;scoutMode=false;screen=next;$('home-page').hidden=screen!=='home';$('game-page').hidden=screen!=='game';$('game-tools').hidden=screen!=='game';
+    scrollTo(0,0);
+    if(screen==='home'){
+      clearTimeout(computerTimer);computerTimer=null;
+      for(const dialog of [fight,previewDialog,rules,confirmDialog,restDialog])if(dialog.open)dialog.close();
+      if(s){$('scenario').value=lesson?'tutorial':s.scenario;$('opponent').value=opponent;$('difficulty').value=difficulty;}
+      saveProgress();renderHome();$(s?'resume':'load').focus({preventScroll:true});return;
+    }
+    render();
+    if(fightUI){renderFight();fight.showModal();}
+    else if(!previewDialog.open)$(s.phase==='ended'?'endgame-title':'back-home').focus();
+  }
+  function computerTurn(){return screen==='game'&&!lesson&&opponent==='computer'&&s.phase==='board'&&s.turn==='black'&&!fightUI;}
+  function scheduleComputer(){
+    if(!computerTurn()||computerTimer!==null||computerError||rules.open||confirmDialog.open)return;
+    computerTimer=setTimeout(()=>{
+      computerTimer=null;if(!computerTurn()||rules.open||confirmDialog.open)return;
+      try{
+        const action=C.board(s,Math.random,difficulty),p=E.get(s,action.id);hint=null;notice='';
+        if(action.type==='pass')E.pass(s);
+        else if(action.type==='rest')E.rest(s,p.id,action.card);
+        else{const target=E.at(s,action.x,action.y);if(target){beginFight(p,target);render();return;}E.move(s,p.id,action.x,action.y);}
+        selected=null;preview=null;
+      }catch(error){computerError=error.message;notice='电脑行动未完成：'+error.message;}
+      render();
+    },420);
+  }
+  function teamHTML(side){
+    const ps=s.pieces.filter(p=>p.side===side),spent=s.points-s.budget[side],alive=ps.length,ready=ps.reduce((n,p)=>n+p.learned.length-p.exhausted.length,0);
+    return `<div class="team ${side}"><div class="team-head"><strong>${E.SIDE[side]}${opponent==='computer'?(side==='red'?' · 你':lesson?' · 演示':' · 电脑'):''}</strong><span class="team-number">${s.phase==='setup'?spent+'/'+s.points:alive+' 子'}</span></div><div class="thin">${s.phase==='setup'?'剩余 '+s.budget[side]+' 点培养':'未耗尽培养牌 '+ready+' 张'}</div><div class="meter"><i style="width:${s.phase==='setup'?spent/s.points*100:Math.min(100,alive/(s.scenario==='quick'?8:16)*100)}%"></i></div></div>`;
+  }
+  function lessonChoice(){return {counter:'pawn_grit',store:'focus',release:'strike'}[lesson?.stage]||null;}
+  function lessonCellAllowed(x,y){
+    if(!lesson)return true;
+    const id=E.at(s,x,y)?.id;
+    if(lesson.stage==='attack'||lesson.stage==='support-preview')return id==='hero'||id==='target';
+    if(lesson.stage==='support-move')return id==='helper'||x===1&&y===4;
+    return false;
+  }
+  function lessonTarget(){
+    if(!lesson||preview)return null;
+    if(lesson.stage==='attack'||lesson.stage==='support-preview')return E.get(s,selected==='hero'?'target':'hero');
+    if(lesson.stage==='support-move')return selected==='helper'?{x:1,y:4}:E.get(s,'helper');
+    return null;
+  }
+  function lessonHTML(compact=false){
+    if(!lesson)return '';
+    const stage=lesson.stage,result=fightUI?.step==='result';
+    const steps={
+      attack:[1,'克制与培养牌','点选中央红兵，再点正前方黑炮，查看预览并发起武斗。'],
+      counter:[1,'克制与培养牌',result?'韧劲属于架势，克制震慑的斩击。红兵剩 17 血、黑炮剩 12 血；韧劲使红兵获得 1 点气势，两张培养牌均耗尽。':'本课对手固定使用「震慑」（斩击）。选择「韧劲」（架势），查看推演，再锁定并揭示。'],
+      store:[2,'气势的积累与风险',result?'双方没有造成伤害，红兵气势达到 2/2。气势满时不能继续蓄势。':'对手固定使用「架势」。选择「蓄势」，将气势从 1 提升至 2。'],
+      release:[2,'气势的积累与风险',result?'斩击被稳炮的架势克制。红兵的 2 点气势仍被消耗，未能增伤；红兵剩 12 血，黑炮剩 11 血。':'选择「斩击」释放气势。本课对手固定使用「稳炮」，观察被克制时会发生什么。'],
+      retreat:[3,'撤回与持续消耗','不利时可以停止进攻。点击底部「红方主动撤回」，观察伤势、耗尽牌和气势的变化。'],
+      withdrawn:[3,'撤回与持续消耗','红兵仍为 12 血、黑炮仍为 11 血；伤势与耗尽牌保留，气势归零。点击「继续学习支援」。'],
+      'support-move':[4,'用站位改变支援','当前红车进攻为输出 3 对 5。将左侧红车从 2 路 5 线移至 2 路 6 线，提供支援，同时挡住左侧黑车。'],
+      'support-preview':[4,'用站位改变支援','演示对手已合法移动将帅一步。现在点选中央红车，再点前方黑卒，核对双方输出已变为 4 对 4。'],
+      complete:[4,'教学完成','你已练习克制、气势、撤回和支援。快速对局双方各 8 子、各 6 点培养，可以自由选招和调动队形。']
+    };
+    const [n,title,text]=steps[stage];
+    const tasks={
+      counter:result?'架势克制斩击：红兵 17 血，黑炮 12 血，红兵气势 1/2。':fightUI?.pending?'已选「韧劲」。点击底部高亮的「锁定并揭示」。':'点击高亮的「韧劲」，再锁定并揭示。对手固定出「震慑」。',
+      store:result?'气势已达 2/2。点击「下一轮」，学习如何释放。':fightUI?.pending?'已选「蓄势」。点击「锁定并揭示」，观察气势增长。':'选择高亮的「蓄势」。本轮对手固定出「架势」。',
+      release:result?'斩击被克制：2 点气势已消耗，却没有增伤。点击「继续学习撤回」。':fightUI?.pending?'已选「斩击」。点击「锁定并揭示」，观察被克制时的气势。':'选择高亮的「斩击」。本轮对手固定出「稳炮」。',
+      retreat:'现在点击底部高亮的「红方主动撤回」，观察持续消耗。',
+      withdrawn:'撤回成功：伤势、耗尽牌保留，气势归零。点击「继续学习支援」。'
+    };
+    return `<div class="lesson-copy"><div class="lesson-heading"><span>教学指引 · 第 ${n} / 4 课</span><strong>${title}</strong></div>${compact?'':'<ol class="lesson-progress" aria-label="课程进度">'+['克制','气势','撤回','支援'].map((name,i)=>'<li class="'+(stage==='complete'||i+1<n?'done':i+1===n?'current':'')+'"'+(stage!=='complete'&&i+1===n?' aria-current="step"':'')+'>'+name+'</li>').join('')+'</ol>'}<p>${compact?tasks[stage]||text:text}</p>${compact?'':'<small>固定出招演示：按指引操作。正式对局采用暗选。</small>'}${stage==='complete'?'<button class="primary lesson-target" data-action="quick-start">返回首页，选择快速局</button>':''}</div>`;
+  }
+  function boardRelations(p){
+    if(!p||lesson||preview||s.phase!=='board'||computerTurn())return null;
+    const enemies=s.pieces.filter(q=>q.side!==p.side);
+    return {targets:enemies.filter(q=>E.canMove(s,p,q.x,q.y)),attackers:enemies.filter(q=>E.canMove(s,q,p.x,p.y))};
+  }
+  function positionHTML(p){
+    const relation=boardRelations(p);if(!relation)return '';
+    const pieces=[...new Set(relation.targets.concat(relation.attackers))];
+    return `<section class="position-analysis" aria-label="站位观察"><h3>站位观察</h3><p class="position-count">交战目标 ${relation.targets.length} 子 · 威胁来源 ${relation.attackers.length} 子</p>${pieces.length?'<div class="position-list">'+pieces.map(q=>{
+      const kind=relation.targets.includes(q)?relation.attackers.includes(q)?'互攻':'目标':'威胁';
+      return `<button class="position-link" data-inspect="${q.id}" aria-label="查看${E.label(q)}，${q.x+1}路${10-q.y}线，${kind}"><span>${E.label(q)}<small>${q.x+1} 路 ${10-q.y} 线</small></span><b>${kind}</b></button>`;
+    }).join('')+'</div>':'<span class="thin">当前没有直接交战关系。</span>'}<p class="tip">按当前站位显示。仅表示可以发起武斗，不代表能击倒对手。点列表可查看，轮到该方才可行动。</p></section>`;
+  }
+  function drawBoard(){
+    const p=E.get(s,selected),legal=s.phase==='board'&&p?.side===s.turn?E.moves(s,p).filter(m=>lessonCellAllowed(m.x,m.y)):[];
+    const relation=boardRelations(p),cardTargetIds=new Set(cardGuide&&p?cardTargets(p,cardGuide).ready.map(q=>q.id):[]);
+    $('position-info').innerHTML=relation?`<strong>站位观察 · ${E.label(p)}</strong><span>可进攻 ${relation.targets.length} 子 · 可被 ${relation.attackers.length} 子进攻</span><span class="position-legend">角标：攻=目标 · 险=威胁 · 互=互攻</span><span class="position-small-legend">虚线圈为目标，橙色外圈为威胁；完整关系见棋子列表。</span>`:'';
+    const lines=[];for(let y=0;y<10;y++)lines.push(`<path d="M30 ${30+y*60}H510"/>`);
+    for(let x=0;x<9;x++){const xx=30+x*60;lines.push(`<path d="M${xx} 30V270 M${xx} 330V570"/>`);if(x===0||x===8)lines.push(`<path d="M${xx} 270V330"/>`);}
+    lines.push('<path d="M210 30L330 150M330 30L210 150M210 450L330 570M330 450L210 570"/>');
+    let sup=[];if(preview){const d=E.get(s,preview),ctx=E.context(s,p,d);sup=[...ctx.supportA.slice(0,2),...ctx.supportD.slice(0,2)];for(const id of sup){const q=E.get(s,id);lines.push(`<path d="M${30+q.x*60} ${30+q.y*60}L${30+d.x*60} ${30+d.y*60}" stroke="#886023" stroke-width="2" stroke-dasharray="5 5"/>`);}}
+    if(!lesson&&s.last?.type==='move'){
+      const {from,to,side}=s.last,dx=(to.x-from.x)*60,dy=(to.y-from.y)*60,len=Math.hypot(dx,dy),x=30+from.x*60,y=30+from.y*60;
+      lines.push(`<path class="last-move-trace ${side}" d="M${x+dx/len*22} ${y+dy/len*22}L${x+dx-dx/len*25} ${y+dy-dy/len*25}" marker-end="url(#last-arrow-${side})"/>`);
+    }
+    $('lines').innerHTML=`<defs><marker id="last-arrow-red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#973f39"/></marker><marker id="last-arrow-black" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#304e6a"/></marker></defs><g fill="none" stroke="#806e4c" stroke-width="1.3">${lines.join('')}</g><text x="125" y="308" class="river">楚河</text><text x="335" y="308" class="river">汉界</text>`;
+    const target=lessonTarget();
+    let html='';for(let y=0;y<10;y++)for(let x=0;x<9;x++){
+      const q=E.at(s,x,y),m=legal.find(v=>v.x===x&&v.y===y),last=s.last&&[s.last.from,s.last.to].some(v=>v?.x===x&&v?.y===y);
+      const lastFrom=!lesson&&s.last?.type==='move'&&s.last.from.x===x&&s.last.from.y===y,lastTo=!lesson&&s.last?.type==='move'&&s.last.to.x===x&&s.last.to.y===y;
+      const canAttack=q&&relation?.targets.includes(q),canBeAttacked=q&&relation?.attackers.includes(q);
+      const marker=canAttack&&canBeAttacked?'互':canAttack?'攻':canBeAttacked?'险':'';
+      const relationLabel=canAttack&&canBeAttacked?'，可与所选棋子互相发起武斗':canAttack?'，所选棋子的交战目标':canBeAttacked?'，可向所选棋子发起武斗':'';
+      const classes=['cell',q&&cardTargetIds.has(q.id)?'card-target':'',q?.id===selected?'selected':'',movePreview?.x===x&&movePreview?.y===y?'move-candidate':'',m?(m.capture?'capture':'legal'):'',last?'last':'',lastFrom?'last-from':'',lastTo?'last-to':'',q&&sup.includes(q.id)?'support':'',hint?.type==='move'&&hint.x===x&&hint.y===y?'suggested':'',target?.x===x&&target.y===y?'lesson-target':'',canAttack?'inspect-target':'',canBeAttacked?'inspect-threat':''].join(' ');
+      const description=q?`${E.label(q)}，生命 ${q.hp}/18，未耗尽培养牌 ${q.learned.length-q.exhausted.length} 张`:'空位';
+      html+=`<button class="${classes}" data-x="${x}" data-y="${y}" tabindex="${y*9+x===focusIndex?0:-1}" aria-label="${x+1}路${10-y}线，${description}${relationLabel}${m&&!q&&scoutMode?'，可预览移动':''}${movePreview?.x===x&&movePreview?.y===y?'，正在预览':''}${q&&cardTargetIds.has(q.id)?'，培养牌可用目标':''}${lastFrom?'，上一步起点':lastTo?'，上一步落点':''}${hint?.type==='move'&&hint.x===x&&hint.y===y?'，建议落点':''}" ${s.phase==='duel'||computerTurn()||!lessonCellAllowed(x,y)?'disabled':''}>${q?`<span class="piece ${q.side}" aria-hidden="true">${E.NAMES[q.side][q.kind]}<span class="life"><i style="width:${q.hp/18*100}%"></i></span>${q.learned.length?`<span class="marks ${q.exhausted.length?'tired':''}">${q.learned.length-q.exhausted.length}</span>`:''}${q.hp<18?'<span class="wound">'+q.hp+'</span>':''}</span>`:''}${marker?'<span class="position-mark" aria-hidden="true">'+marker+'</span>':''}</button>`;
+    }
+    $('grid').innerHTML=html;
+  }
+  function supportText(ctx,isA){const ids=isA?ctx.supportA:ctx.supportD;return ids.length?ids.slice(0,2).map(id=>E.label(E.get(s,id))).join('、')+(ids.length>2?'（其余不计）':''):'无支援';}
+  function previewHTML(){
+      const p=E.get(s,selected);
+      const d=E.get(s,preview),ctx=E.context(s,p,d);
+      return `<div class="preview-header"><h2 id="preview-title">交战预览</h2><p>${E.label(p)} 进攻 ${E.label(d)}</p></div><div class="preview-body"><div class="stats"><div><b>${p.hp}</b><small>进攻方生命</small></div><div><b>${d.hp}</b><small>守方生命</small></div><div><b>6</b><small>最多轮数</small></div></div><div class="card"><h3>进攻方输出 ${E.power(ctx,true)}</h3><p>${supportText(ctx,true)}</p></div><div class="card"><h3>守方输出 ${E.power(ctx,false)}</h3><p>${supportText(ctx,false)}</p></div>${E.power(ctx,true)<E.power(ctx,false)?'<p class="preview-risk">对方支援更多：输出 '+E.power(ctx,true)+' 对 '+E.power(ctx,false)+'。可先调动友军支援，或换一个交战目标。</p>':''}<p class="tip">进攻方首轮有效伤害加 1。支援关系在开战时固定；伤势和招式消耗保留。</p></div><div class="preview-actions"><button class="quiet" data-action="cancel-preview">取消进攻</button>${lesson?.stage==='support-preview'?'<button class="primary lesson-target" data-action="lesson-finish">完成教学</button>':'<button class="primary'+(lesson?' lesson-target':'')+'" data-action="attack">发起武斗</button>'}</div>`;
+  }
+  function cardTargets(p,id){
+    const targets=s.pieces.filter(q=>q.side!==p.side&&E.canMove(s,p,q.x,q.y));
+    return {targets,ready:targets.filter(q=>!E.availability(s,p,id,E.context(s,p,q)))};
+  }
+  function cardGuideHTML(){
+    const p=E.get(s,selected);if(!cardGuide||!p)return '';
+    const {targets,ready}=cardTargets(p,cardGuide),c=E.CARDS[cardGuide];
+    const reasons={isolatedEnemy:'当前目标都有友军支援，可先阻挡或移开对方支援线。',supported:'当前交战目标没有己方支援，可先让友军能够攻击目标格。',friendlyScreen:'需要己方棋子作炮架；敌方炮架不满足借架条件。',unsupported:'当前交战中有己方支援，不满足稳炮条件；请优先保留有利支援。',adjacent:'需要友军与本兵上下左右相邻，斜对角不算。',crossed:'本兵尚未过河，先推进过河再使用奋进。',nearKing:'需要本子位于己方将帅周围一格内。'};
+    const message=ready.length?'棋盘金色底框标出 '+ready.length+' 个可用目标。点击目标先查看交战预览，不会直接开战。':p.exhausted.includes(cardGuide)?'该牌已耗尽，需要先花一次棋盘行动整备。':!targets.length?'当前没有能按走法直接交战的敌子，先调动本子或调整阻挡关系。':reasons[c.condition]||'当前没有满足该牌条件的交战目标。';
+    return '<div class="card-guide" role="status"><strong>'+E.label(p)+' · '+c.name+'</strong><p>'+message+'</p><small>仅按当前站位显示，不代表武斗必胜。</small><br><button class="small quiet" data-action="clear-card-guide">收起用牌目标</button></div>';
+  }
+  function cardPlanHTML(p,id){
+    if(lesson||!['setup','board'].includes(s.phase)||s.phase==='board'&&!p.learned.includes(id))return '';
+    const c=E.CARDS[id],plans={
+      isolatedEnemy:'选对方没有支援的交战目标；先在交战预览中核对。',
+      supported:'先让友军能够攻击交战目标格，再由本子进攻；最多两名支援。',
+      friendlyScreen:'用己方棋子作炮架主动进攻；敌方炮架或被动迎战均不满足。',
+      unsupported:'本子没有支援时可用；不要仅为用牌主动放弃有利支援。',
+      adjacent:'让友军与本兵上下左右相邻；斜对角不算相邻。',
+      crossed:'先把本兵推进过河，再寻找交战目标。',
+      nearKing:'留在己方将帅周围一格内；将帅移动后需重新核对。'
+    };
+    const plan=plans[c.condition]||(c.type==='focus'?'本轮放弃攻击换取气势，留意对手能否压制蓄势。':c.gain?'存活后获得气势，可在后续轮次用斩击或破势释放。':'无需额外站位条件，仍需根据对手可能的招式选择。');
+    let status='';
+    if(s.phase==='board'){
+      const targets=cardTargets(p,id).ready;
+      status=p.exhausted.includes(id)?'已耗尽：整备后才能再次使用。':'按当前站位，主动交战可用目标 '+targets.length+' 个；需轮到该方行动。';
+    }
+    return `<div class="card-plan"><b>使用计划</b>${plan}${status?'<span>'+status+'</span>':''}${s.phase==='board'&&p.side===s.turn&&!computerTurn()?'<button class="small quiet" data-card-targets="'+id+'" aria-label="查看'+c.name+'的用牌目标" aria-pressed="'+(cardGuide===id)+'">'+(cardGuide===id?'收起目标说明':'查看用牌目标')+'</button>':''}</div>`;
+  }
+  function restAllowed(p,card){return screen==='game'&&!lesson&&s.phase==='board'&&!computerTurn()&&p?.side===s.turn&&p.learned.includes(card)&&p.exhausted.includes(card);}
+  function restOptionsHTML(){
+    if(lesson||s.phase!=='board'||computerTurn())return '';
+    const entries=s.pieces.filter(p=>p.side===s.turn).flatMap(p=>p.exhausted.map(card=>({p,card})));
+    return '<details class="rest-options"><summary>'+E.SIDE[s.turn]+'待整备招式 · '+entries.length+' 张</summary><p>'+(entries.length?'一次只恢复一张牌，占用本次行动，不回血。点击先查看代价。':'当前没有耗尽的培养牌。已学牌在武斗中使用后可整备。')+'</p><div class="rest-list">'+entries.map(({p,card})=>'<button class="rest-entry" data-rest-piece="'+p.id+'" data-rest="'+card+'"><b>'+E.label(p)+' · '+E.CARDS[card].name+'</b><small>'+ (p.x+1)+' 路 '+(10-p.y)+' 线 · 生命 '+p.hp+'/18</small></button>').join('')+'</div></details>';
+  }
+  function requestRest(id,card,fromList){
+    const p=E.get(s,id);if(restDialog.open||!restAllowed(p,card))return;
+    pendingRest={id,card,fromList};
+    $('rest-target').textContent=E.label(p)+' · '+E.CARDS[card].name+' · '+(p.x+1)+' 路 '+(10-p.y)+' 线';
+    $('rest-content').innerHTML='<p id="rest-cost" class="rest-cost">占用'+E.SIDE[p.side]+'本次棋盘行动，并让出走棋机会。</p><p>仅恢复「'+E.CARDS[card].name+'」这一张牌；生命保持 '+p.hp+' / 18，棋子留在原位。</p><p class="rest-effect"><b>招式效果：</b>'+E.CARDS[card].text+'</p><p class="tip">恢复后仍需满足招式的使用条件。返回棋盘可继续考虑，不消耗行动；刷新会关闭本次确认。</p>';
+    restDialog.showModal();$('cancel-rest').focus();
+  }
+  function setupRosterHTML(){
+    if(s.phase!=='setup')return '';
+    const ps=s.pieces.filter(p=>p.side===setupSide),readonly=opponent==='computer'&&setupSide==='black';
+    return '<h3>阵容配牌总览</h3><div class="setup-sides" role="group" aria-label="查看配牌阵营">'+['red','black'].map(side=>'<button data-setup-side="'+side+'" aria-pressed="'+(setupSide===side)+'">'+E.SIDE[side]+(opponent==='computer'&&side==='black'?' · 只读':'')+'</button>').join('')+'</div><p class="setup-summary">已培养 '+ps.filter(p=>p.learned.length).length+' / '+ps.length+' 子 · 剩余 '+s.budget[setupSide]+' 点</p><div class="setup-list" role="group" aria-label="'+E.SIDE[setupSide]+'配牌列表">'+ps.map(p=>'<button class="setup-piece" data-setup-piece="'+p.id+'" aria-pressed="'+(selected===p.id)+'" aria-controls="detail"><span><b>'+E.label(p)+'</b><small>'+ (p.x+1)+' 路 '+(10-p.y)+' 线</small></span><em>'+(p.learned.length?p.learned.map(id=>E.CARDS[id].name).join(' · '):'未培养 · 基础招式可用')+'</em></button>').join('')+'</div><p class="setup-help">'+(readonly?'电脑配牌仅供查看。切回红方可调整自己的招式。':'点击条目查看与调整。未培养棋子也有全部基础招式。')+'</p>';
+  }
+  function detailHTML(){
+    const p=E.get(s,selected),advice=hint&&s.phase==='board'&&!lesson?adviceHTML(boardAdvice(hint)):'';
+    if(!p)return advice+`<h2>选择棋子</h2><p class="tip">点击棋子查看生命、招式与可行动的位置。</p>${logsHTML()}`;
+    const canRest=!lesson&&s.phase==='board'&&p.side===s.turn&&!computerTurn(),canLearn=s.phase==='setup'&&(opponent!=='computer'||p.side==='red');
+    let html=`<div class="piece-title"><span class="seal ${p.side}">${E.NAMES[p.side][p.kind]}</span><div><h2 id="piece-detail-title" tabindex="-1">${E.label(p)}</h2><span class="thin">${p.x+1} 路 ${10-p.y} 线${s.phase==='setup'?' · 已学 '+p.learned.length+'/2 张':''}</span></div></div><div class="health-row"><span>生命</span><b>${p.hp} / 18</b></div><div class="health-track"><i style="width:${p.hp/18*100}%"></i></div><p class="tip">基础输出 3；每名有效支援加 1，最多加 2。培养不增加基础数值。</p>`;
+    html+='<p class="movement-note"><b>走法：</b>'+MOVE_RULES[p.kind]+'</p>'+positionHTML(p);
+    const ids=Object.keys(E.CARDS).filter(id=>E.CARDS[id].kind===p.kind);
+    html+='<h3>'+(s.phase==='setup'?'三选二 · 培养招式':'绑定招式')+'</h3>';
+    if(s.phase==='setup')html+='<div class="setup-message">'+(canLearn?'<b>'+E.SIDE[p.side]+'剩余 '+s.budget[p.side]+' 点 · 本子已学 '+p.learned.length+'/2 张</b>'+(p.learned.length>=2?'本子已满两张。先撤回本子的一张，再学习另一张。':s.budget[p.side]===0?'本方点数已用完。先在本子或总览中的其他棋子上撤回一张，返还 1 点。':'每张花费 1 点，撤回返还 1 点。开始对局后锁定。'):'电脑配牌仅供查看。')+'<button class="small quiet" data-action="setup-overview" aria-controls="setup-roster">返回阵容总览</button></div>';
+    for(const id of ids){const c=E.CARDS[id],learned=p.learned.includes(id),used=p.exhausted.includes(id);
+      html+=`<div class="card ${used?'exhausted':''}"><div class="card-head"><strong><span class="card-type">${E.TYPE[c.type]}</span>${c.name}</strong>${canLearn?`<button class="small card-learn ${learned?'':'primary'}" data-learn="${id}" aria-label="${learned?'撤回':'学习'}${c.name}${learned?'，返还1点':'，花费1点'}" ${!learned&&(s.budget[p.side]===0||p.learned.length>=2)?'disabled':''}>${learned?'撤回':p.learned.length>=2?'已满两张':s.budget[p.side]===0?'点数已用完':'学习 · 1点'}</button>`:used&&canRest?`<button class="small rest-button" data-rest="${id}" aria-label="整备${c.name}，查看行动代价">整备</button>`:`<span class="thin">${learned?(used?'已耗尽':'未耗尽'):'未学习'}</span>`}</div><p>${c.text}${used?' 整备占用一次走棋，不回血。':''}</p>${cardPlanHTML(p,id)}</div>`;
+    }
+    html+=`<p class="tip">${s.phase==='setup'?(canLearn?'牌与当前这枚棋子绑定，开始后锁定。':'电脑配牌仅供查看，可点选红方棋子调整配牌。'):s.phase==='ended'?'对局已结束，可以查看棋子信息。':p.side===s.turn&&!computerTurn()?'点选落点移动，或在耗尽的牌上整备。':'当前只能查看棋子信息。'}</p>`;
+    return advice+html+logsHTML();
+  }
+  function logsHTML(){return '<hr class="separator"><h3>战局记录</h3><ol class="log">'+(s.log.length?s.log.slice(0,8).map(t=>'<li>'+esc(t)+'</li>').join(''):'<li>等待双方完成配牌。</li>')+'</ol>';}
+  function movePreviewHTML(){
+    if(!movePreview)return '';
+    const advice=boardAdvice(movePreview);
+    advice.note='仅按移动后的公开站位计算；不模拟武斗胜负或对手后续走棋。当前尚未移动，不消耗行动。';
+    return adviceHTML(advice,true)+'<div class="move-preview-actions"><button class="primary" data-action="confirm-move">确认走到这里</button><button class="quiet" data-action="cancel-move">取消本次预览</button></div>';
+  }
+  function outcomeTitle(){return E.CHALLENGES[s.scenario]?(s.winner==='red'?'挑战完成':'挑战未完成'):s.winner==='draw'?'双方和棋':E.SIDE[s.winner]+'获胜';}
+  function reviewAlternative(state,isA,mineId,enemyId){
+    const ctx=state.duel,mine=Yiwu.get(state,isA?ctx.a:ctx.d),enemy=Yiwu.get(state,isA?ctx.d:ctx.a);
+    const outcome=id=>{
+      const r=Yiwu.roundDamage(ctx,isA?id:enemyId,isA?enemyId:id),loss=Math.min(mine.hp,isA?r.toA:r.toD),damage=Math.min(enemy.hp,isA?r.toD:r.toA);
+      return {id,loss,damage,card:!!Yiwu.CARDS[id],spent:isA?r.spentA:r.spentD,force:loss===mine.hp||damage===enemy.hp||ctx.round===6?0:isA?r.forceAfterA:r.forceAfterD};
+    };
+    const actual=outcome(mineId);
+    const options=C.choices(state,mine,ctx).filter(id=>id!==mineId).map(outcome).filter(option=>option.loss<=actual.loss&&option.damage>=actual.damage&&(option.loss<actual.loss||option.damage>actual.damage||actual.card&&!option.card&&option.force>=actual.force));
+    for(const option of options)option.rank=(actual.loss===mine.hp&&option.loss<mine.hp?(mine.kind==='king'?200:100):0)+(actual.loss-option.loss)*3+option.damage-actual.damage+(actual.card&&!option.card ? .25 : 0);
+    const alternative=options.sort((a,b)=>b.rank-a.rank||a.loss-b.loss||b.damage-a.damage||Number(a.card)-Number(b.card)||b.force-a.force)[0];
+    return alternative?{side:mine.side,round:ctx.round,enemyId,actual,alternative}:null;
+  }
+  function analyzeMatch(history){
+    const totals={red:{loss:0,fallen:0,cards:0},black:{loss:0,fallen:0,cards:0}},battles=[],actions=[];
+    let state,battle=null;
+    for(const [name,...args]of history){
+      if(name==='create'){state=Yiwu.create(...args);continue;}
+      const beforePly=state.ply,actor=state.turn;
+      if(name==='resolve'){
+        const a=Yiwu.get(state,state.duel.a),d=Yiwu.get(state,state.duel.d);
+        for(const [isA,p,id,other]of [[true,a,args[0],args[1]],[false,d,args[1],args[0]]]){
+          const tip=reviewAlternative(state,isA,id,other),previous=battle.tips[p.side];
+          if(tip&&(!previous||tip.alternative.rank>previous.alternative.rank))battle.tips[p.side]=tip;
+          if(Yiwu.CARDS[id]){totals[p.side].cards++;battle[p.side].cards++;}
+        }
+        const beforeA=a.hp,beforeD=d.hp;
+        Yiwu.resolve(state,...args);battle.rounds++;
+        for(const [p,before]of [[a,beforeA],[d,beforeD]]){
+          totals[p.side].loss+=before-p.hp;battle[p.side].end=p.hp;
+          if(p.hp===0)totals[p.side].fallen++;
+        }
+      }else Yiwu[name](state,...args);
+      if(name==='move'&&state.duel){
+        const ctx=state.duel,a=Yiwu.get(state,ctx.a),d=Yiwu.get(state,ctx.d);
+        battle={ply:state.ply+1,rounds:0,tips:{},supportA:Math.min(2,ctx.supportA.length),supportD:Math.min(2,ctx.supportD.length),attacker:a.side};
+        for(const p of [a,d])battle[p.side]={id:p.id,name:Yiwu.label(p),kind:p.kind,start:p.hp,end:p.hp,cards:0};
+      }
+      if(battle&&state.phase!=='duel'){
+        battle.summary=state.lastCombat.summary;battles.push(battle);battle=null;
+      }
+      if(state.ply>beforePly)actions.push({ply:state.ply,side:actor,type:name==='resolve'||name==='retreat'?'battle':name});
+    }
+    if(!state||state.phase!=='ended')throw new Error('只能复盘已结束的完整对局记录');
+    return {totals,battles,actions,ply:state.ply,winner:state.winner,reason:state.reason};
+  }
+  function challengeFeedbackHTML(review){
+    const spec=E.CHALLENGES[s.scenario];if(!spec||s.phase!=='ended'||s.winner==='red')return '';
+    review=review||analyzeMatch(commands);
+    const last=review.battles.at(-1),ctx=s.lastCombat,hero=E.get(s,'hero'),target=E.get(s,'target');
+    const fallen=!s.pieces.some(p=>p.side==='red'&&p.kind==='king')?'red_king':!hero?'hero':s.scenario==='challenge-relay'&&!E.get(s,'veteran')?'veteran':null;
+    const original=Yiwu.create(s.scenario),name=id=>E.label(E.get(original,id));
+    let fact,next;
+    if(fallen){
+      const loss=last?.red.id===fallen?last.red:null;
+      fact=name(fallen)+'在第 '+s.ply+' 次行动阵亡，本关要求其存活。'+(loss?'本次开战生命 '+loss.start+'，本场实际损血 '+(loss.start-loss.end)+'。':'');
+      next=fallen==='veteran'?'让红马承担进攻，受伤红车留作支援；先看交战预览再决定。':fallen==='red_king'?'移动前检查是否移开了将帅前的阻挡，或落入敌子可进攻的位置。':'留意本子剩余生命及对手的合法回应；先调整支援，再决定进攻或整备，整备不回血。';
+    }else if(!target){
+      const involved=ctx&&(ctx.a==='hero'&&ctx.d==='target'||ctx.d==='hero'&&ctx.a==='target');
+      if(!involved){fact='第 '+s.ply+' 次行动由'+(last?.red.name||'其他棋子')+'击败目标，本关指定由'+name('hero')+'完成。';next='保留目标，让指定主力发起交战；其他棋子用于支援或阻挡。';}
+      else{fact='第 '+s.ply+' 次行动击败了目标，但红兵开战时有效支援为 0 名。';next='先让友军能够攻击目标格，在交战预览中确认红方至少 1 名支援，再由红兵进攻。';}
+    }else if(!s.pieces.some(p=>p.side==='black'&&p.kind==='king')){
+      fact='黑将已阵亡，但指定目标'+name('target')+'仍有 '+target.hp+' 点生命。';next='本关按指定目标判定完成；优先进攻目标棋子，避免先结束与黑将的交战。';
+    }else{
+      const rests=review.actions.filter(a=>a.side==='red'&&a.type==='rest').length;
+      fact='已用 '+s.ply+' / '+spec.limit+' 次棋盘行动，目标仍有 '+target.hp+' 点生命。'+(rests?'其中红方整备 '+rests+' 次；整备让出行动且不回血。':'');
+      next=rests?'尝试减少整备，先比较现有基础招式能否完成交战，再决定是否恢复培养牌。':'尝试减少与目标无关的调动，先查看指定主力能否直接交战，以及需要的支援。';
+    }
+    return '<section class="challenge-feedback" aria-label="残局失败反馈"><h3>本次未完成的原因</h3><p>'+esc(fact)+'</p><h4>下次可以尝试</h4><p>'+esc(next)+'</p><small>依据本局实际行动与已揭示结果说明，不代表事先能预知暗招或保证通关。</small></section>';
+  }
+  function openReview(){
+    if(lesson||s.phase!=='ended')return;
+    const review=analyzeMatch(commands),sides=['red','black'];
+    const rank=b=>sides.reduce((n,side)=>n+(b[side].end===0?(b[side].kind==='king'?10000:1000):0)+b[side].start-b[side].end,0);
+    const keyBattles=[...review.battles].sort((a,b)=>rank(b)-rank(a)||a.ply-b.ply).slice(0,3);
+    const moveName=id=>(Yiwu.BASE[id]||Yiwu.CARDS[id]).name;
+    const comparison=option=>`<span>${esc(moveName(option.id))}</span><b>自身损血 ${option.loss} · 造成伤害 ${option.damage}</b><small>${option.card?'培养牌用后耗尽':'基础招式不耗牌'}；释放气势 ${option.spent}，结算后 ${option.force}/2</small>`;
+    let html=`<div class="modal-head"><h2 id="review-title" tabindex="-1">对局复盘</h2><button data-action="close-review" class="quiet">返回终局</button></div><p class="review-intro">${esc(outcomeTitle())} · ${esc(review.reason.replace(/。$/,''))}。共 ${review.ply} 次棋盘行动、${review.battles.length} 场武斗。<br>按将帅阵亡、棋子阵亡及双方损血，展示最多三场关键交战。替代招式针对当轮已揭示的对手出招计算，仅比较该轮，不是当时能预知的答案，也不推断后续胜负。</p><div class="review-teams">${sides.map(side=>{const t=review.totals[side];return `<section class="review-team ${side}"><h3>${E.SIDE[side]}损失</h3><p>累计损血 <b>${t.loss}</b> · 阵亡 <b>${t.fallen}</b> 子</p><p>培养牌共使用 ${t.cards} 次（可整备后再次使用）</p></section>`;}).join('')}</div>`;
+    html+=challengeFeedbackHTML(review);
+    if(!keyBattles.length)html+='<p class="coach">本局没有发生武斗，没有交战损失或选招可供对照。</p>';
+    for(const b of keyBattles){
+      html+=`<article class="review-battle"><h3>第 ${b.ply} 次行动 · ${b[b.attacker].name}进攻${b[E.OTHER[b.attacker]].name}</h3><p>${esc(b.summary)} 已交战 ${b.rounds} 轮；开战支援 ${E.SIDE[b.attacker]} ${b.supportA} 名 / ${E.SIDE[E.OTHER[b.attacker]]} ${b.supportD} 名。</p><div class="review-losses">${sides.map(side=>{const p=b[side];return `<div class="${side}"><b>${p.name}${p.end===0?' · 阵亡':''}</b><span>生命 ${p.start} → ${p.end} · 使用培养牌 ${p.cards} 次</span></div>`;}).join('')}</div>`;
+      for(const side of sides){const tip=b.tips[side];if(tip)html+=`<section class="review-tip"><h4>${E.SIDE[side]}可改进选择 · 第 ${tip.round} 轮，对手已出「${esc(moveName(tip.enemyId))}」</h4><div class="review-compare"><div><strong>实际选择</strong>${comparison(tip.actual)}</div><div><strong>可比较的替代</strong>${comparison(tip.alternative)}</div></div></section>`;}
+      if(!Object.keys(b.tips).length)html+='<p class="tip">未找到能在不增加本轮损血的前提下提高伤害，或不降低伤害而减少损血、节省培养牌的替代招式；不代表整场选择最优。</p>';
+      html+='</article>';
+    }
+    if(!['full','quick'].includes(s.scenario))html+='<p class="tip">本局为规则试验，阵容与预算不对等，复盘不作为平衡性结论。</p>';
+    $('review-content').innerHTML=html;$('review').showModal();$('review-title').focus();
+  }
+  function endgameHTML(){
+    if(lesson||s.phase!=='ended')return '';
+    return `<div class="endgame-head"><span class="endgame-seal" aria-hidden="true">${E.CHALLENGES[s.scenario]?(s.winner==='red'?'成':'败'):s.winner==='draw'?'和':'胜'}</span><div class="endgame-copy"><span>${E.CHALLENGES[s.scenario]?'残局挑战结束':'整局结束'}</span><h2 id="endgame-title" tabindex="-1">${outcomeTitle()}</h2><p>${esc(s.reason)}</p></div><div class="endgame-actions"><button class="primary" data-action="review">查看对局复盘</button><button class="quiet" data-action="new">再开当前棋局</button></div></div><div class="endgame-stats"><div><b>${s.ply}</b><span>已完成行动</span></div>${['red','black'].map(side=>'<div><b>'+s.pieces.filter(p=>p.side===side).length+'</b><span>'+E.SIDE[side]+'存活</span></div>').join('')}</div><p class="tip">可以继续点选棋子查看终局；重开前会确认，取消可保留终局。${['full','quick'].includes(s.scenario)?'':' 规则试验局面，阵容与预算不对等，不作为平衡性依据。'}</p>${challengeFeedbackHTML()}`;
+  }
+  function render(){
+    if(restDialog.open&&!restAllowed(E.get(s,pendingRest?.id),pendingRest?.card))restDialog.close();
+    if(lesson||s.phase!=='board'||computerTurn()){scoutMode=false;movePreview=null;}
+    if(movePreview&&(selected!==movePreview.id||!scoutMode||!E.get(s,selected)||E.get(s,selected).side!==s.turn||E.at(s,movePreview.x,movePreview.y)||!E.canMove(s,E.get(s,selected),movePreview.x,movePreview.y)))movePreview=null;
+    if(cardGuide&&(lesson||preview||s.phase!=='board'||computerTurn()||!E.get(s,selected)?.learned.includes(cardGuide)))cardGuide=null;
+    saveProgress();
+    if(screen==='home'){renderHome();return;}
+    document.title='弈武 · '+(lesson?'分步教学':opponent==='computer'?'电脑对战':'同机双人');
+    document.querySelector('.subtitle').innerHTML='象棋走位，招式交锋<br>'+(lesson?'分步教学 · 固定演示':opponent==='computer'?(difficulty==='practice'?'练习电脑':'标准电脑'):'同机双人');
+    const boardFocused=$('grid').contains(document.activeElement)&&document.activeElement!==$('grid'),previewWasOpen=previewDialog.open,endgameWasVisible=!$('endgame').hidden;
+    $('teams').innerHTML=teamHTML('black')+teamHTML('red');
+    const setupList=$('setup-roster').querySelector('.setup-list'),setupScroll=setupList?.scrollTop||0,previousSetupSide=$('setup-roster').dataset.side;
+    $('setup-roster').hidden=s.phase!=='setup';$('setup-roster').innerHTML=setupRosterHTML();$('setup-roster').dataset.side=setupSide;
+    if(s.phase==='setup'&&previousSetupSide===setupSide&&setupList)$('setup-roster').querySelector('.setup-list').scrollTop=setupScroll;
+    $('endgame').innerHTML=endgameHTML();$('endgame').hidden=!!lesson||s.phase!=='ended';$('endgame').className='endgame '+(s.phase==='ended'?s.winner:'');
+    const challenge=E.CHALLENGES[s.scenario];
+    $('challenge-info').hidden=!challenge;$('challenge-info').innerHTML=challenge?'<h2>残局挑战 · '+challenge.title+'</h2><p>'+challenge.goal+'</p><p>已完成 '+s.ply+' / '+challenge.limit+' 次棋盘行动（双方行动均计数，整场武斗计一次）。</p><p>'+challenge.tip+'</p><small>预置残局，阵容与培养不对等，不计公平对局；电脑使用所选难度，自由走棋、暗选招式。</small>':'';
+    $('lesson').hidden=!lesson;$('lesson').innerHTML=lessonHTML();
+    $('game-setting').textContent=(lesson?'分步教学':s.scenario==='quick'?'快速对局':s.scenario==='full'?'标准棋局':challenge?'残局 · '+challenge.title:'规则试验')+' · '+(lesson?'固定演示':opponent==='local'?'同机双人':difficulty==='practice'?'练习电脑':'标准电脑');
+    $('phase').textContent=lesson?'分步教学':s.phase==='ended'?'对局结束':challenge?'残局挑战':!['full','quick'].includes(s.scenario)?'规则试验':s.phase==='setup'?'配牌阶段':'第 '+(Math.floor(s.ply/2)+1)+' 回合';
+    $('status').textContent=lesson?.stage==='complete'?'四课已完成':s.phase==='setup'?'为棋子选择招式':s.phase==='ended'?(challenge?(s.winner==='red'?'挑战完成':'挑战未完成'):s.winner==='draw'?'双方和棋':E.SIDE[s.winner]+'获胜'):s.phase==='duel'?'武斗进行中':computerTurn()?(computerError?'电脑行动暂停':'电脑正在思考'):(opponent==='computer'?'轮到你 · 红方行动':E.SIDE[s.turn]+'行动');
+    $('substatus').textContent=lesson?'固定演示，不计公平对局':s.phase==='setup'?'双方各 '+s.points+' 点 · 每子最多两张':s.phase==='ended'?s.reason:challenge?'按目标完成残局，双方行动均计数':['full','quick'].includes(s.scenario)?(s.scenario==='quick'?'快速对局 · ':'')+'移动一子，或整备一张招式':'测试局面，不计公平阵容预算';
+    $('start-wrap').innerHTML=s.phase==='setup'?`<button class="primary wide" data-action="start" ${s.budget.red||s.budget.black?'disabled':''}>完成配牌，进入对局</button><button class="quiet wide" data-action="auto" style="margin-top:8px">${E.SIDE[opponent==='computer'?'red':setupSide]}分散配牌</button><p class="tip">${opponent==='computer'?'你执红，电脑执黑。已配好牌，可直接进入对局，也可先调整红方招式。':'点击红方或黑方棋子调整配牌。已分配招式，可直接开始或撤回后重配。'}</p>`:s.phase==='ended'?`<p class="tip">${s.reason}</p><button class="primary wide" data-action="new">再开一局</button>`:`<p class="tip">${computerTurn()?'电脑会自动走棋、整备和发起武斗。':'点选己方棋子，再点圆点移动、虚线圈交战。斩击克破势，破势克架势，架势克斩击。'}</p>${!computerTurn()?'<button class="primary wide" data-action="hint">提示一步</button>':computerError?'<button class="primary wide" data-action="retry">重试电脑行动</button>':''}<button class="quiet wide" data-action="rules" style="margin-top:8px">查看规则</button>`;
+    if(lesson)$('start-wrap').innerHTML='<p class="tip">按教学指引逐步操作。返回首页可暂停教学或选择新棋局。</p><button class="quiet wide" data-action="rules">查看规则</button>';
+    if(s.phase==='setup'&&(s.budget.red||s.budget.black))$('start-wrap').innerHTML+='<p class="setup-message" role="status">还需分配：'+['red','black'].filter(side=>s.budget[side]).map(side=>E.SIDE[side]+' '+s.budget[side]+' 点').join('、')+'。分完后才能开始。</p>';
+    if(!lesson&&s.phase==='board'&&!computerTurn())$('start-wrap').innerHTML+='<button class="quiet wide" data-action="scout" aria-label="落点预览" aria-pressed="'+scoutMode+'" style="margin-top:9px">'+(scoutMode?'关闭落点预览':'开启落点预览')+'</button>'+(scoutMode?'<p class="scout-note">点选己方棋子，再点合法空位先看风险，确认后才移动。交战仍先查看预览。</p>':'');
+    if(!lesson&&s.phase==='board'&&!computerTurn()&&!C.actions(s).length)$('start-wrap').innerHTML+='<button class="wide" data-action="pass">跳过受阻回合</button>';
+    $('start-wrap').innerHTML=restOptionsHTML()+$('start-wrap').innerHTML;
+    drawBoard();$('move-preview').hidden=!movePreview;$('move-preview').innerHTML=movePreviewHTML();$('detail').innerHTML=detailHTML();$('notice').textContent=notice;
+    if(cardGuide)$('notice').innerHTML=cardGuideHTML();
+    if(hint&&s.phase==='board'&&!lesson)$('notice').innerHTML=esc(notice)+'<button class="small quiet" data-action="hint-details" aria-controls="detail">查看理由与风险</button>';
+    $('last-action').innerHTML=!lesson&&s.last?`<strong class="${s.last.side}">上一行动 · ${E.SIDE[s.last.side]}${{move:'移动',rest:'整备',battle:'武斗',pass:'受阻'}[s.last.type]}</strong><p>${esc(s.log[0])}</p>`:'';
+    if(preview){$('preview-content').innerHTML=previewHTML();if(!previewDialog.open)previewDialog.showModal();}
+    else if(previewDialog.open)previewDialog.close();
+    if((boardFocused||previewWasOpen&&!preview)&&!fight.open&&!previewDialog.open)$('grid').children[focusIndex]?.focus();
+    scheduleComputer();
+    if(!endgameWasVisible&&!lesson&&s.phase==='ended'&&!fightUI)$('endgame-title').focus();
+  }
+  function chooseCell(x,y,commit=false){
+    focusIndex=y*9+x;
+    if(screen!=='game'||s.phase==='duel'||computerTurn()||!lessonCellAllowed(x,y))return;
+    hint=null;cardGuide=null;movePreview=null;
+    const q=E.at(s,x,y),p=E.get(s,selected);
+    if(s.phase==='board'&&p?.side===s.turn&&q?.side!==p.side&&E.canMove(s,p,x,y)){
+      if(q){preview=q.id;return;}
+      if(scoutMode&&!commit&&!lesson){movePreview={type:'move',id:p.id,x,y};return;}
+      scoutMode=false;E.move(s,p.id,x,y);selected=null;preview=null;
+      if(lesson?.stage==='support-move'){
+        E.move(s,'black_king',5,1);lesson.stage='support-preview';selected='hero';
+      }
+      return;
+    }
+    preview=null;selected=q?.id||null;if(q&&s.phase==='setup')setupSide=q.side;
+  }
+  function openFight(){
+    beginFight(E.get(s,selected),E.get(s,preview));
+  }
+  function beginFight(a,d){
+    if(lesson&&(lesson.stage!=='attack'||a?.id!=='hero'||d?.id!=='target'))throw new Error('请按教学指引选择交战目标');
+    E.move(s,a.id,d.x,d.y);hint=null;if(previewDialog.open)previewDialog.close();
+    if(lesson)lesson.stage='counter';
+    fightUI={a,d,ctx:s.duel,step:'handoffA',first:null,result:null,computerChoice:null,pending:null,hint:''};preview=null;prepareRound();renderFight();fight.showModal();
+  }
+  function prepareRound(){
+    const ui=fightUI;ui.hint='';ui.first=null;ui.pending=null;
+    if(lesson){
+      lesson.stage={1:'counter',2:'store',3:'release',4:'retreat'}[s.duel.round];
+      ui.computerChoice={1:'cannon_pressure',2:'guard',3:'cannon_hold',4:'strike'}[s.duel.round];ui.step='pickA';return;
+    }
+    if(opponent!=='computer'){ui.step='handoffA';return;}
+    // 电脑先提交决定，后续人类点击只负责揭示与结算。
+    ui.computerChoice=C.combat(s,'black',Math.random,difficulty);
+    ui.computerReason=C.explain(ui.computerChoice,difficulty);
+    if(ui.a.side==='black'&&ui.computerChoice==='retreat'){ui.result=E.retreat(s);ui.step='retreated';return;}
+    ui.step=ui.a.side==='red'?'pickA':'pickD';
+  }
+  function boardHint(){
+    if(s.phase!=='board'||computerTurn())return;
+    if(lesson){notice='请按棋盘上方的教学指引操作。';return;}
+    cardGuide=null;movePreview=null;const ranked=C.rankedActions(s),hero=E.get(s,'hero'),target=E.get(s,'target');
+    const goalAction=E.CHALLENGES[s.scenario]&&hero&&target&&ranked.find(a=>a.type==='move'&&a.id===hero.id&&a.x===target.x&&a.y===target.y&&(s.scenario!=='challenge-support'||E.context(s,hero,target).supportA.length));
+    hint=goalAction||ranked[0]||{type:'pass'};preview=null;
+    const p=E.get(s,hint.id);
+    if(p)selected=p.id;
+    notice=hint.type==='move'?'建议将'+E.label(p)+'移向 '+(hint.x+1)+' 路 '+(10-hint.y)+' 线'+(E.at(s,hint.x,hint.y)?'，先查看交战支援。':'，亮框为建议落点。'):hint.type==='rest'?'建议整备'+E.label(p)+'的「'+E.CARDS[hint.card].name+'」，这会让出一次走棋机会。':'没有合法移动或整备，可跳过受阻回合。';
+  }
+  function adviceHTML(advice,forMove=false){
+    if(typeof advice==='string')return '<div class="coach"><p role="status">'+esc(advice)+'</p></div>';
+    return `<section class="advice" tabindex="-1" aria-label="${forMove?'落点变化与风险':'推荐理由与风险'}" role="status"><h3>${forMove?'落点预览 · ':''}${esc(advice.title)}</h3><h4>${forMove?'站位变化':'推荐依据'}</h4><ul>${advice.reasons.map(t=>'<li>'+esc(t)+'</li>').join('')}</ul><h4>风险与代价</h4><ul class="advice-risks">${advice.risks.map(t=>'<li>'+esc(t)+'</li>').join('')}</ul><p class="advice-note">${esc(advice.note)}</p></section>`;
+  }
+  function boardAdvice(action){
+    const advice={title:'走棋建议',reasons:[],risks:[],note:'依据当前站位、生命、可用牌和重复局面评分；未搜索对手后续回应，不代表武斗必胜。'};
+    if(action.type==='pass'){
+      advice.reasons.push('当前没有合法移动或可整备招式，只能跳过受阻回合。');
+      advice.risks.push('行动交给对手；仍计入重复局面与无伤行动判和。');return advice;
+    }
+    const p=E.get(s,action.id),target=action.type==='move'?E.at(s,action.x,action.y):null;
+    const names=ps=>ps.map(q=>E.label(q)+'（'+(q.x+1)+'路'+(10-q.y)+'线）').join('、');
+    const threats=(state,q)=>state.pieces.filter(enemy=>enemy.side!==q.side&&E.canMove(state,enemy,q.x,q.y));
+    const guards=(state,q)=>Math.min(2,E.support(state,q,q.x,q.y,[q.id]).length);
+    if(action.type==='rest'){
+      advice.title='整备'+E.label(p)+'的「'+E.CARDS[action.card].name+'」';
+      advice.reasons.push('恢复这一张耗尽牌：'+E.CARDS[action.card].text);
+      advice.risks.push('花一次棋盘行动，不回血；恢复后仍需满足站位和气势条件。');
+      const incoming=threats(s,p);if(incoming.length)advice.risks.push('原地整备后，'+names(incoming)+'仍可向本子发起武斗。');
+      const king=s.pieces.find(q=>q.side===p.side&&q.kind==='king');
+      if(king&&king.id!==p.id&&threats(s,king).length)advice.risks.push('己方将帅仍可被'+names(threats(s,king))+'进攻，整备不能解除该威胁。');
+    }else if(target){
+      const ctx=E.context(s,p,target);
+      advice.title=E.label(p)+'进攻'+E.label(target);
+      if(E.CHALLENGES[s.scenario]&&p.id==='hero'&&target.id==='target'){
+        advice.reasons.push('优先尝试本关指定目标：'+E.CHALLENGES[s.scenario].goal);
+        advice.note='残局提示优先指定目标；未搜索对手后续回应，不代表武斗必胜。';
+      }
+      advice.reasons.push('交战输出为 '+E.power(ctx,true)+' 对 '+E.power(ctx,false)+'；双方有效支援为 '+Math.min(2,ctx.supportA.length)+' / '+Math.min(2,ctx.supportD.length)+' 名。','进攻方首轮有效伤害额外加 1；目标剩余生命 '+target.hp+'。');
+      const ready=p.learned.filter(id=>!E.availability(s,p,id,ctx));
+      if(ready.length)advice.reasons.push('本次交战站位可使用培养牌「'+ready.map(id=>E.CARDS[id].name).join('、')+'」；仍需结合对手的合法回应选招。');
+      if(E.power(ctx,true)<E.power(ctx,false))advice.risks.push('己方输出比对手低 '+(E.power(ctx,false)-E.power(ctx,true))+'，需结合招式克制判断。');
+      advice.risks.push('发起武斗不会直接吃子；己方生命 '+p.hp+'，伤害同时结算，伤势和耗牌跨战斗保留。');
+    }else{
+      const next={...s,pieces:s.pieces.map(q=>q.id===p.id?{...q,x:action.x,y:action.y}:q)},moved=E.get(next,p.id);
+      advice.title=E.label(p)+'移至 '+(action.x+1)+' 路 '+(10-action.y)+' 线';
+      if(['rook','horse','cannon','pawn'].includes(p.kind)){
+        const forward=p.side==='red'?p.y-moved.y:moved.y-p.y;
+        if(forward>0)advice.reasons.push('向前推进 '+forward+' 线，接近对方阵地。');
+        if(Math.abs(moved.x-4)<Math.abs(p.x-4))advice.reasons.push('落点更靠近中路，可作为后续调动的起点。');
+      }
+      const supportChange='本子守位的有效支援由 '+guards(s,p)+' 变为 '+guards(next,moved)+' 名（最多计 2 名）。';
+      if(guards(next,moved)>=guards(s,p))advice.reasons.push(supportChange);
+      else advice.risks.push(supportChange+'本子离开部分支援，守在落点时输出会降低。');
+      const targets=next.pieces.filter(q=>q.side!==p.side&&E.canMove(next,moved,q.x,q.y));
+      advice.reasons.push(targets.length?'移动后可向'+names(targets)+'发起武斗。':'移动后有 '+E.moves(next,moved).length+' 个合法落点，可继续调动。');
+      const incoming=threats(next,moved);
+      advice.risks.push(incoming.length?'落点可被'+names(incoming)+'进攻；能发起武斗不等于能击倒本子。':'按移动后的站位，敌子暂时不能直接进攻本子；不代表后续安全。');
+      if(E.CHALLENGES[s.scenario]){
+        const hero=E.get(s,'hero'),after=E.get(next,'hero'),goal=E.get(s,'target');
+        if(hero&&after&&goal&&E.canMove(s,hero,goal.x,goal.y)&&E.canMove(next,after,goal.x,goal.y)){
+          const before=E.context(s,hero,goal),later=E.context(next,after,goal),a=Math.min(2,before.supportA.length),b=Math.min(2,later.supportA.length),c=Math.min(2,before.supportD.length),d=Math.min(2,later.supportD.length);
+          if(a!==b||c!==d)(b<a||d>c?advice.risks:advice.reasons).push('若按落点后的站位进行指定交战，红方有效支援由 '+a+' 变为 '+b+' 名，黑方由 '+c+' 变为 '+d+' 名。');
+        }
+      }
+      const king=s.pieces.find(q=>q.side===p.side&&q.kind==='king'),nextKing=king&&E.get(next,king.id);
+      if(king&&p.kind!=='king'){
+        const danger=threats(next,nextKing);
+        if(danger.length)advice.risks.push('移动后己方将帅可被'+names(danger)+'进攻。');
+        else if(threats(s,king).length)advice.reasons.push('此步解除当前站位下对己方将帅的直接进攻。');
+      }
+    }
+    return advice;
+  }
+  function combatAdvice(who,id){
+    const ctx=s.duel,isA=who.id===ctx.a,enemy=E.get(s,isA?ctx.d:ctx.a),force=isA?ctx.forceA:ctx.forceD;
+    const advice={title:id==='retreat'?'建议主动撤回':'建议「'+(E.BASE[id]||E.CARDS[id]).name+'」',reasons:[],risks:[],note:'依据本轮伤害、阵亡风险、气势、耗牌和已揭示历史综合推荐；不预知暗招，也未搜索后续轮次。'};
+    if(id==='retreat'){
+      advice.reasons.push('撤回保留当前 '+who.hp+' 点生命，不再结算本轮伤害。');
+      advice.risks.push('结束本次棋盘行动，交给对手；位置不变，伤势与耗尽牌保留，气势清零。');return advice;
+    }
+    const card=E.BASE[id]||E.CARDS[id],rows=C.choices(s,enemy,ctx).map(other=>{
+      const r=E.roundDamage(ctx,isA?id:other,isA?other:id);
+      return {name:(E.BASE[other]||E.CARDS[other]).name,loss:isA?r.toA:r.toD,damage:isA?r.toD:r.toA,force:isA?r.forceAfterA:r.forceAfterD,loses:r.outcome===(isA?'d':'a')};
+    });
+    const range=values=>{const lo=Math.min(...values),hi=Math.max(...values);return lo===hi?String(lo):lo+'–'+hi;};
+    const countered=rows.filter(r=>r.loses),dead=rows.filter(r=>r.loss>=who.hp),mutual=dead.filter(r=>r.damage>=enemy.hp);
+    advice.reasons.push('面对全部合法回应，本轮可造成 '+range(rows.map(r=>Math.min(enemy.hp,r.damage)))+' 点伤害，自身损失 '+range(rows.map(r=>Math.min(who.hp,r.loss)))+' 点生命。');
+    if(rows.every(r=>r.damage>=enemy.hp))advice.reasons.push('对手的所有合法回应都会使其在本轮阵亡；仍需同时结算自身受伤。');
+    if(card.type==='focus')advice.reasons.push('本轮不攻击；若存活，结算后气势为 '+range(rows.map(r=>r.force))+'/2（含可能的削势）。');
+    else if(card.type==='guard')advice.reasons.push('架势克制斩击，保留现有气势；若存活，结算后气势为 '+range(rows.map(r=>r.force))+'/2。');
+    else advice.reasons.push(E.TYPE[card.type]+'克制'+(card.type==='strike'?'破势':'架势')+'，也能压制蓄势。');
+    if(!E.CARDS[id])advice.reasons.push('基础招式不耗牌，可重复使用。');
+    else advice.risks.push('培养牌用后耗尽；回棋盘整备需要一次行动。');
+    if(countered.length)advice.risks.push('对手用「'+countered.map(r=>r.name).join('、')+'」会'+(card.type==='focus'?'压制蓄势。':'克制本招。'));
+    if((card.type==='strike'||card.type==='break')&&force)advice.risks.push('消耗全部 '+force+' 点气势；被克制时仍消耗，但不增伤。');
+    if(dead.length)advice.risks.push('对手用「'+dead.map(r=>r.name).join('、')+'」时，本子会在本轮阵亡。');
+    if(mutual.length)advice.risks.push('其中「'+mutual.map(r=>r.name).join('、')+'」会导致双方同归于尽；击倒对手不能免除同时受到的伤害。');
+    if(ctx.round===6)advice.risks.push('已是第六轮；双方若存活，进攻方退回，剩余气势清零。');
+    return advice;
+  }
+  function moveIcon(type){
+    const paths={strike:'M7 21L21 7M15 5L23 3L21 11M6 16L12 22M4 24L8 20',guard:'M14 3L24 7V14C24 21 14 26 14 26S4 21 4 14V7Z M14 8V20',break:'M6 7L10 3L24 17L20 21Z M14 15L5 24 M4 20L8 24',focus:'M14 3V8 M14 20V25 M3 14H8 M20 14H25 M8 8L10 10 M18 18L20 20 M8 20L10 18 M18 10L20 8 M14 10L18 14L14 18L10 14Z'};
+    return `<svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${'<path d="'+paths[type]+'"/>'}</svg>`;
+  }
+  function forceHTML(value){return `<span class="force-pips" aria-label="气势 ${value}/2"><i class="${value>=1?'full':''}"></i><i class="${value>=2?'full':''}"></i><small>气势 ${value}/2</small></span>`;}
+  function fightersHTML(){
+    const {a,d,ctx,step}=fightUI,current=step==='pickA'||step==='handoffA'?a:step==='pickD'||step==='handoffD'?d:null;
+    const order=[a,d].sort((x,y)=>x.side==='red'?-1:1);
+    return `<div class="duel-fighters">${order.map(p=>{
+      const isA=p===a,force=s.phase==='duel'?(isA?ctx.forceA:ctx.forceD):0,locked=(isA&&['handoffD','pickD'].includes(step))||(opponent==='computer'&&p.side==='black'&&['pickA','pickD'].includes(step));
+      const ready=s.phase==='duel'?p.learned.filter(id=>!E.availability(s,p,id,ctx)).length:p.learned.length-p.exhausted.length;
+      const readyLabel=s.phase!=='duel'?'未耗尽牌':step==='result'?'下轮可用牌':'可用培养牌';
+      return `<section class="duel-fighter ${p.side} ${current===p?'active':''}"><div class="duel-side"><strong>${E.SIDE[p.side]}</strong><span>${isA?'进攻方':'守方'}${locked?' · 已锁定':current===p?' · 当前选招':''}</span></div><div class="duel-identity"><span class="duel-seal">${E.NAMES[p.side][p.kind]}</span><div><b>${E.label(p)}</b><small>基础 3${E.power(ctx,isA)>3?' ＋ 支援 '+(E.power(ctx,isA)-3):''}</small></div><b class="duel-hp">${p.hp}<small> /18</small></b></div><div class="duel-health"><i style="width:${p.hp/18*100}%"></i></div><div class="duel-resources">${forceHTML(force||0)}<small>${readyLabel} ${ready} 张</small></div><div class="duel-support">${supportText(ctx,isA)}</div></section>`;
+    }).join('')}</div>`;
+  }
+  function damageBreakdownHTML(p,isA,r){
+    const b=isA?r.breakdownA:r.breakdownD,damage=isA?r.toD:r.toA,name=isA?r.aName:r.dName,enemyName=isA?r.dName:r.aName;
+    const hpBefore=isA?r.hpBeforeD:r.hpBeforeA,hpAfter=isA?r.hpD:r.hpA,spent=isA?r.spentA:r.spentD;
+    const rows=[[b.base===0?'本轮未出击':b.base===1?'被克制后的基础伤害':'基础伤害',b.base]];
+    if(b.support)rows.push(['有效支援（'+b.support+' 名，上限 2）','＋'+b.support]);
+    if(b.matchup)rows.push([r.focusRound?'压制蓄势':'克制加成','＋'+b.matchup]);
+    if(b.skill)rows.push(['培养牌「'+name+'」增伤','＋'+b.skill]);
+    if(b.burst)rows.push(['释放气势（'+spent+' 点）','＋'+b.burst]);
+    if(b.opening)rows.push(['进攻方首轮加成','＋'+b.opening]);
+    if(b.base&&b.reduceLimit)rows.push(['对方「'+enemyName+'」减伤（最多 '+b.reduceLimit+'）','−'+b.reduction]);
+    const formula=rows.map(row=>row[1]).join(' ')+' ＝ '+damage;
+    let note=b.base===1?'被克制后基础伤害固定为 1，支援和培养牌增伤不生效。':b.base===0?'蓄势不攻击；架势面对蓄势或架势也不造成伤害，因此不触发增伤和首轮加成。':'';
+    if(spent&&!b.burst)note+='已释放 '+spent+' 点气势，本轮没有获得气势增伤。';
+    if(b.base&&b.reduceLimit>b.reduction)note+='有效伤害最低为 1，因此减伤只抵消 '+b.reduction+' 点。';
+    return '<details class="damage-breakdown" aria-label="'+E.SIDE[p.side]+'伤害拆解"><summary><span>'+E.SIDE[p.side]+'伤害拆解</span><b>'+formula+'</b></summary><dl>'+rows.map(([label,value])=>'<div><dt>'+esc(label)+'</dt><dd>'+value+'</dd></div>').join('')+'<div class="damage-total"><dt>结算伤害</dt><dd>'+damage+'</dd></div></dl>'+(note?'<p>'+esc(note)+'</p>':'')+'<p>对方生命 '+hpBefore+' → '+hpAfter+'，实际扣除 '+(hpBefore-hpAfter)+' 点。'+(damage>hpBefore?'结算伤害超过剩余生命，实际只扣到 0。':'')+'</p></details>';
+  }
+  function revealCard(p,isA,r){
+    const name=isA?r.aName:r.dName,type=isA?r.aType:r.dType,damage=isA?r.toD:r.toA,taken=(isA?r.hpBeforeA-r.hpA:r.hpBeforeD-r.hpD),hpBefore=isA?r.hpBeforeA:r.hpBeforeD,hpAfter=isA?r.hpA:r.hpD;
+    const spent=isA?r.spentA:r.spentD,suppressed=isA?r.suppressedA:r.suppressedD,before=isA?r.forceBeforeA:r.forceBeforeD,after=r.finished?0:(isA?r.forceAfterA:r.forceAfterD);
+    return `<article class="reveal-card ${p.side}" aria-label="${E.SIDE[p.side]}出招 ${name}"><div class="reveal-label">${E.SIDE[p.side]}出招 <span>${isA?'进攻':'守方'}</span></div><div class="reveal-move">${moveIcon(type)}<h3>${name}</h3><span>${E.TYPE[type]}</span></div><div class="reveal-damage"><div><strong>${damage}</strong><span>造成结算伤害</span></div><div><b>−${taken}</b><span>自身实际损血</span></div></div><p class="reveal-health">自身生命 ${hpBefore} → ${hpAfter}</p>${damageBreakdownHTML(p,isA,r)}<div class="force-change">${spent?'释放 '+spent+' 点；':''}${suppressed?'被削势 '+suppressed+' 点；':''}气势 ${before}/2 变为 ${after}/2${r.finished?'（离场归零）':''}</div></article>`;
+  }
+  function publicCardsHTML(who){
+    if(lesson)return '';
+    const enemy=who===fightUI.a?fightUI.d:fightUI.a;
+    return `<section class="public-cards" id="public-cards" aria-label="对手公开配牌"><h4>${E.label(enemy)}的培养牌</h4><p>公开配牌，不代表对手本轮已选。基础招式不耗牌；满气势不能蓄势。</p>${enemy.learned.length?'<ul>'+enemy.learned.map(id=>{const c=E.CARDS[id],reason=E.availability(s,enemy,id,fightUI.ctx);return `<li class="public-card${reason?' unavailable':''}"><div><strong>${c.name}</strong><span class="card-type">${E.TYPE[c.type]}</span><small>${reason||'本轮可用'}</small></div><p>${c.text}</p></li>`;}).join('')+'</ul>':'<p>对手没有学习培养牌，仍可使用基础招式。</p>'}</section>`;
+  }
+  function reviewHTML(who){
+    const ui=fightUI,id=ui.pending,c=E.BASE[id]||E.CARDS[id],range=(lo,hi)=>lo===hi?lo:lo+'–'+hi;
+    const publicJump=lesson?'':'<button class="quiet public-jump" data-fight="public-cards" aria-controls="public-cards">对手配牌</button>';
+    let html='<aside class="pick-review '+who.side+'" aria-label="'+E.SIDE[who.side]+'出招推演">'+(ui.hint?adviceHTML(ui.hint):'');
+    if(c){
+      const rows=E.preview(s,who.side,id),lethal=rows.some(row=>row.lossMax>=who.hp);
+      const force=who===ui.a?ui.ctx.forceA:ui.ctx.forceD,attacking=c.type==='strike'||c.type==='break';
+      const relation={strike:'克制破势 · 受架势克制 · 可压制蓄势',break:'克制架势 · 受斩击克制 · 可压制蓄势',guard:'克制斩击 · 受破势克制 · 不攻击蓄势',focus:'本轮不攻击 · 会被斩击、破势压制'}[c.type];
+      const forceText=attacking?(force?'消耗全部 '+force+' 点气势；被克制也会消耗。':'当前气势为 0，没有气势增伤。'):c.type==='focus'?'若存活，蓄势 +'+(1+(c.gain||0))+'，上限 2；可能被削势。':'现有气势保留；仍可能被对手削势。';
+      html+=`<div class="review-head"><h3>${E.SIDE[who.side]}已选「${c.name}」<span class="card-type">${E.TYPE[c.type]}</span></h3>${publicJump}</div><p class="tip">${c.text}</p><div class="decision-facts"><span>${relation}</span><span>${forceText}</span><span>${E.CARDS[id]?'培养牌 · 使用后耗尽，需在棋盘整备。':'基础招式 · 不耗牌，可重复使用。'}</span></div><table class="preview-table"><thead><tr><th>对手可能出招</th><th>我造成伤害</th><th>我损失生命</th></tr></thead><tbody>${rows.map(row=>`<tr><td>${E.TYPE[row.type]}<small>${row.names.join('、')}</small></td><td>${range(row.damageMin,row.damageMax)}</td><td class="loss">${range(row.lossMin,row.lossMax)}</td></tr>`).join('')}</tbody></table><p class="tip">范围包含对方所有可用招式，已计入支援、气势和减伤，上限为剩余生命。不能据此知道对手本轮已选哪招。</p>${lethal?'<p class="preview-risk">对手的部分选择可能击倒本枚棋子。双方伤害仍同时结算。</p>':''}`;
+    }else html+='<div class="review-head"><h3>先选招，再锁定</h3>'+publicJump+'</div><div class="review-empty"><p>点选招式，查看面对不同招式时会造成多少伤害、损失多少生命。</p><p>选错可以更换，锁定前不会耗牌。也可先点「选招建议」。</p></div>';
+    return html+'</aside>';
+  }
+  function renderFight(){
+    const active=document.activeElement,focusedChoice=active?.dataset.choice,focusedAction=active?.dataset.fight,previousStep=fight.dataset.step,bodyScroll=$('fight-content').querySelector('.fight-body')?.scrollTop||0;
+    const ui=fightUI,{a,d,ctx}=ui,round=ui.result?.round||(ui.step==='retreated'?ctx.history.length:ctx.round);
+    const selecting=ui.step==='pickA'||ui.step==='handoffA'?a:ui.step==='pickD'||ui.step==='handoffD'?d:null;
+    const computerLocked=p=>opponent==='computer'&&p.side==='black'&&['pickA','pickD'].includes(ui.step);
+    let html=`<div class="fight-header"><div class="modal-head"><h2>${lesson?'教学演示':'武斗交锋'}</h2><button class="quiet fight-home" data-action="home">返回首页</button><span class="round-badge">${ui.step==='retreated'?'已交战 '+round+' 轮':'第 '+round+' / 6 轮'}</span></div>${ui.step==='retreated'?'':`<div class="duel-progress"><span class="${a.side} ${ui.step==='pickA'||ui.step==='handoffA'?'now':''}">${E.SIDE[a.side]}${['handoffD','pickD','result'].includes(ui.step)||computerLocked(a)?'已锁定':'选招'}</span><span class="${d.side} ${ui.step==='pickD'||ui.step==='handoffD'?'now':''}">${E.SIDE[d.side]}${ui.step==='result'||computerLocked(d)?'已锁定':'选招'}</span><span class="${ui.step==='result'?'now':''}">双方揭示</span></div>`}${fightersHTML()}</div>${lesson?'<div class="fight-lesson" role="status">'+lessonHTML(true)+'</div>':''}<div class="fight-body">`,footer='';
+    if(s.phase==='ended')html+=`<div class="match-verdict ${s.winner}" role="status"><strong>整局结束 · ${outcomeTitle()}</strong><span>${esc(s.reason)}</span></div>`;
+    if(ui.step==='handoffA'||ui.step==='handoffD'){
+      const who=ui.step==='handoffA'?a:d;
+      html+=`<div class="handoff ${who.side}"><span class="side-ribbon">轮到${E.SIDE[who.side]}</span><h3>请${E.label(who)}的玩家接手</h3><p>${ui.step==='handoffD'?E.SIDE[a.side]+'已锁定，所选招式暂不公开。':'决定本轮攻击、防守，还是蓄势。'}<br>另一方请暂时移开视线。</p><button class="side-button ${who.side}" data-fight="ready">${E.SIDE[who.side]}开始选招</button></div>`;
+      if(ui.step==='handoffA'&&ctx.round>=2)html+=`<div class="retreat-row"><span>继续进攻会保留全部伤势。气势只在本场有效。</span><button class="small quiet" data-fight="retreat">${E.SIDE[a.side]}主动撤回</button></div>`;
+    }else if(ui.step==='pickA'||ui.step==='pickD'){
+      const who=ui.step==='pickA'?a:d;
+      html+=`<div class="choice-heading ${who.side}"><strong>${E.SIDE[who.side]}正在出招</strong><span>${E.label(who)} · 先点选，再锁定</span></div><div class="combat-legend"><span>斩击 克 破势</span><span>破势 克 架势</span><span>架势 克 斩击</span><span>攻击可压制蓄势</span></div><div class="pick-layout"><section class="pick-options" aria-label="选择招式"><div class="actions ${who.side}">`;
+      for(const [id,c]of Object.entries(E.BASE)){const reason=E.availability(s,who,id,ctx)||(lesson&&id!==lessonChoice()?'请按本课指引选招':'');html+=`<button class="action ${lesson&&id===lessonChoice()?'lesson-target':''} ${ui.pending===id?'chosen':''}" data-choice="${id}" aria-pressed="${ui.pending===id}" ${reason?'disabled':''}>${moveIcon(c.type)}<strong>${c.name}</strong><span>${c.text}</span><small>${reason||'基础招式 · 不耗牌'}</small></button>`;}
+      html+='</div><div class="learned-heading">已培养的招式<span>使用后耗尽</span></div><div class="skill-actions '+who.side+'">';
+      for(const id of who.learned){const c=E.CARDS[id],reason=E.availability(s,who,id,ctx)||(lesson&&id!==lessonChoice()?'请按本课指引选招':'');html+=`<button class="action skill ${lesson&&id===lessonChoice()?'lesson-target':''} ${ui.pending===id?'chosen':''}" data-choice="${id}" aria-pressed="${ui.pending===id}" ${reason?'disabled':''}>${moveIcon(c.type)}<strong>${c.name}<span class="card-type">${E.TYPE[c.type]}</span></strong><span>${c.text}</span><small>${reason||'仅本枚棋子可用'}</small></button>`;}
+      html+='</div><p class="tip">斩击、破势会释放全部气势；若被克制，气势仍消耗但不增伤。架势保留气势。</p>';
+      html+='</section>'+reviewHTML(who)+'</div>'+publicCardsHTML(who);
+      const card=E.BASE[ui.pending]||E.CARDS[ui.pending];
+      footer=`<div class="pick-confirm-info ${who.side}" aria-live="polite"><strong>${E.SIDE[who.side]} · ${card?'已选「'+card.name+'」':'尚未选招'}</strong><span>${lesson?'教学对手已锁定固定出招；确认后揭示。':opponent==='computer'?'电脑已锁定；确认后同时揭示。':'请在锁定前确认，交接时隐藏所选招式。'}</span>${card?'<button class="quiet review-jump" data-fight="review">查看推演</button>':''}</div><div class="fight-controls"><button class="quiet" data-fight="hint">选招建议</button>${ui.step==='pickA'&&ctx.round>=2&&(!lesson||lesson.stage==='retreat')?'<button class="quiet" data-fight="retreat">'+E.SIDE[a.side]+'主动撤回</button>':''}<button class="primary" data-fight="commit" ${card?'':'disabled'}>${opponent==='computer'||ui.step==='pickD'?'锁定并揭示':'锁定招式'}</button></div>`;
+      if(lesson?.stage==='retreat')footer='<p class="tip">本课请撤回，保留棋子并观察持续消耗。</p><button class="primary" data-fight="retreat">红方主动撤回</button>';
+    }else if(ui.step==='result'){
+      const r=ui.result,winner=r.outcome==='a'?a:r.outcome==='d'?d:null;
+      const verdict=r.outcome==='tie'?(r.focusRound?'双方调整架势，准备下一轮':r.aType==='guard'?'双方架势相持':'同类招式，正面交锋'):(E.SIDE[winner.side]+(r.focusRound?'压制了对手的蓄势':'形成克制'));
+      if(ui.computerReason)html+='<div class="coach"><strong>电脑选招说明</strong><p>'+esc(ui.computerReason)+'</p></div>';
+      html+=`<div class="reveal-verdict ${winner?.side||''}" role="status">${verdict}<small>双方伤害同时结算</small></div><div class="revealed-pair">${[a,d].sort((x,y)=>x.side==='red'?-1:1).map(p=>revealCard(p,p===a,r)).join('')}</div>${r.finished?'<div class="combat-summary">'+esc(r.summary)+'</div>':''}`;
+      footer=`<p class="tip">${r.finished?'气势离场归零，伤势和耗尽牌保留。':'观察对手的剩余气势与招式，再决定下一轮。'}</p><button class="primary" data-fight="next">${r.finished?(s.phase==='ended'?'查看终局':'返回棋盘'):lesson?.stage==='counter'?'继续学习气势':lesson?.stage==='release'?'继续学习撤回':'下一轮'}</button>`;
+    }else if(ui.step==='retreated'){
+      html+=`<div class="combat-summary"><h3>${E.SIDE[a.side]}主动撤回</h3><p>${esc(ui.result.summary)}</p><p class="tip">双方回到交战前的位置。没有回血、没有恢复招式；${s.phase==='ended'?'本局已结束：'+s.reason:'由'+E.SIDE[s.turn]+'行动'}。</p></div>`;
+      footer='<p class="tip">伤势与消耗保留，气势归零。</p><button class="primary" data-fight="next">'+(lesson?'继续学习支援':s.phase==='ended'?'查看终局':'返回棋盘')+'</button>';
+    }
+    if(ctx.history.length>1)html+=`<details class="combat-history"><summary>查看本场已揭示的 ${ctx.history.length} 轮记录</summary><ol>${ctx.history.map(r=>'<li><p>第 '+r.round+' 轮：'+E.SIDE[a.side]+'「'+r.aName+'」结算伤害 '+r.toD+'；'+E.SIDE[d.side]+'「'+r.dName+'」结算伤害 '+r.toA+'</p><div class="damage-history-pair">'+[a,d].sort((x,y)=>x.side==='red'?-1:1).map(p=>damageBreakdownHTML(p,p===a,r)).join('')+'</div></li>').join('')}</ol></details>`;
+    if(lesson&&(ui.pending||ui.step==='result'||ui.step==='retreated'||lesson.stage==='retreat'))footer=footer.replace('class="primary"','class="primary lesson-target"');
+    html+='</div>'+(footer?'<div class="fight-footer">'+footer+'</div>':'');
+    $('fight-content').innerHTML=html;saveProgress();
+    fight.dataset.acting=selecting?.side||'result';
+    fight.dataset.step=ui.step;
+    requestAnimationFrame(()=>{
+      const sameStep=previousStep===ui.step,selector=sameStep&&focusedChoice?'[data-choice="'+focusedChoice+'"]':sameStep&&focusedAction?'[data-fight="'+focusedAction+'"]':null;
+      const btn=(selector&&$('fight-content').querySelector(selector))||$('fight-content').querySelector('button:not(:disabled):not(.fight-home)');
+      if(btn)btn.focus({preventScroll:true});$('fight-content').querySelector('.fight-body')?.scrollTo(0,sameStep?bodyScroll:0);
+      if(lesson&&!sameStep)$('fight-content').querySelector('.fight-body .lesson-target')?.scrollIntoView({block:'nearest'});
+    });
+  }
+  $('grid').addEventListener('click',e=>{const cell=e.target.closest('[data-x]');if(cell){act(()=>chooseCell(+cell.dataset.x,+cell.dataset.y));if(movePreview){$('move-preview').scrollIntoView?.({block:'nearest'});$('move-preview').querySelector('.advice')?.focus({preventScroll:true});}}});
+  $('grid').addEventListener('keydown',e=>{
+    const cell=e.target.closest('[data-x]');if(!cell)return;let x=+cell.dataset.x,y=+cell.dataset.y;
+    const offset={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]}[e.key];
+    if(offset){e.preventDefault();let xx=x+offset[0],yy=y+offset[1];while(E.inside(xx,yy)&&!lessonCellAllowed(xx,yy)){xx+=offset[0];yy+=offset[1];}if(E.inside(xx,yy)){focusIndex=yy*9+xx;drawBoard();$('grid').children[focusIndex].focus();}}
+    if(e.key==='Escape'){preview=null;selected=null;hint=null;cardGuide=null;movePreview=null;notice='';render();}
+  });
+  $('move-preview').addEventListener('keydown',e=>{
+    if(e.key==='Escape'){e.preventDefault();act(()=>{movePreview=null;});$('grid').children[focusIndex]?.focus();}
+  });
+  document.addEventListener('click',e=>{
+    if(screen!=='game')return;
+    const guide=e.target.closest('[data-card-targets]');
+    if(guide&&!lesson&&s.phase==='board'&&!computerTurn()) {
+      const p=E.get(s,selected),id=guide.dataset.cardTargets;
+      if(p?.side===s.turn&&p.learned.includes(id)){act(()=>{cardGuide=cardGuide===id?null:id;movePreview=null;preview=null;hint=null;const target=cardGuide?cardTargets(p,id).ready[0]:p;focusIndex=(target||p).y*9+(target||p).x;});$('grid').children[focusIndex]?.focus();$('notice').scrollIntoView?.({block:'nearest'});}
+      return;
+    }
+    const setupPiece=e.target.closest('[data-setup-piece]'),setupTeam=e.target.closest('[data-setup-side]');
+    if(setupPiece||setupTeam){
+      if(s.phase!=='setup')return;
+      if(setupTeam&&!['red','black'].includes(setupTeam.dataset.setupSide))return;
+      const p=setupPiece?E.get(s,setupPiece.dataset.setupPiece):s.pieces.find(q=>q.side===setupTeam.dataset.setupSide);
+      if(!p)return;
+      act(()=>{chooseCell(p.x,p.y);});
+      if(setupPiece){$('piece-detail-title').scrollIntoView?.({block:'start'});$('piece-detail-title').focus({preventScroll:true});}
+      else $('setup-roster').querySelector('[data-setup-side="'+p.side+'"]')?.focus({preventScroll:true});
+      return;
+    }
+    const learn=e.target.closest('[data-learn]'),rest=e.target.closest('[data-rest]'),action=e.target.closest('[data-action]'),inspect=e.target.closest('[data-inspect]');
+    if(learn){act(()=>{if(opponent==='computer'&&E.get(s,selected)?.side!=='red')return;E.learn(s,selected,learn.dataset.learn);});$('detail').querySelector('[data-learn="'+learn.dataset.learn+'"]')?.focus({preventScroll:true});}
+    if(rest){requestRest(rest.dataset.restPiece||selected,rest.dataset.rest,!!rest.dataset.restPiece);return;}
+    if(inspect&&!lesson&&s.phase==='board'&&!computerTurn()){
+      act(()=>{const p=E.get(s,inspect.dataset.inspect);if(p){selected=p.id;cardGuide=null;movePreview=null;preview=null;hint=null;focusIndex=p.y*9+p.x;}});
+      $('grid').children[focusIndex]?.focus();
+    }
+    if(action){
+      if(action.dataset.action==='setup-overview'&&s.phase==='setup'){
+        const entry=$('setup-roster').querySelector('[data-setup-piece="'+selected+'"]');entry?.scrollIntoView({block:'center'});entry?.focus({preventScroll:true});return;
+      }
+      if(action.dataset.action==='review'){act(openReview);return;}
+      if(action.dataset.action==='close-review'){$('review').close();return;}
+      if(action.dataset.action==='hint-details'){
+        const panel=$('detail').querySelector('.advice');panel?.scrollIntoView({block:'start'});panel?.focus({preventScroll:true});return;
+      }
+      act(()=>{switch(action.dataset.action){case'scout':scoutMode=!scoutMode;movePreview=null;hint=null;cardGuide=null;break;case'confirm-move':if(movePreview){const m=movePreview;chooseCell(m.x,m.y,true);}break;case'cancel-move':movePreview=null;break;case'clear-card-guide':cardGuide=null;break;case'start':E.start(s);selected=null;break;case'auto':E.auto(s,opponent==='computer'?'red':setupSide);break;case'attack':if(!computerTurn())openFight();break;case'cancel-preview':preview=null;break;case'hint':boardHint();break;case'pass':if(!lesson&&!computerTurn()){E.pass(s);hint=null;}break;case'retry':computerError='';break;case'rules':rules.showModal();break;case'new':requestNewGame(s.scenario);break;case'home':showScreen('home');break;case'quick-start':if(lesson?.stage==='complete'){showScreen('home');$('scenario').value='quick';renderHome();$('load').focus();}break;case'lesson-finish':if(lesson?.stage==='support-preview'&&preview==='target'){const ctx=E.context(s,E.get(s,'hero'),E.get(s,'target'));if(E.power(ctx,true)!==4||E.power(ctx,false)!==4)throw new Error('请先完成支援站位');lesson.stage='complete';preview=null;}break;}});
+      if(action.dataset.action==='scout')$('start-wrap').querySelector('[data-action="scout"]')?.focus({preventScroll:true});
+      if(['cancel-move','confirm-move'].includes(action.dataset.action)){const cell=$('grid').children[focusIndex];(cell&&!cell.disabled?cell:$('back-home')).focus();}
+      if(action.dataset.action==='start'&&s.phase==='board')$('grid').children[focusIndex]?.focus();
+    }
+  });
+  $('fight-content').addEventListener('click',e=>{
+    const button=e.target.closest('button');if(screen!=='game'||!button||button.disabled||!fightUI)return;
+    try{
+      if(button.dataset.fight==='review'||button.dataset.fight==='public-cards'){$('fight-content').querySelector(button.dataset.fight==='review'?'.pick-review':'.public-cards')?.scrollIntoView({block:'start'});return;}
+      if(button.dataset.fight==='ready'){
+        if(!['handoffA','handoffD'].includes(fightUI.step))return;
+        fightUI.step=fightUI.step==='handoffA'?'pickA':'pickD';fightUI.pending=null;fightUI.hint='';
+      }
+      else if(button.dataset.fight==='hint'){
+        if(!['pickA','pickD'].includes(fightUI.step))return;
+        if(lesson){fightUI.pending=lessonChoice();fightUI.hint='本课请按教学指引选招，正式对局可以自由选择。';renderFight();return;}
+        const who=fightUI.step==='pickA'?fightUI.a:fightUI.d;
+        const ranked=C.combatPlan(s,who.side).sort((x,y)=>y.weight-x.weight),id=ranked[0].id;
+        fightUI.pending=id==='retreat'?null:id;
+        fightUI.hint=combatAdvice(who,id);
+      }else if(button.dataset.choice){
+        if(!['pickA','pickD'].includes(fightUI.step))return;
+        if(lesson&&button.dataset.choice!==lessonChoice())return;
+        const who=fightUI.step==='pickA'?fightUI.a:fightUI.d;
+        if(E.availability(s,who,button.dataset.choice,s.duel))return;
+        fightUI.pending=button.dataset.choice;fightUI.hint='';
+      }else if(button.dataset.fight==='commit'){
+        if(!['pickA','pickD'].includes(fightUI.step)||!fightUI.pending)return;
+        if(lesson&&fightUI.pending!==lessonChoice())return;
+        const who=fightUI.step==='pickA'?fightUI.a:fightUI.d,id=fightUI.pending;
+        if(E.availability(s,who,id,s.duel))return;
+        if(opponent==='computer'){
+          fightUI.result=E.resolve(s,fightUI.a.side==='red'?id:fightUI.computerChoice,fightUI.a.side==='black'?id:fightUI.computerChoice);fightUI.step='result';render();
+        }else if(fightUI.step==='pickA'){fightUI.first=id;fightUI.step='handoffD';}
+        else{fightUI.result=E.resolve(s,fightUI.first,id);fightUI.first=null;fightUI.step='result';render();}
+        fightUI.pending=null;fightUI.hint='';
+      }else if(button.dataset.fight==='retreat'){
+        if(!['handoffA','pickA'].includes(fightUI.step))return;
+        if(lesson&&lesson.stage!=='retreat')return;
+        fightUI.result=E.retreat(s);fightUI.first=null;fightUI.step='retreated';
+        if(lesson)lesson.stage='withdrawn';
+        render();
+      }else if(button.dataset.fight==='next'){
+        if(lesson?.stage==='withdrawn'){
+          fight.close();fightUI=null;s=E.create('tutorial-support');lesson.stage='support-move';selected='helper';preview=null;focusIndex=46;render();return;
+        }
+        if(fightUI.result.finished){fight.close();fightUI=null;selected=null;render();if(s.phase==='ended')$('endgame-title').focus();return;}
+        fightUI.result=null;prepareRound();render();
+      }
+      renderFight();
+      if(button.dataset.fight==='hint')requestAnimationFrame(()=>$('fight-content').querySelector('.pick-review')?.scrollIntoView({block:'start'}));
+    }catch(error){notice=error.message;render();}
+  });
+  fight.addEventListener('cancel',e=>e.preventDefault());
+  previewDialog.addEventListener('cancel',e=>{e.preventDefault();act(()=>{preview=null;});});
+  $('cancel-rest').onclick=()=>restDialog.close();
+  restDialog.addEventListener('cancel',e=>{e.preventDefault();restDialog.close();});
+  restDialog.addEventListener('close',()=>{
+    const item=pendingRest;pendingRest=null;if(!item||screen!=='game'||s.phase!=='board'||computerTurn())return;
+    const origin=item.fromList?$('start-wrap').querySelector('[data-rest-piece="'+item.id+'"][data-rest="'+item.card+'"]'):selected===item.id?$('detail').querySelector('[data-rest="'+item.card+'"]'):null;
+    (origin||$('back-home')).focus({preventScroll:true});
+  });
+  $('confirm-rest').onclick=()=>{
+    if(!pendingRest)return;
+    const item=pendingRest;pendingRest=null;restDialog.close();
+    act(()=>{const p=E.get(s,item.id);if(!restAllowed(p,item.card))throw new Error('当前不能整备这张招式。');focusIndex=p.y*9+p.x;E.rest(s,p.id,item.card);movePreview=null;scoutMode=false;cardGuide=null;hint=null;preview=null;selected=null;});
+    const cell=$('grid').children[focusIndex];(cell&&!cell.disabled?cell:$('back-home')).focus();
+  };
+  $('help').onclick=()=>rules.showModal();$('close-rules').onclick=()=>{rules.close();scheduleComputer();};
+  $('review').addEventListener('close',()=>$('endgame').querySelector('[data-action="review"]')?.focus());
+  rules.addEventListener('close',scheduleComputer);
+  $('opponent').onchange=renderHome;$('difficulty').onchange=renderHome;$('scenario').onchange=renderHome;
+  $('back-home').onclick=()=>showScreen('home');$('resume').onclick=()=>showScreen('game');
+  $('load').onclick=()=>{const mode=$('scenario').value;if(!s&&!saveBlocked)init(mode);else requestNewGame(mode,{opponent:$('opponent').value,difficulty:$('difficulty').value});};
+  $('cancel-load').onclick=()=>{cancelNewGame();confirmDialog.close();};
+  $('confirm-load').onclick=()=>{
+    if(!pendingNewGame)return;
+    const target=pendingNewGame;pendingNewGame=null;confirmDialog.close();
+    if(saveBlocked){try{observedSave=localStorage.getItem(SAVE_KEY);}catch(error){saveError=error.message;}saveBlocked='';lastGoodSave=null;}recoveryNote='';
+    $('opponent').value=target.opponent;$('difficulty').value=target.difficulty;init(target.mode);
+  };
+  confirmDialog.addEventListener('cancel',cancelNewGame);confirmDialog.addEventListener('close',()=>{scheduleComputer();if(screen==='home')$('load').focus();else if(s?.phase==='ended')$('endgame-title').focus();});
+  loadProgress();
+  showScreen('home');
+})();
+</script>
+</body>
+</html>
