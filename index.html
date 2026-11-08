@@ -71,7 +71,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.22 · 电脑节奏与试玩记录</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.23 · 首轮交战判断</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -375,6 +375,17 @@ globalThis.YiwuComputer = (() => {
     return out;
   }
   function choices(s,p,ctx){return Object.keys(E.BASE).concat(p.learned).filter(id=>!E.availability(s,p,id,ctx));}
+  function battleOutlook(s,ctx){
+    const a=E.get(s,ctx.a),d=E.get(s,ctx.d),rows=choices(s,a,ctx),cols=choices(s,d,ctx);
+    const matrix=rows.map(id=>cols.map(reply=>E.roundDamage(ctx,id,reply)));
+    const finishes=rows.filter((_,i)=>matrix[i].every(r=>r.toD>=d.hp&&r.toA<a.hp));
+    const counters=cols.filter((_,j)=>matrix.every(row=>row[j].toA>=a.hp&&row[j].toD<d.hp));
+    // 确定首轮终结的交换按实际损血和存活价值计算，与站位评分的生命权重一致。
+    const score=Math.max(...matrix.map(row=>Math.min(...row.map(r=>
+      (Math.min(d.hp,r.toD)*VALUE[d.kind]-Math.min(a.hp,r.toA)*VALUE[a.kind])/36+.8
+      +(r.toD>=d.hp?VALUE[d.kind]*.5:0)-(r.toA>=a.hp?VALUE[a.kind]*.5:0)))));
+    return {finishes,counters,score};
+  }
   function winningChoices(s,ctx,side){
     const a=E.get(s,ctx.a),d=E.get(s,ctx.d),isA=a.side===side,mine=isA?a:d,enemy=isA?d:a;
     if(enemy.kind!=='king')return [];
@@ -401,6 +412,10 @@ globalThis.YiwuComputer = (() => {
     if(side!==a.side&&side!==d.side)throw new Error('无效阵营');
     const winning=winningChoices(s,ctx,side);
     if(winning.length)return winning.map(id=>({id,weight:1/winning.length}));
+    if(ctx.round===1){
+      const opening=battleOutlook(s,ctx),safe=side===a.side?opening.finishes:opening.counters;
+      if(safe.length)return safe.map(id=>({id,weight:1/safe.length}));
+    }
     const rows=choices(s,a,ctx),cols=choices(s,d,ctx);
     if(ctx.round>=2)rows.push('retreat');
     const matrix=rows.map(x=>cols.map(y=>combatScore(s,ctx,x,y))),ra=rows.map(()=>0),rd=cols.map(()=>0),sa=rows.map(()=>0),sd=cols.map(()=>0);
@@ -481,7 +496,10 @@ globalThis.YiwuComputer = (() => {
           score=(hurtD*valueD-hurtA*valueA)/24+.8;
           if(hurtD>=target.hp)score+=valueD*.5;
           if(hurtA>=p.hp)score-=valueA*.5;
-          if(target.kind==='king'){score+=hurtD*1.3;if(winningChoices(s,ctx,side).length)score=1000;}
+          if(target.kind==='king')score+=hurtD*1.3;
+          const outlook=battleOutlook(s,ctx);
+          if(outlook.finishes.length||outlook.counters.length)score=outlook.score;
+          if(target.kind==='king'&&winningChoices(s,ctx,side).length)score=1000;
         }else{
           moved.x=action.x;moved.y=action.y;
         }
@@ -498,7 +516,7 @@ globalThis.YiwuComputer = (() => {
     const near=difficulty==='practice'?ranked.filter(a=>a.score>=ranked[0].score-1.2).slice(0,3):ranked.filter(a=>a.score>=ranked[0].score-.06);
     return near[Math.min(near.length-1,Math.floor(rng()*near.length))];
   }
-  return {actions,choices,combatPlan,practicePlan,combat,explain,rankedActions,board};
+  return {actions,choices,battleOutlook,combatPlan,practicePlan,combat,explain,rankedActions,board};
 })();
 </script>
 <script>
@@ -521,9 +539,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.22',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.23',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.22-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.23-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -779,10 +797,17 @@ globalThis.YiwuComputer = (() => {
     $('grid').innerHTML=html;
   }
   function supportText(ctx,isA){const ids=isA?ctx.supportA:ctx.supportD;return ids.length?ids.slice(0,2).map(id=>E.label(E.get(s,id))).join('、')+(ids.length>2?'（其余不计）':''):'无支援';}
+  function openingAdvice(ctx){
+    const out=C.battleOutlook(s,ctx),names=ids=>ids.map(id=>'「'+(E.BASE[id]||E.CARDS[id]).name+'」').join('或');
+    return {
+      reason:out.finishes.length?'首轮使用'+names(out.finishes)+'，可在守方所有合法回应下击倒目标，并保住进攻子。':'',
+      risk:out.counters.length?'首轮被击倒风险：守方使用'+names(out.counters)+'时，进攻方无论出哪一招都会阵亡，且守方存活。':''
+    };
+  }
   function previewHTML(){
       const p=E.get(s,selected);
-      const d=E.get(s,preview),ctx=E.context(s,p,d);
-      return `<div class="preview-header"><h2 id="preview-title">交战预览</h2><p>${E.label(p)} 进攻 ${E.label(d)}</p></div><div class="preview-body"><div class="stats"><div><b>${p.hp}</b><small>进攻方生命</small></div><div><b>${d.hp}</b><small>守方生命</small></div><div><b>6</b><small>最多轮数</small></div></div><div class="card"><h3>进攻方输出 ${E.power(ctx,true)}</h3><p>${supportText(ctx,true)}</p></div><div class="card"><h3>守方输出 ${E.power(ctx,false)}</h3><p>${supportText(ctx,false)}</p></div>${E.power(ctx,true)<E.power(ctx,false)?'<p class="preview-risk">对方支援更多：输出 '+E.power(ctx,true)+' 对 '+E.power(ctx,false)+'。可先调动友军支援，或换一个交战目标。</p>':''}<p class="tip">进攻方首轮有效伤害加 1。支援关系在开战时固定；伤势和招式消耗保留。</p></div><div class="preview-actions"><button class="quiet" data-action="cancel-preview">取消进攻</button>${lesson?.stage==='support-preview'?'<button class="primary lesson-target" data-action="lesson-finish">完成教学</button>':'<button class="primary'+(lesson?' lesson-target':'')+'" data-action="attack">发起武斗</button>'}</div>`;
+      const d=E.get(s,preview),ctx=E.context(s,p,d),opening=openingAdvice(ctx);
+      return `<div class="preview-header"><h2 id="preview-title">交战预览</h2><p>${E.label(p)} 进攻 ${E.label(d)}</p></div><div class="preview-body"><div class="stats"><div><b>${p.hp}</b><small>进攻方生命</small></div><div><b>${d.hp}</b><small>守方生命</small></div><div><b>6</b><small>最多轮数</small></div></div><div class="card"><h3>进攻方输出 ${E.power(ctx,true)}</h3><p>${supportText(ctx,true)}</p></div><div class="card"><h3>守方输出 ${E.power(ctx,false)}</h3><p>${supportText(ctx,false)}</p></div><div class="card"><h3>首轮判断</h3>${opening.reason?'<p>'+esc(opening.reason)+'</p>':opening.risk?'<p class="preview-risk">'+esc(opening.risk)+'</p>':'<p>未发现可确保首轮击倒的招式。双方仍需按克制选择。</p>'}<p class="tip">按双方当前全部可用招式判断；不预测暗招，不判断后续轮次。</p></div>${E.power(ctx,true)<E.power(ctx,false)?'<p class="preview-risk">对方支援更多：输出 '+E.power(ctx,true)+' 对 '+E.power(ctx,false)+'。可先调动友军支援，或换一个交战目标。</p>':''}<p class="tip">进攻方首轮有效伤害加 1。支援关系在开战时固定；伤势和招式消耗保留。</p></div><div class="preview-actions"><button class="quiet" data-action="cancel-preview">取消进攻</button>${lesson?.stage==='support-preview'?'<button class="primary lesson-target" data-action="lesson-finish">完成教学</button>':'<button class="primary'+(lesson?' lesson-target':'')+'" data-action="attack">发起武斗</button>'}</div>`;
   }
   function cardTargets(p,id){
     const targets=s.pieces.filter(q=>q.side!==p.side&&E.canMove(s,p,q.x,q.y));
@@ -1075,6 +1100,9 @@ globalThis.YiwuComputer = (() => {
       if(king&&king.id!==p.id&&threats(s,king).length)advice.risks.push('己方将帅仍可被'+names(threats(s,king))+'进攻，整备不能解除该威胁。');
     }else if(target){
       const ctx=E.context(s,p,target);
+      const opening=openingAdvice(ctx);
+      if(opening.reason)advice.reasons.push(opening.reason);
+      if(opening.risk)advice.risks.push(opening.risk);
       advice.title=E.label(p)+'进攻'+E.label(target);
       if(E.CHALLENGES[s.scenario]&&p.id==='hero'&&target.id==='target'){
         advice.reasons.push('优先尝试本关指定目标：'+E.CHALLENGES[s.scenario].goal);
