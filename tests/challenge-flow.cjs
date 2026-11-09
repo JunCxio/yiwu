@@ -382,4 +382,40 @@ function retreatReady() {
   assert.equal(JSON.stringify(q.ui.state), state); assert.equal(q.timerCount(), 0);
   assert.equal(JSON.parse(saved.getItem('yiwu.autosave')).commands.length, 6);
 }
-console.log('残局流程、行动后果与武斗确认：24 项检查通过。');
+{
+  for (const side of ['red', 'black']) {
+    const p = page(); p.node('opponent').value = 'local'; p.ui.init('tactics');
+    p.ui.beginFight(p.E.get(p.ui.state, 'hero'), p.E.get(p.ui.state, 'target')); p.fight('ready');
+    if (side === 'black') {p.pick('guard'); p.fight('commit'); p.fight('ready');}
+    const id = side === 'red' ? 'guard' : 'cannon_pressure'; p.pick(id);
+    const before = JSON.stringify(p.ui.state), first = p.ui.fight.first, commands = JSON.parse(p.saved.getItem('yiwu.autosave')).commands;
+    const q = page(p.saved), focused = [], scrolled = [];
+    const target = name => ({focus(options) {assert(options.preventScroll); focused.push(name);},
+      scrollIntoView(options) {assert.equal(options.block, 'nearest'); scrolled.push(name);}});
+    const chosen = target(id), fallback = target('first');
+    q.node('fight-content').querySelector = selector => selector === '.pick-options .chosen:not(:disabled)' ? chosen
+      : selector === 'button:not(:disabled):not(.fight-home)' ? fallback : null;
+    q.node('resume').onclick();
+    assert.deepEqual(focused, [id]); assert.deepEqual(scrolled, [id]); assert.equal(q.ui.fight.pending, id); assert.equal(q.ui.fight.first, first);
+    assert.equal(JSON.stringify(q.ui.state), before); assert.equal(q.timerCount(), 0);
+    assert.deepEqual(JSON.parse(q.saved.getItem('yiwu.autosave')).commands, commands);
+  }
+}
+{
+  for (const dataset of [{choice: 'guard'}, {fight: 'hint'}]) {
+    const p = page(); p.ui.init('tactics'); p.ui.beginFight(p.E.get(p.ui.state, 'hero'), p.E.get(p.ui.state, 'target')); p.pick('guard');
+    const active = p.node('focused-control'); active.dataset = dataset; active.focus(); const focused = [];
+    const selector = dataset.choice ? '[data-choice="guard"]' : '[data-fight="hint"]';
+    p.node('fight-content').querySelector = query => query === selector ? {focus() {focused.push('original');}}
+      : query === '.pick-options .chosen:not(:disabled)' ? {focus() {focused.push('chosen');}, scrollIntoView() {assert.fail('同一步骤不应跳到另一个选牌');}} : null;
+    const before = JSON.stringify(p.ui.state); p.pick('guard');
+    assert.deepEqual(focused, ['original']); assert.equal(JSON.stringify(p.ui.state), before);
+  }
+}
+{
+  const p = page(), focused = []; p.ui.init('tactics');
+  p.node('fight-content').querySelector = selector => selector === 'button:not(:disabled):not(.fight-home)' ? {focus() {focused.push('first');}} : null;
+  p.ui.beginFight(p.E.get(p.ui.state, 'hero'), p.E.get(p.ui.state, 'target'));
+  assert.equal(p.ui.fight.pending, null); assert.deepEqual(focused, ['first']);
+}
+console.log('残局流程、行动后果与武斗确认：27 项检查通过。');
