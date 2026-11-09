@@ -83,6 +83,8 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 }
 .pick-forecast{margin-top:5px;border-left:3px solid #93af97;padding-left:8px;color:#dae5d6}.pick-forecast.danger{border-color:#dfa486;color:#ffd1ba}.pick-forecast p{margin:0;font-size:12px;line-height:1.5;font-variant-numeric:tabular-nums}.pick-forecast small{display:block;font-size:11px;line-height:1.5}.pick-forecast .forecast-note{color:#becdbb}@media(max-width:760px){.pick-confirm-info{flex-wrap:wrap}.pick-forecast{flex-basis:100%;margin-top:0}}@media(min-width:600px) and (max-height:500px){.pick-forecast{max-width:250px}.pick-forecast p,.pick-forecast small{font-size:11px}}
 
+.left-panel:focus-visible,.detail-panel:focus-visible,.board-notes:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+@media(min-width:1101px){.board-frame{max-width:min(100%,max(390px,calc((100dvh - 245px)*.9 + 36px)));margin-inline:auto}}
 .unlearned-cards{margin-top:10px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}.unlearned-cards>summary{min-height:44px;padding:10px 0;cursor:pointer}.unlearned-cards[open]>summary{color:var(--gold)}.unlearned-cards>.tip{margin:0 0 8px;font-size:12px}
 @media(min-width:1000px){
   .combat-result{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:14px;align-items:start}
@@ -91,34 +93,9 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
   .pick-options .learned-heading{margin-top:6px}.pick-options .skill-actions{margin-top:3px}
   #fight:is([data-step="pickA"],[data-step="pickD"]) .combat-scene{margin-bottom:6px}
   .fight-body .choice-heading{padding-block:0}
-  .app{height:100dvh;min-height:600px;max-width:1500px;padding:12px 20px;display:flex;flex-direction:column}
-  .app>header{flex:none;padding-bottom:9px;gap:16px}.app>header h1{font-size:32px}
-  .app>.footer{flex:none;margin-top:8px;padding-top:6px;font-size:11px;line-height:1.5}
-  #game-page:not([hidden]){flex:1;min-height:0;display:flex;flex-direction:column}
-  .status{flex:none;margin:8px 0;gap:12px}.status strong{font-size:18px}
-  .layout{flex:1;min-height:0;grid-template-columns:minmax(170px,.75fr) minmax(0,2fr) minmax(235px,1fr);grid-template-rows:minmax(0,1fr);gap:16px;align-items:stretch}
-  .left-panel,.detail-panel{min-height:0;max-height:none;grid-column:auto;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;padding:14px}
-  .left-panel{display:block}.left-panel .teams{display:block}.left-panel h2,.left-panel .separator,.left-panel .steps{display:revert}
-  .left-panel .team{margin-bottom:10px}.left-panel .separator{margin:10px 0}.left-panel .balance-note{font-size:12px;margin:6px 0}
-  .start-wrap{display:flex;flex-direction:column;flex-wrap:nowrap;gap:6px}.start-wrap>.tip,.start-wrap>.scout-note{order:1;flex-basis:auto;font-size:12px;margin:3px 0}.start-wrap>button{min-height:44px;margin-top:0!important}
-  .left-panel:focus-visible,.detail-panel:focus-visible,.board-notes:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
-  .setup-list,.rest-list,.log{max-height:none;overflow:visible}
-  .board-column{min-width:0;min-height:0;display:flex;flex-direction:column;gap:8px}
-  .board-column>.notice{flex:none;min-height:0;margin:0;font-size:12px}
-  .board-frame{flex:1;min-height:0;max-width:100%;width:100%;margin:0;padding:8px 10px;display:flex;flex-direction:column;align-items:center;justify-content:center;container-type:size}
-  .board{flex:none;width:min(100cqw,calc((100cqh - 20px)*.9));height:auto;container-type:inline-size}
-  .board .piece{font-size:clamp(14px,6.5cqw,31px)}.board .piece .marks{font-size:9px;line-height:12px;min-width:12px;top:-2px;right:-2px}
-  .board-caption{flex:none;width:100%;padding-top:4px;font-size:11px;line-height:16px}
-  .board-notes{flex:none;min-height:0;max-height:30%;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable}
-  .board-notes .legend{padding:0;gap:12px;font-size:11px}.board-notes .position-info{margin-top:6px;padding:4px 8px;gap:2px 10px;font-size:11px}
-  .board-notes .last-action{margin-top:6px;padding:5px 8px}.board-notes .last-action p{display:inline;margin:0 0 0 8px;font-size:12px}
-  .board-notes .move-preview{margin-top:6px;padding:9px}
-  .board-notes .move-preview-actions{position:sticky;bottom:0;background:#203d3b;padding-top:6px;margin-top:6px}
-  .lesson-panel,.challenge-info,.endgame{flex:none;max-height:150px;overflow-y:auto;margin-bottom:8px}
-  #lesson .lesson-copy{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:4px 20px;padding:8px 16px}
-  #lesson .lesson-heading{grid-row:1/3;flex-direction:column;align-items:flex-start;gap:3px}#lesson .lesson-heading>strong{font-size:20px}
-  #lesson .lesson-progress{grid-column:2;margin:0}#lesson .lesson-copy p{grid-column:2;font-size:15px;line-height:1.5;margin:0}
-  #lesson .lesson-copy>small,#lesson .lesson-copy>button{grid-column:1/-1}#lesson .lesson-copy>button{min-height:44px;margin-top:4px}
+  .app:has(#home-page:not([hidden])){height:100dvh;min-height:600px;max-width:1500px;padding:12px 20px;display:flex;flex-direction:column}
+  .app:has(#home-page:not([hidden]))>header{flex:none;padding-bottom:9px;gap:16px}.app:has(#home-page:not([hidden]))>header h1{font-size:32px}
+  .app:has(#home-page:not([hidden]))>.footer{flex:none;margin-top:8px;padding-top:6px;font-size:11px;line-height:1.5}
   .home-page{flex:1;min-height:0;width:100%;margin:12px auto;gap:48px}.home-settings{min-height:0;max-height:100%;overflow-y:auto;scrollbar-gutter:stable;padding:14px 22px}
   .home-intro h2{font-size:clamp(42px,7dvh,76px);margin:12px 0}.home-steps{margin-top:18px;gap:10px}
   .home-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 12px}.home-field:last-child{grid-column:1/-1}
@@ -152,7 +129,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.37 · 终局决策修正</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.38 · 恢复对局自然布局</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -630,9 +607,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.37',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.38',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.37-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.38-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
