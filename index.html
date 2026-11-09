@@ -74,11 +74,11 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
   .fight-header .duel-side,.fight-header .duel-health{grid-column:1/-1}
   .fight-header .duel-identity{grid-column:1;grid-row:2;min-width:0}
   .fight-header .duel-resources{grid-column:2;grid-row:2;display:grid;justify-items:end;gap:0;margin:0}
-  #fight:is([data-step="pickA"],[data-step="pickD"]) .pick-confirm-info{width:auto;flex:1}
+  #fight:is([data-step="pickA"],[data-step="pickD"]) .pick-confirm-info{width:auto;flex:1;gap:4px 8px}
   #fight:is([data-step="pickA"],[data-step="pickD"]) .fight-controls{width:auto;flex:1}
   #fight:is([data-step="pickA"],[data-step="pickD"]) .fight-footer{flex-wrap:nowrap}
 }
-.pick-forecast{margin-top:5px;border-left:3px solid #93af97;padding-left:8px;color:#dae5d6}.pick-forecast.danger{border-color:#dfa486;color:#ffd1ba}.pick-forecast p{margin:0;font-size:12px;line-height:1.5;font-variant-numeric:tabular-nums}.pick-forecast small{display:block;font-size:11px;line-height:1.5}.pick-forecast .forecast-note{color:#becdbb}@media(max-width:760px){.pick-confirm-info{flex-wrap:wrap}.pick-forecast{flex-basis:100%;margin-top:0}}@media(min-width:600px) and (max-height:500px){.pick-forecast{max-width:250px}.pick-forecast p,.pick-forecast small{font-size:11px}}
+.pick-forecast{margin-top:5px;border-left:3px solid #93af97;padding-left:8px;color:#dae5d6}.pick-forecast.danger{border-color:#dfa486;color:#ffd1ba}.pick-forecast p{margin:0;font-size:12px;line-height:1.5;font-variant-numeric:tabular-nums}.pick-forecast small{display:block;font-size:11px;line-height:1.5}.pick-forecast .forecast-note{color:#becdbb}@media(max-width:760px){.pick-confirm-info{flex-wrap:wrap}.pick-forecast{flex-basis:100%;margin-top:0}}@media(min-width:600px) and (max-height:500px){.pick-forecast{max-width:none;display:flex;flex-wrap:wrap;column-gap:8px}.pick-forecast p{flex-basis:100%}.pick-forecast p,.pick-forecast small{font-size:11px}}
 
 .left-panel:focus-visible,.detail-panel:focus-visible,.board-notes:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 @media(min-width:1101px){.board-frame{max-width:min(100%,max(390px,calc((100dvh - 245px)*.9 + 36px)));margin-inline:auto}}
@@ -126,7 +126,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.61 · 窄屏武斗确认区排版</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.62 · 横屏武斗预估区排版</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -653,9 +653,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.61',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.62',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.61-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.62-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
