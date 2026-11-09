@@ -119,4 +119,76 @@ test('吃子后仍有阻挡或无法确认击倒将帅时，不误报确定败�
     assert(capture.score>-500);assert.equal(C.board(s,()=>0).id,'rr');assert.equal(JSON.stringify(s),before);
   }
 });
+function kingCapture(rotated=false,extraSupport=false,defending=false){
+  const sample={pieces:[['rk','red','king',4,9,9],['bk','black','king',3,0,18],['target','black','pawn',4,8,1],['br','black','rook',4,5,18]]};
+  if(extraSupport)sample.pieces.push(['bh','black','horse',2,7,18]);
+  const s=scene(sample,rotated),king=E.get(s,'rk'),target=E.get(s,'target');
+  king.learned=['king_calm'];king.exhausted=['king_calm'];
+  target.learned=extraSupport?['pawn_grit']:['pawn_advance','pawn_grit'];
+  s.turn=defending?target.side:king.side;
+  if(defending)E.move(s,target.id,king.x,king.y);else E.move(s,king.id,target.x,target.y);
+  return s;
+}
+function checkedKingPlan(s){
+  const king=E.get(s,'rk'),before=JSON.stringify(s),plan=C.combatPlan(s,king.side);
+  assert.equal(JSON.stringify(s),before,'选招不得改写生命、耗牌、历史或重复记录');
+  assert(plan.length&&plan.every(x=>Number.isFinite(x.weight)&&x.weight>=0&&!E.availability(s,king,x.id,s.duel)));
+  assert(Math.abs(plan.reduce((n,x)=>n+x.weight,0)-1)<1e-9);
+  return copy(plan);
+}
+test('将帅首轮吃子有避险替代时排除下一手确定败局，红黑一致',()=>{
+  for(const rotated of [false,true]){
+    const s=kingCapture(rotated),side=E.get(s,'rk').side,before=JSON.stringify(s);
+    const danger=copy(s);E.resolve(danger,'break','pawn_advance');
+    assert.equal(E.get(danger,'rk').hp,1);assert.equal(danger.turn,E.OTHER[side]);assert(winsAgainstKing(danger,'br'));
+    assert.deepEqual(checkedKingPlan(s),[{id:'strike',weight:1}]);
+    for(const option of checkedKingPlan(s))for(const reply of C.choices(s,E.get(s,'target'),s.duel)){
+      const next=copy(s);E.resolve(next,option.id,reply);
+      assert(!E.get(next,'target'));assert(E.get(next,'rk')?.hp>0);
+      assert(!next.pieces.some(p=>p.side===next.turn&&winsAgainstKing(next,p.id)));
+    }
+    for(const roll of [0,.25,.5,.75,.999999])assert.equal(C.combat(s,side,()=>roll),'strike');
+    assert(C.practicePlan(s,side).some(x=>x.id==='break'&&x.weight>0));
+    assert.equal(JSON.stringify(s),before);
+  }
+});
+test('将帅守方反杀后轮到己方行动，不按敌方立即进攻筛掉反杀招式',()=>{
+  for(const rotated of [false,true]){
+    const s=kingCapture(rotated,false,true),next=copy(s),side=E.get(s,'rk').side;
+    E.resolve(next,'pawn_advance','break');assert.equal(next.turn,side);assert.equal(E.get(next,'rk').hp,1);
+    const wrongTurn=copy(next);wrongTurn.turn=E.OTHER[side];assert(winsAgainstKing(wrongTurn,'br'));
+    const king=E.get(next,'rk');assert(E.moves(next,king).some(move=>{
+      if(E.at(next,move.x,move.y))return false;
+      const escaped=copy(next);E.move(escaped,king.id,move.x,move.y);return !winsAgainstKing(escaped,'br');
+    }));
+    assert.deepEqual(checkedKingPlan(s),[{id:'strike',weight:.5},{id:'break',weight:.5}]);
+  }
+});
+test('全部首轮存活吃子招式都有危险回应时，仍返回合法且归一的非空计划',()=>{
+  for(const rotated of [false,true]){
+    const s=kingCapture(rotated,true),out=C.battleOutlook(s,s.duel);
+    assert(out.finishes.length>1);
+    for(const id of out.finishes)assert(C.choices(s,E.get(s,'target'),s.duel).some(reply=>{
+      const next=copy(s);E.resolve(next,id,reply);return winsAgainstKing(next,'br');
+    }));
+    const plan=checkedKingPlan(s);assert(plan.every(x=>out.finishes.includes(x.id)));
+  }
+});
+test('将帅吃子已实际获胜或判和时，不虚构结束后的敌方进攻',()=>{
+  for(const rotated of [false,true]){
+    const s=kingCapture(rotated),out=C.battleOutlook(s,s.duel);
+    for(const id of out.finishes)for(const reply of C.choices(s,E.get(s,'target'),s.duel)){
+      const next=copy(s);E.resolve(next,id,reply);s.repetitions[E.key(next)]=E.DRAW.repetitions-1;
+    }
+    for(const option of checkedKingPlan(s))for(const reply of C.choices(s,E.get(s,'target'),s.duel)){
+      const end=copy(s);E.resolve(end,option.id,reply);assert.equal(end.winner,'draw');
+    }
+    assert.equal(checkedKingPlan(s).length,out.finishes.length);
+    const won=scene({pieces:[['rk','red','king',3,9,9],['bk','black','king',3,0,1],['br','black','rook',4,0,18]]},rotated);
+    const king=E.get(won,'rk'),enemy=E.get(won,'bk');won.turn=king.side;E.move(won,king.id,enemy.x,enemy.y);
+    for(const option of checkedKingPlan(won))for(const reply of C.choices(won,enemy,won.duel)){
+      const end=copy(won);E.resolve(end,option.id,reply);assert.equal(end.winner,king.side);
+    }
+  }
+});
 console.log('将帅安全：'+checks+' 项检查通过。');
