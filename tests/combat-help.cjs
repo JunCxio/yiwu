@@ -8,7 +8,7 @@ const scripts = [...html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].map(m =
 const box = vm.createContext({});
 vm.runInContext(scripts[0], box);
 vm.runInContext(scripts[1], box);
-const helpers = ['cardUnavailable', 'supportDetailsHTML', 'combatForecastHTML', 'openingAdvice', 'pawnEndRankRisk', 'previewBoardAction', 'actionOutcomeRisk', 'boardAdvice', 'challengeCombatHTML', 'previewHTML'].map(name => {
+const helpers = ['cardUnavailable', 'supportDetailsHTML', 'combatForecastHTML', 'openingAdvice', 'pawnEndRankRisk', 'firstRoundLossRisk', 'previewBoardAction', 'actionOutcomeRisk', 'boardAdvice', 'challengeCombatHTML', 'previewHTML'].map(name => {
   const source = scripts[2].match(new RegExp('  function ' + name + '\\([\\s\\S]*?\\n  \\}'));
   assert(source, '缺少界面函数：' + name);
   return source[0];
@@ -219,6 +219,7 @@ for (const side of ['red', 'black']) for (const repetition of [false, true]) {
   assert.equal(next.phase, 'ended'); assert.equal(next.winner, 'draw');
   assert(advice.risks.some(text => text.includes(next.reason)));
   assert(advice.reasons.some(text => text.includes('本局立即结束')));
+  assert(!advice.risks.some(text => text.includes('首轮吃子风险')));
   assert(!advice.reasons.concat(advice.risks).some(text => /移动后可向|可继续调动|落点可被|只能横移/.test(text)));
   assert(advice.note.includes('尚未执行'));
   assert.equal(JSON.stringify(s), before);
@@ -232,6 +233,7 @@ for (const side of ['red', 'black']) for (const repetition of [false, true]) {
   assert.equal(next.phase, 'ended'); assert.equal(next.winner, 'black');
   assert(advice.risks.some(text => text.includes(next.reason)));
   assert(advice.reasons.some(text => text.includes('本局立即结束')));
+  assert(!advice.risks.some(text => text.includes('首轮吃子风险')));
   assert(!advice.reasons.concat(advice.risks).some(text => /发起武斗|可继续调动|落点可被/.test(text)));
   assert.equal(JSON.stringify(s), before);
 }
@@ -246,4 +248,40 @@ for (const side of ['red', 'black']) {
   assert(!advice.risks.some(text => /仍可向|恢复后仍需/.test(text)));
   assert.equal(JSON.stringify(s), before);
 }
-console.log('配牌条件、支援、本轮生命预估、吃子漏防、兵卒底线与行动终局提示：16 组检查通过。');
+for (const rotated of [false, true]) {
+  const s = load('attrition'); s.repetitions = {};
+  s.pieces = [E.piece('rk', 'red', 'king', 3, 9), E.piece('bk', 'black', 'king', 5, 0), E.piece('hero', 'red', 'rook', 4, 5), E.piece('enemy', 'black', 'rook', 3, 0)];
+  E.get(s, 'hero').hp = 2;
+  if (rotated) {s.turn = 'black'; for (const p of s.pieces) {p.side = E.OTHER[p.side]; p.x = 8 - p.x; p.y = 9 - p.y;}}
+  const action = {type: 'move', id: 'hero', x: rotated ? 5 : 3, y: rotated ? 4 : 5};
+  const before = JSON.stringify(s), advice = box.boardAdvice(action, true), next = JSON.parse(before);
+  E.move(next, action.id, action.x, action.y);
+  const hero = E.get(next, 'hero'), enemy = E.get(next, 'enemy'), ctx = E.context(next, enemy, hero), finishes = box.YiwuComputer.battleOutlook(next, ctx).finishes;
+  assert(finishes.length); assert(advice.risks.some(text => text.includes('首轮吃子风险') && text.includes('不代表对手已决定')));
+  assert(advice.note.includes('未推演后续走棋'));
+  for (const attack of finishes) for (const defense of box.YiwuComputer.choices(next, hero, ctx)) {
+    const result = JSON.parse(JSON.stringify(next)); E.move(result, enemy.id, hero.x, hero.y); E.resolve(result, attack, defense);
+    assert(!E.get(result, hero.id)); assert(E.get(result, enemy.id)?.hp > 0);
+  }
+  assert.equal(JSON.stringify(s), before);
+  const p = E.get(s, 'hero'); p.x = action.x; p.learned = ['rook_crush']; p.exhausted = ['rook_crush'];
+  const restBefore = JSON.stringify(s), rest = box.boardAdvice({type: 'rest', id: p.id, card: 'rook_crush'});
+  assert(rest.risks.some(text => text.includes('首轮吃子风险'))); assert.equal(JSON.stringify(s), restBefore);
+  const restored = JSON.parse(restBefore); E.rest(restored, p.id, 'rook_crush');
+  const defender = E.get(restored, p.id), attacker = E.get(restored, 'enemy'), restCtx = E.context(restored, attacker, defender);
+  const attacks = box.YiwuComputer.battleOutlook(restored, restCtx).finishes; assert(attacks.length);
+  for (const attack of attacks) for (const defense of box.YiwuComputer.choices(restored, defender, restCtx)) {
+    const result = JSON.parse(JSON.stringify(restored)); E.move(result, attacker.id, defender.x, defender.y); E.resolve(result, attack, defense);
+    assert(!E.get(result, defender.id)); assert(E.get(result, attacker.id)?.hp > 0);
+  }
+}
+
+for (const hp of [18, 1]) {
+  const s = load('attrition'); s.repetitions = {};
+  s.pieces = [E.piece('rk', 'red', 'king', 3, 9), E.piece('bk', 'black', 'king', 5, 0), E.piece('hero', 'red', 'rook', 4, 5), E.piece('enemy', 'black', 'rook', 3, 0)];
+  E.get(s, 'hero').hp = hp; if (hp === 1) E.get(s, 'enemy').hp = 1;
+  const before = JSON.stringify(s), advice = box.boardAdvice({type: 'move', id: 'hero', x: 3, y: 5}, true);
+  assert(!advice.risks.some(text => text.includes('首轮吃子风险')), '只有几何威胁或同时阵亡不能宣称对手存活吃子');
+  assert.equal(JSON.stringify(s), before);
+}
+console.log('配牌条件、支援、本轮生命预估、吃子漏防、兵卒底线、行动终局与落点首轮风险：18 组检查通过。');

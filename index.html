@@ -126,7 +126,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.49 · 行动终局提示修正</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.50 · 落点首轮风险说明</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -641,9 +641,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.49',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.50',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.49-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.50-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -944,6 +944,14 @@ globalThis.YiwuComputer = (() => {
     const title=risk?'残局目标风险':'残局目标核对',classes='challenge-check'+(risk?' risk':''),body='<p>'+esc(message)+'</p><small>'+protectedIds.map(id=>E.label(E.get(s,id))).join('、')+'必须存活。仅核对目标条件，不保证赢下武斗。</small>';
     return compact?'<details class="'+classes+'" aria-label="残局目标核对" '+(risk?'open':'')+'><summary>'+title+' · 查看本场条件</summary>'+body+'</details>':'<aside class="'+classes+'" aria-label="残局目标核对"><strong>'+title+'</strong>'+body+'</aside>';
   }
+  function firstRoundLossRisk(state,p){
+    if(state.phase!=='board')return '';
+    for(const enemy of state.pieces.filter(q=>q.side!==p.side&&E.canMove(state,q,p.x,p.y))){
+      const id=C.battleOutlook(state,E.context(state,enemy,p)).finishes[0];
+      if(id)return '首轮吃子风险：例如，若'+E.label(enemy)+'（'+(enemy.x+1)+'路'+(10-enemy.y)+'线）下一步进攻并使用「'+(E.BASE[id]||E.CARDS[id]).name+'」，本子用任何当前可用招式回应都会在首轮阵亡，进攻子仍可存活。此提示不代表对手已决定进攻或出招。';
+    }
+    return '';
+  }
   function pawnEndRankRisk(p,y,attack=false){
     if(p.kind!=='pawn'||y!==(p.side==='red'?0:9))return '';
     return (attack?'若获胜并占位，':'移动后，')+'本兵位于对方底线，只能横移，不能后退，也不会升变。';
@@ -1024,7 +1032,8 @@ globalThis.YiwuComputer = (() => {
     const action={type:'rest',id,card},next=previewBoardAction(action);
     $('rest-target').textContent=E.label(p)+' · '+E.CARDS[card].name+' · '+(p.x+1)+' 路 '+(10-p.y)+' 线';
     $('rest-content').innerHTML='<p id="rest-cost" class="rest-cost">占用'+E.SIDE[p.side]+'本次棋盘行动，'+(next.phase==='ended'?'随后本局结束。':'并让出走棋机会。')+'</p><p>仅恢复「'+E.CARDS[card].name+'」这一张牌；生命保持 '+p.hp+' / 18，棋子留在原位。</p><p class="rest-effect"><b>招式效果：</b>'+E.CARDS[card].text+'</p><p class="tip">'+(next.phase==='ended'?'整备后本局随即结束，这张牌在本局不再有使用机会。':'恢复后仍需满足招式的使用条件。')+'返回棋盘可继续考虑，不消耗行动；刷新会关闭本次确认。</p>';
-    const risk=actionOutcomeRisk(action,next);if(risk)$('rest-content').innerHTML+='<p class="draw-warning" role="status">'+esc(risk)+'</p>';
+    const risks=[actionOutcomeRisk(action,next),firstRoundLossRisk(next,E.get(next,id))].filter(Boolean);
+    for(const risk of risks)$('rest-content').innerHTML+='<p class="draw-warning" role="status">'+esc(risk)+'</p>';
     restDialog.showModal();$('cancel-rest').focus();
   }
   function setupRosterHTML(){
@@ -1265,7 +1274,7 @@ globalThis.YiwuComputer = (() => {
     return `<section class="advice" tabindex="-1" aria-label="${forMove?'落点变化与风险':'推荐理由与风险'}" role="status"><h3>${forMove?'落点预览 · ':''}${esc(advice.title)}</h3><h4>${forMove?'站位变化':'推荐依据'}</h4><ul>${advice.reasons.map(t=>'<li>'+esc(t)+'</li>').join('')}</ul><h4>风险与代价</h4><ul class="advice-risks">${advice.risks.map(t=>'<li>'+esc(t)+'</li>').join('')}</ul><p class="advice-note">${esc(advice.note)}</p></section>`;
   }
   function boardAdvice(action,forMove=false){
-    const advice={title:'走棋建议',reasons:[],risks:[],note:forMove?'仅按移动后的公开站位计算；不模拟武斗胜负或对手后续走棋。当前尚未移动，不消耗行动。':'依据当前站位、生命、可用牌和重复阵形推荐；移动、整备及可确保存活的首轮吃子会核对对手下一手的确定将帅击倒，其余交战未推演更多轮次，不保证武斗获胜。'};
+    const advice={title:'走棋建议',reasons:[],risks:[],note:forMove?'按移动后的公开站位检查支援与对手首轮吃子机会；未推演后续走棋或更多武斗轮次。当前尚未移动，不消耗行动。':'依据当前站位、生命、可用牌和重复阵形推荐，并说明移动或整备后的首轮吃子风险；评分还会核对移动、整备及可确保存活的首轮吃子后的将帅漏防。未推演更多轮次，不保证武斗获胜。'};
     const next=previewBoardAction(action),risk=actionOutcomeRisk(action,next);if(risk)advice.risks.push(risk);
     if(action.type==='pass')advice.reasons.push('当前没有合法移动或可整备招式，只能跳过受阻回合。');
     if(next?.phase==='ended'){
@@ -1288,6 +1297,7 @@ globalThis.YiwuComputer = (() => {
       advice.reasons.push('恢复这一张耗尽牌：'+E.CARDS[action.card].text);
       advice.risks.push('花一次棋盘行动，不回血；恢复后仍需满足站位和气势条件。');
       const incoming=threats(s,p);if(incoming.length)advice.risks.push('原地整备后，'+names(incoming)+'仍可向本子发起武斗。');
+      const loss=firstRoundLossRisk(next,E.get(next,p.id));if(loss)advice.risks.push(loss);
       const king=s.pieces.find(q=>q.side===p.side&&q.kind==='king');
       if(king&&king.id!==p.id&&threats(s,king).length)advice.risks.push('己方将帅仍可被'+names(threats(s,king))+'进攻，整备不能解除该威胁。');
     }else if(target){
@@ -1319,7 +1329,8 @@ globalThis.YiwuComputer = (() => {
       const targets=next.pieces.filter(q=>q.side!==p.side&&E.canMove(next,moved,q.x,q.y));
       advice.reasons.push(targets.length?'移动后可向'+names(targets)+'发起武斗。':'移动后有 '+E.moves(next,moved).length+' 个合法落点，可继续调动。');
       const incoming=threats(next,moved);
-      advice.risks.push(incoming.length?'落点可被'+names(incoming)+'进攻；能发起武斗不等于能击倒本子。':'按移动后的站位，敌子暂时不能直接进攻本子；不代表后续安全。');
+      const loss=firstRoundLossRisk(next,moved);
+      advice.risks.push(loss||(incoming.length?'落点可被'+names(incoming)+'进攻；能发起武斗不等于能击倒本子。':'按移动后的站位，敌子暂时不能直接进攻本子；不代表后续安全。'));
       if(E.CHALLENGES[s.scenario]){
         const hero=E.get(s,'hero'),after=E.get(next,'hero'),goal=E.get(s,'target');
         if(hero&&after&&goal&&E.canMove(s,hero,goal.x,goal.y)&&E.canMove(next,after,goal.x,goal.y)){

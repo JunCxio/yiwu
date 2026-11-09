@@ -453,4 +453,22 @@ function retreatReady() {
   const q = page(saved); q.node('resume').onclick();
   assert.equal(JSON.stringify(q.ui.state), JSON.stringify(p.ui.state)); assert.equal(q.timerCount(), 0);
 }
-console.log('残局流程、行动后果与武斗确认：29 项检查通过。');
+{
+  for (const rotated of [false, true]) {
+    const p = page(); p.node('opponent').value = 'local'; p.ui.init('attrition'); const s = p.ui.state;
+    s.pieces = [p.E.piece('rk', 'red', 'king', 3, 9), p.E.piece('bk', 'black', 'king', 5, 0), p.E.piece('hero', 'red', 'rook', 4, 5), p.E.piece('enemy', 'black', 'rook', 3, 0)];
+    const hero = p.E.get(s, 'hero'); hero.hp = 2; hero.exhausted = ['rook_crush']; hero.learned = ['rook_crush']; s.repetitions = {};
+    if (rotated) {s.turn = 'black'; for (const q of s.pieces) {q.side = p.E.OTHER[q.side]; q.x = 8 - q.x; q.y = 9 - q.y;}}
+    const before = JSON.stringify(s), commands = JSON.parse(p.saved.getItem('yiwu.autosave')).commands;
+    p.action('scout'); p.cell(hero.x, hero.y); p.cell(rotated ? 5 : 3, hero.y);
+    assert(p.node('move-preview').innerHTML.includes('首轮吃子风险'));
+    p.action('cancel-move'); assert.equal(JSON.stringify(s), before);
+    assert.deepEqual(JSON.parse(p.saved.getItem('yiwu.autosave')).commands, commands); assert.equal(p.timerCount(), 0);
+    p.E.get(s, 'enemy').x = hero.x; const restBefore = JSON.stringify(s);
+    p.ui.requestRest(hero.id, 'rook_crush', false);
+    assert(p.node('rest-content').innerHTML.includes('首轮吃子风险'));
+    p.node('cancel-rest').onclick(); assert.equal(JSON.stringify(s), restBefore);
+    assert.deepEqual(JSON.parse(p.saved.getItem('yiwu.autosave')).commands, commands); assert.equal(p.timerCount(), 0);
+  }
+}
+console.log('残局流程、行动后果与武斗确认：30 项检查通过。');
