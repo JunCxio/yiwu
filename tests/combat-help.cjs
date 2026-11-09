@@ -8,7 +8,7 @@ const scripts = [...html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].map(m =
 const box = vm.createContext({});
 vm.runInContext(scripts[0], box);
 vm.runInContext(scripts[1], box);
-const helpers = ['cardUnavailable', 'supportDetailsHTML', 'combatForecastHTML', 'openingAdvice', 'pawnEndRankRisk', 'actionOutcomeRisk', 'boardAdvice', 'challengeCombatHTML', 'previewHTML'].map(name => {
+const helpers = ['cardUnavailable', 'supportDetailsHTML', 'combatForecastHTML', 'openingAdvice', 'pawnEndRankRisk', 'previewBoardAction', 'actionOutcomeRisk', 'boardAdvice', 'challengeCombatHTML', 'previewHTML'].map(name => {
   const source = scripts[2].match(new RegExp('  function ' + name + '\\([\\s\\S]*?\\n  \\}'));
   assert(source, '缺少界面函数：' + name);
   return source[0];
@@ -208,4 +208,42 @@ for (const side of ['red', 'black']) {
   }
   assert.equal(JSON.stringify(s), before);
 }
-console.log('配牌条件、支援、本轮生命预估、吃子漏防与兵卒底线提示：13 组检查通过。');
+for (const side of ['red', 'black']) for (const repetition of [false, true]) {
+  const s = edgeScene(side, side === 'red' ? 1 : 8), action = {type: 'move', id: 'pawn', x: 3, y: side === 'red' ? 0 : 9};
+  if (repetition) {
+    const next = JSON.parse(JSON.stringify(s)); E.move(next, action.id, action.x, action.y);
+    s.repetitions[E.key(next)] = 2;
+  } else s.quiet = 79;
+  const before = JSON.stringify(s), advice = box.boardAdvice(action, true);
+  const next = JSON.parse(before); E.move(next, action.id, action.x, action.y);
+  assert.equal(next.phase, 'ended'); assert.equal(next.winner, 'draw');
+  assert(advice.risks.some(text => text.includes(next.reason)));
+  assert(advice.reasons.some(text => text.includes('本局立即结束')));
+  assert(!advice.reasons.concat(advice.risks).some(text => /移动后可向|可继续调动|落点可被|只能横移/.test(text)));
+  assert(advice.note.includes('尚未执行'));
+  assert.equal(JSON.stringify(s), before);
+}
+
+{
+  const s = load('challenge-tempo');
+  E.rest(s, 'hero', 'rook_crush'); E.move(s, 'black_king', 5, 1); E.move(s, 'red_king', 4, 9);
+  const before = JSON.stringify(s), action = {type: 'move', id: 'black_king', x: 4, y: 1};
+  const advice = box.boardAdvice(action), next = JSON.parse(before); E.move(next, action.id, action.x, action.y);
+  assert.equal(next.phase, 'ended'); assert.equal(next.winner, 'black');
+  assert(advice.risks.some(text => text.includes(next.reason)));
+  assert(advice.reasons.some(text => text.includes('本局立即结束')));
+  assert(!advice.reasons.concat(advice.risks).some(text => /发起武斗|可继续调动|落点可被/.test(text)));
+  assert.equal(JSON.stringify(s), before);
+}
+
+for (const side of ['red', 'black']) {
+  const s = edgeScene(side, side === 'red' ? 1 : 8), pawn = E.get(s, 'pawn');
+  pawn.learned = ['pawn_grit']; pawn.exhausted = ['pawn_grit']; s.quiet = 79;
+  const before = JSON.stringify(s), advice = box.boardAdvice({type: 'rest', id: pawn.id, card: 'pawn_grit'});
+  const next = JSON.parse(before); E.rest(next, pawn.id, 'pawn_grit');
+  assert.equal(next.phase, 'ended'); assert.equal(next.winner, 'draw');
+  assert(advice.reasons.some(text => text.includes('本局不再有使用机会')));
+  assert(!advice.risks.some(text => /仍可向|恢复后仍需/.test(text)));
+  assert.equal(JSON.stringify(s), before);
+}
+console.log('配牌条件、支援、本轮生命预估、吃子漏防、兵卒底线与行动终局提示：16 组检查通过。');

@@ -418,4 +418,39 @@ function retreatReady() {
   p.ui.beginFight(p.E.get(p.ui.state, 'hero'), p.E.get(p.ui.state, 'target'));
   assert.equal(p.ui.fight.pending, null); assert.deepEqual(focused, ['first']);
 }
-console.log('残局流程、行动后果与武斗确认：27 项检查通过。');
+{
+  const p = page(); p.node('opponent').value = 'local'; p.ui.init('attrition');
+  const s = p.ui.state; s.quiet = 79; p.E.get(s, 'hero').exhausted = ['rook_crush'];
+  const before = JSON.stringify(s), commands = JSON.parse(p.saved.getItem('yiwu.autosave')).commands;
+  p.action('scout'); p.cell(4, 5); p.cell(3, 5);
+  const preview = p.node('move-preview').innerHTML;
+  assert(preview.includes('本局立即结束') && preview.includes('当前尚未执行'));
+  assert(!/移动后可向|可继续调动|落点可被/.test(preview));
+  p.action('cancel-move'); p.ui.requestRest('hero', 'rook_crush', false);
+  const rest = p.node('rest-content').innerHTML;
+  assert(rest.includes('随后本局结束') && rest.includes('本局不再有使用机会'));
+  assert(!/恢复后仍需|并让出走棋机会/.test(rest));
+  p.node('cancel-rest').onclick();
+  assert.equal(JSON.stringify(s), before); assert.equal(p.timerCount(), 0);
+  assert.deepEqual(JSON.parse(p.saved.getItem('yiwu.autosave')).commands, commands);
+}
+{
+  const saved = storage(), commands = [['create', 'quick'], ['auto', 'red'], ['auto', 'black'], ['start'],
+    ['move', 'red_rook_3', 0, 8], ['move', 'black_rook_3', 8, 1], ['move', 'red_rook_3', 0, 9], ['move', 'black_rook_3', 8, 0],
+    ['move', 'red_rook_3', 0, 8], ['move', 'black_rook_3', 8, 1], ['move', 'red_rook_3', 0, 9]];
+  saved.setItem('yiwu.autosave', JSON.stringify({version: 1, commands, ui: {opponent: 'local', difficulty: 'standard', selected: 'black_rook_3',
+    preview: null, setupSide: 'black', focusIndex: 17, lesson: null, fight: null}}));
+  const p = page(saved); p.node('resume').onclick(); const before = JSON.stringify(p.ui.state);
+  p.action('scout'); p.cell(8, 0);
+  const preview = p.node('move-preview').innerHTML;
+  assert(preview.includes('此步将直接判和') && preview.includes('本局立即结束'));
+  assert(!/发起武斗|可继续调动|落点可被/.test(preview));
+  p.action('cancel-move'); assert.equal(JSON.stringify(p.ui.state), before);
+  assert.deepEqual(JSON.parse(saved.getItem('yiwu.autosave')).commands, commands);
+  p.cell(8, 0); p.action('confirm-move'); p.action('confirm-move');
+  assert.equal(p.ui.state.phase, 'ended'); assert.equal(p.ui.state.ply, 8); assert.equal(p.ui.state.winner, 'draw');
+  assert.equal(JSON.parse(saved.getItem('yiwu.autosave')).commands.length, commands.length + 1);
+  const q = page(saved); q.node('resume').onclick();
+  assert.equal(JSON.stringify(q.ui.state), JSON.stringify(p.ui.state)); assert.equal(q.timerCount(), 0);
+}
+console.log('残局流程、行动后果与武斗确认：29 项检查通过。');
