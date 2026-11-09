@@ -24,10 +24,12 @@ function page(saved = storage()) {
   vm.runInContext(scripts[0], box); vm.runInContext(scripts[1], box);
   const startup = "  showScreen('home');\n})();";
   assert(scripts[2].includes(startup));
-  vm.runInContext(scripts[2].replace(startup, "globalThis.ui={init,nextChallenge,beginFight,challengeCombatHTML,actionOutcomeRisk,requestRest,get state(){return s;},get screen(){return screen;},get difficulty(){return difficulty;}};\n" + startup), box);
+  vm.runInContext(scripts[2].replace(startup, "globalThis.ui={init,nextChallenge,beginFight,challengeCombatHTML,actionOutcomeRisk,requestRest,get state(){return s;},get fight(){return fightUI;},get screen(){return screen;},get difficulty(){return difficulty;}};\n" + startup), box);
   return {ui: box.ui, E: box.Yiwu, node, saved, timerCount: () => timers.size,
+    computerMove: action => {box.YiwuComputer.board = () => action; assert(timers.size); const [id, fn] = timers.entries().next().value; timers.delete(id); fn();},
     cell: (x, y) => node('grid').handlers.click({target: {closest: () => ({dataset: {x, y}})}}),
     pick: choice => node('fight-content').handlers.click({target: {closest: () => ({dataset: {choice}, disabled: false})}}),
+    fight: fight => node('fight-content').handlers.click({target: {closest: () => ({dataset: {fight}, disabled: false})}}),
     action: action => document.handlers.click({target: {closest: selector => selector === '[data-action]' ? {dataset: {action}} : null}})};
 }
 function finished(won = true) {
@@ -212,4 +214,90 @@ function nearDeadline() {
   p.action('cancel-preview'); assert.equal(JSON.stringify(s), before);
   s.quiet = 0; p.cell(4, 4); assert(!p.node('preview-content').innerHTML.includes('结束时可能判和'));
 }
-console.log('残局流程、目标与行动后果：14 项检查通过。');
+function retreatReady() {
+  const p = page(); p.ui.init('tactics');
+  p.ui.beginFight(p.E.get(p.ui.state, 'hero'), p.E.get(p.ui.state, 'target'));
+  p.ui.fight.computerChoice = 'cannon_pressure'; p.pick('pawn_grit'); p.fight('commit'); p.fight('next');
+  assert.equal(p.ui.fight.ctx.round, 2); assert.equal(p.ui.state.phase, 'duel'); return p;
+}
+{
+  const p = retreatReady(); p.pick('guard');
+  const state = JSON.stringify(p.ui.state), saved = p.saved.getItem('yiwu.autosave'), choice = p.ui.fight.computerChoice;
+  p.fight('retreat');
+  const h = p.node('fight-content').innerHTML;
+  assert(h.includes('确认主动撤回？') && h.includes('韧劲') && h.includes('震慑'));
+  assert(h.includes('生命保持 17 / 18') && h.includes('气势 0 → 0'));
+  assert(h.includes('轮到黑方行动') && !h.includes('data-choice='));
+  p.pick('strike'); p.fight('commit'); p.fight('next'); p.fight('hint');
+  assert.equal(JSON.stringify(p.ui.state), state); assert.equal(p.ui.fight.pending, 'guard');
+  p.fight('cancel-retreat'); assert(!p.node('fight-content').innerHTML.includes('确认主动撤回？'));
+  assert.equal(p.ui.fight.computerChoice, choice); assert.equal(p.saved.getItem('yiwu.autosave'), saved);
+  p.fight('retreat'); let prevented = false;
+  p.node('fight').handlers.cancel({preventDefault() {prevented = true;}});
+  assert(prevented && !p.ui.fight.retreatConfirm); assert.equal(JSON.stringify(p.ui.state), state);
+  assert.equal(p.ui.fight.pending, 'guard'); assert.equal(p.ui.fight.computerChoice, choice);
+}
+{
+  const p = retreatReady(), expected = JSON.parse(JSON.stringify(p.ui.state)); p.E.retreat(expected);
+  const before = JSON.parse(p.saved.getItem('yiwu.autosave')).commands.length;
+  p.fight('retreat'); p.fight('confirm-retreat');
+  assert.equal(JSON.stringify(p.ui.state), JSON.stringify(expected)); assert.equal(p.ui.fight.step, 'retreated');
+  const saved = p.saved.getItem('yiwu.autosave');
+  assert.equal(JSON.parse(saved).commands.length, before + 1); assert.deepEqual(JSON.parse(saved).commands.at(-1), ['retreat']);
+  p.fight('confirm-retreat'); p.fight('retreat'); assert.equal(p.saved.getItem('yiwu.autosave'), saved);
+  const q = page(p.saved); q.node('resume').onclick(); assert.equal(q.ui.fight.step, 'retreated');
+  assert.equal(JSON.stringify(q.ui.state), JSON.stringify(expected)); assert.equal(q.timerCount(), 0);
+}
+{
+  const p = retreatReady(); p.pick('break'); const saved = p.saved.getItem('yiwu.autosave');
+  p.fight('retreat'); assert.equal(p.saved.getItem('yiwu.autosave'), saved);
+  const q = page(p.saved); q.node('resume').onclick();
+  assert(!q.node('fight-content').innerHTML.includes('确认主动撤回？')); assert.equal(q.ui.fight.pending, 'break');
+  assert.equal(q.ui.fight.computerChoice, p.ui.fight.computerChoice);
+  q.fight('confirm-retreat'); assert.equal(q.saved.getItem('yiwu.autosave'), saved);
+  p.action('home'); p.node('resume').onclick(); assert(!p.ui.fight.retreatConfirm);
+  p.fight('confirm-retreat'); assert.equal(p.saved.getItem('yiwu.autosave'), saved);
+}
+{
+  const p = page(); p.node('opponent').value = 'local'; p.ui.init('tactics');
+  p.ui.beginFight(p.E.get(p.ui.state, 'hero'), p.E.get(p.ui.state, 'target'));
+  let before = JSON.stringify(p.ui.state); p.fight('retreat'); p.fight('confirm-retreat'); assert.equal(JSON.stringify(p.ui.state), before);
+  assert(!p.ui.fight.retreatConfirm); p.fight('ready'); p.pick('focus'); p.fight('commit');
+  p.fight('ready'); p.pick('focus'); p.fight('commit'); p.fight('next');
+  p.fight('ready'); p.pick('strike'); p.fight('commit'); assert.equal(p.ui.fight.step, 'handoffD');
+  before = JSON.stringify(p.ui.state); p.fight('retreat'); p.fight('confirm-retreat');
+  assert.equal(JSON.stringify(p.ui.state), before); assert(!p.ui.fight.retreatConfirm);
+  p.fight('ready'); p.fight('retreat'); p.fight('confirm-retreat'); assert.equal(JSON.stringify(p.ui.state), before);
+}
+{
+  const p = page(); p.node('opponent').value = 'local'; p.ui.init('attrition');
+  const duel = (a, d) => p.ui.beginFight(p.E.get(p.ui.state, a), p.E.get(p.ui.state, d));
+  const round = () => {p.fight('ready'); p.pick('focus'); p.fight('commit'); p.fight('ready'); p.pick('focus'); p.fight('commit'); p.fight('next');};
+  duel('hero', 'target'); round(); p.fight('retreat'); p.fight('confirm-retreat'); p.fight('next');
+  duel('target', 'hero'); round(); assert.equal(p.ui.fight.step, 'handoffA');
+  const before = JSON.stringify(p.ui.state); p.fight('retreat');
+  const h = p.node('fight-content').innerHTML;
+  assert(h.includes('黑方主动撤回') && h.includes('轮到红方行动') && h.includes('气势 1 → 0'));
+  p.fight('cancel-retreat'); assert.equal(p.ui.fight.step, 'handoffA'); assert.equal(JSON.stringify(p.ui.state), before);
+  p.fight('retreat'); p.fight('confirm-retreat'); assert.equal(p.ui.state.turn, 'red'); assert.equal(p.ui.state.ply, 2);
+}
+{
+  const p = page(); p.ui.init('challenge-tempo'); p.ui.requestRest('hero', 'rook_crush', true); p.node('confirm-rest').onclick();
+  p.computerMove({type: 'move', id: 'black_king', x: 5, y: 1});
+  p.ui.beginFight(p.E.get(p.ui.state, 'hero'), p.E.get(p.ui.state, 'target'));
+  p.ui.fight.computerChoice = 'guard'; p.pick('focus'); p.fight('commit'); p.fight('next');
+  const before = JSON.stringify(p.ui.state); p.fight('retreat');
+  assert(p.node('fight-content').innerHTML.includes('撤回后本关剩余 1 次棋盘行动'));
+  assert.equal(JSON.stringify(p.ui.state), before); p.fight('cancel-retreat');
+  p.ui.state.ply = 3; p.fight('retreat');
+  assert(p.node('fight-content').innerHTML.includes('撤回将直接结束本局'));
+  p.fight('cancel-retreat'); p.ui.state.ply = 2; p.fight('retreat'); p.fight('confirm-retreat'); assert.equal(p.ui.state.ply, 3);
+  const q = page(); q.node('opponent').value = 'local'; q.ui.init('attrition');
+  q.ui.beginFight(q.E.get(q.ui.state, 'hero'), q.E.get(q.ui.state, 'target'));
+  q.fight('ready'); q.pick('focus'); q.fight('commit'); q.fight('ready'); q.pick('focus'); q.fight('commit'); q.fight('next');
+  q.ui.state.quiet = 79; q.fight('retreat');
+  assert(q.node('fight-content').innerHTML.includes('撤回将直接结束本局') && q.node('fight-content').innerHTML.includes('判和'));
+  const next = JSON.parse(JSON.stringify(q.ui.state)); q.E.retreat(next); assert.equal(next.winner, 'draw');
+  q.fight('cancel-retreat'); assert.equal(q.ui.state.phase, 'duel'); assert.equal(q.ui.state.quiet, 79);
+}
+console.log('残局流程、行动后果与撤回确认：20 项检查通过。');
