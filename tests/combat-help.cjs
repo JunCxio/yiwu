@@ -8,7 +8,7 @@ const scripts = [...html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].map(m =
 const box = vm.createContext({});
 vm.runInContext(scripts[0], box);
 vm.runInContext(scripts[1], box);
-const helpers = ['cardUnavailable', 'supportDetailsHTML', 'combatForecastHTML', 'openingAdvice', 'pawnEndRankRisk', 'firstRoundLossRisk', 'previewBoardAction', 'actionOutcomeRisk', 'boardAdvice', 'challengeCombatHTML', 'previewHTML'].map(name => {
+const helpers = ['cardUnavailable', 'supportDetailsHTML', 'combatForecastHTML', 'challengeRepliesHTML', 'openingAdvice', 'pawnEndRankRisk', 'firstRoundLossRisk', 'previewBoardAction', 'actionOutcomeRisk', 'boardAdvice', 'challengeCombatHTML', 'previewHTML'].map(name => {
   const source = scripts[2].match(new RegExp('  function ' + name + '\\([\\s\\S]*?\\n  \\}'));
   assert(source, '缺少界面函数：' + name);
   return source[0];
@@ -339,4 +339,35 @@ for (const commands of outcomeRecords) {
   vm.runInContext('lesson=null', box); assert.equal(box.combatForecastHTML(a, null), '');
   assert.equal(JSON.stringify(s), before);
 }
-console.log('配牌条件、支援、本轮生命预估、吃子漏防、兵卒底线、行动终局与落点首轮风险：21 组检查通过。');
+for (const commands of outcomeRecords) {
+  const s = replayOutcome(commands), ctx = s.duel;
+  for (const who of [E.get(s, ctx.a), E.get(s, ctx.d)]) {
+    const isA = who.id === ctx.a, enemy = E.get(s, isA ? ctx.d : ctx.a);
+    for (const id of box.YiwuComputer.choices(s, who, ctx)) {
+      const before = JSON.stringify(s), expected = new Map(); let ongoing = false;
+      for (const reply of box.YiwuComputer.choices(s, enemy, ctx)) {
+        const next = JSON.parse(before); E.resolve(next, isA ? id : reply, isA ? reply : id);
+        if (next.phase !== 'ended') {ongoing = true; continue;}
+        expected.set((E.BASE[reply] || E.CARDS[reply]).name, {title: {red: '完成挑战', black: '挑战失败', draw: '本局判和'}[next.winner], reason: next.reason});
+      }
+      const html = box.challengeRepliesHTML(who, id), actual = new Map();
+      for (const [, names, title, reason] of html.matchAll(/<p>对手用「([^」]+)」时，([^<]+)。<\/p><small>([^<]+)<\/small>/g)) {
+        for (const name of names.split('、')) {assert(!actual.has(name)); actual.set(name, {title, reason});}
+      }
+      assert.deepEqual(actual, expected);
+      if (expected.size) {
+        assert.equal(html.includes('未列出的回应本轮不会直接结束挑战'), ongoing);
+        assert.equal(html.includes('challenge-check risk'), [...expected.values()].some(value => value.title === '挑战失败'));
+        assert(html.includes('不预知暗招'));
+      } else assert.equal(html, '');
+      assert.equal(JSON.stringify(s), before);
+    }
+  }
+}
+{
+  const {a} = combat(); assert.equal(box.challengeRepliesHTML(a, 'strike'), '');
+  const s = replayOutcome(outcomeRecords[0]), who = E.get(s, s.duel.a);
+  vm.runInContext('lesson={}', box); assert.equal(box.challengeRepliesHTML(who, 'strike'), '');
+  vm.runInContext('lesson=null', box); assert.equal(box.challengeRepliesHTML(who, null), '');
+}
+console.log('配牌条件、支援、本轮生命预估与残局回应、吃子漏防、兵卒底线、行动终局与落点首轮风险：22 组检查通过。');

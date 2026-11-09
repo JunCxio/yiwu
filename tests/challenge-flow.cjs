@@ -586,14 +586,19 @@ function retreatReady() {
         lesson: null, fight: {step: 'pickD', first: null, pending: 'focus', computerChoice}}}));
     const p = page(saved); p.node('resume').onclick(); const before = JSON.stringify(p.ui.state), html = p.node('fight-content').innerHTML;
     assert(html.includes('本子本轮可存活')); assert(html.includes('本轮挑战：必定失败'));
+    assert(html.includes('aria-label="本轮挑战结果"'));
+    assert(html.includes('已达到 4 次棋盘行动的限制'));
     if (visible) assert.equal(html, visible, '预估不得暴露电脑已锁定的暗招'); else visible = html;
     p.pick('rook_crush'); assert(p.node('fight-content').innerHTML.includes('本轮挑战：可能完成；可能失败'));
+    assert(p.node('fight-content').innerHTML.includes('对手用「斩击、架势」时，挑战失败。'));
+    assert(p.node('fight-content').innerHTML.includes('对手用「破势、蓄势」时，完成挑战。'));
     assert.equal(JSON.stringify(p.ui.state), before); assert.equal(p.ui.fight.computerChoice, computerChoice);
     assert.deepEqual(JSON.parse(saved.getItem('yiwu.autosave')).commands, commands); assert.equal(p.timerCount(), 0);
     const restored = page(saved); restored.node('resume').onclick();
     assert.equal(restored.ui.fight.pending, 'rook_crush'); assert.equal(restored.ui.fight.computerChoice, computerChoice);
     assert.equal(JSON.stringify(restored.ui.state), before);
     assert(restored.node('fight-content').innerHTML.includes('本轮挑战：可能完成；可能失败'));
+    assert(restored.node('fight-content').innerHTML.includes('对手用「斩击、架势」时，挑战失败。'));
     assert.deepEqual(JSON.parse(saved.getItem('yiwu.autosave')).commands, commands); assert.equal(restored.timerCount(), 0);
   }
 }
