@@ -7,12 +7,12 @@ const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
 const scripts = [...html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].map(m => m[1]);
 const box = vm.createContext({});
 vm.runInContext(scripts[0], box);
-const helpers = ['cardUnavailable', 'supportDetailsHTML'].map(name => {
+const helpers = ['cardUnavailable', 'supportDetailsHTML', 'combatForecastHTML'].map(name => {
   const source = scripts[2].match(new RegExp('  function ' + name + '\\([\\s\\S]*?\\n  \\}'));
   assert(source, '缺少界面函数：' + name);
   return source[0];
 });
-vm.runInContext('const E=Yiwu; let s;\n' + helpers.join('\n'), box);
+vm.runInContext('const E=Yiwu; let s,lesson=null;\n' + helpers.join('\n'), box);
 const E = box.Yiwu;
 const load = mode => {
   const s = E.create(mode);
@@ -86,4 +86,63 @@ for (const [id, condition, message] of conditions) {
   assert.equal(JSON.stringify([s, ctx]), before);
 }
 
-console.log('配牌条件与支援专项：4 组检查通过。');
+function combat(kindA = 'pawn', kindD = 'cannon') {
+  const s = load('tactics'), a = E.get(s, 'hero'), d = E.get(s, 'target');
+  a.kind = kindA; d.kind = kindD;
+  for (const p of [a, d]) p.learned = Object.keys(E.CARDS).filter(id => E.CARDS[id].kind === p.kind).slice(0, 2);
+  s.duel = E.context(s, a, d); s.phase = 'duel'; return {s, a, d};
+}
+const range = values => {const lo = Math.min(...values), hi = Math.max(...values); return lo === hi ? String(lo) : lo + '–' + hi;};
+{
+  const kinds = Object.keys(E.NAMES.red);
+  for (let i = 0; i < kinds.length; i++) for (const hp of [1, 6, 18]) for (const force of [0, 2]) {
+    const {s, a, d} = combat(kinds[i], kinds[(i + 1) % kinds.length]); a.hp = hp; d.hp = 19 - hp;
+    s.duel.forceA = force; s.duel.forceD = 2 - force;
+    for (const who of [a, d]) for (const id of Object.keys(E.BASE).concat(who.learned).filter(id => !E.availability(s, who, id, s.duel))) {
+      const enemy = who === a ? d : a, before = JSON.stringify(s);
+      const results = Object.keys(E.BASE).concat(enemy.learned).filter(reply => !E.availability(s, enemy, reply, s.duel)).map(reply => {
+        const copy = JSON.parse(before), r = E.resolve(copy, who === a ? id : reply, who === a ? reply : id);
+        return {mine: who === a ? r.hpA : r.hpD, enemy: who === a ? r.hpD : r.hpA};
+      });
+      const h = box.combatForecastHTML(who, id);
+      assert(h.includes(E.SIDE[who.side] + '生命 ' + range(results.map(r => r.mine))), id);
+      assert(h.includes(E.SIDE[enemy.side] + '生命 ' + range(results.map(r => r.enemy))), id);
+      const risk = results.every(r => r.mine === 0) ? '本子本轮必定阵亡' : results.some(r => r.mine === 0) ? '本子本轮可能阵亡' : '本子本轮可存活';
+      assert(h.includes(risk), risk); assert.equal(JSON.stringify(s), before);
+    }
+  }
+}
+{
+  const {s, a, d} = combat(); a.hp = 1; d.hp = 1; s.duel.forceD = 2;
+  const h = box.combatForecastHTML(a, 'strike');
+  assert(h.includes('本子本轮必定阵亡') && h.includes('红方生命 0') && h.includes('黑方生命 0'));
+  assert(h.includes('全部合法回应') && h.includes('双方同时结算'));
+  assert(!h.includes('必胜') && !h.includes('胜率'));
+}
+{
+  const {s, a, d} = combat(); a.hp = 2;
+  const before = JSON.stringify(s), h = box.combatForecastHTML(a, 'guard');
+  assert(h.includes('本子本轮可能阵亡'));
+  a.hp = 18; assert(box.combatForecastHTML(a, 'guard').includes('本子本轮可存活'));
+  a.hp = 2; assert.equal(JSON.stringify(s), before);
+  const original = box.combatForecastHTML(a, 'guard');
+  box.fightUI = {first: 'strike', computerChoice: 'focus'};
+  assert.equal(box.combatForecastHTML(a, 'guard'), original);
+  box.fightUI = {first: 'break', computerChoice: 'guard'};
+  assert.equal(box.combatForecastHTML(a, 'guard'), original);
+}
+{
+  const {s, a, d} = combat();
+  a.learned = ['pawn_grit']; a.exhausted = []; d.learned = ['cannon_hold']; d.exhausted = [];
+  const ready = box.combatForecastHTML(a, 'strike');
+  d.exhausted = ['cannon_hold']; const exhausted = box.combatForecastHTML(a, 'strike');
+  assert.notEqual(ready, exhausted);
+  a.exhausted = ['pawn_grit']; assert.throws(() => box.combatForecastHTML(a, 'pawn_grit'), /不可用/);
+  s.duel.forceA = 2; assert.throws(() => box.combatForecastHTML(a, 'focus'), /不可用/);
+}
+{
+  const {a} = combat(); assert.equal(box.combatForecastHTML(a, null), '');
+  vm.runInContext('lesson={stage:"counter"}', box); assert.equal(box.combatForecastHTML(a, 'strike'), '');
+  vm.runInContext('lesson=null', box);
+}
+console.log('配牌条件、支援与本轮生命预估：9 组检查通过。');

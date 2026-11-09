@@ -300,4 +300,25 @@ function retreatReady() {
   const next = JSON.parse(JSON.stringify(q.ui.state)); q.E.retreat(next); assert.equal(next.winner, 'draw');
   q.fight('cancel-retreat'); assert.equal(q.ui.state.phase, 'duel'); assert.equal(q.ui.state.quiet, 79);
 }
-console.log('残局流程、行动后果与撤回确认：20 项检查通过。');
+{
+  const p = page(); p.ui.init('tactics'); p.ui.beginFight(p.E.get(p.ui.state, 'hero'), p.E.get(p.ui.state, 'target'));
+  assert(!p.node('fight-content').innerHTML.includes('aria-label="本轮生命预估"'));
+  const before = JSON.stringify(p.ui.state), commands = JSON.parse(p.saved.getItem('yiwu.autosave')).commands;
+  p.pick('guard'); const forecast = h => h.match(/<div class="pick-forecast[\s\S]*?<\/div>/)[0];
+  const selected = forecast(p.node('fight-content').innerHTML);
+  assert(p.node('fight-content').innerHTML.indexOf('aria-label="本轮生命预估"') > p.node('fight-content').innerHTML.indexOf('class="fight-footer"'));
+  p.pick('focus'); assert.notEqual(forecast(p.node('fight-content').innerHTML), selected);
+  p.pick('guard'); assert.equal(forecast(p.node('fight-content').innerHTML), selected);
+  assert.equal(JSON.stringify(p.ui.state), before); assert.deepEqual(JSON.parse(p.saved.getItem('yiwu.autosave')).commands, commands);
+  const q = page(p.saved); q.node('resume').onclick(); assert.equal(forecast(q.node('fight-content').innerHTML), selected);
+  q.fight('commit'); assert(!q.node('fight-content').innerHTML.includes('aria-label="本轮生命预估"'));
+  const r = retreatReady(); r.pick('guard'); r.fight('retreat'); assert(!r.node('fight-content').innerHTML.includes('aria-label="本轮生命预估"'));
+  r.fight('cancel-retreat'); assert(r.node('fight-content').innerHTML.includes('aria-label="本轮生命预估"'));
+  const local = page(); local.node('opponent').value = 'local'; local.ui.init('tactics');
+  local.ui.beginFight(local.E.get(local.ui.state, 'hero'), local.E.get(local.ui.state, 'target'));
+  local.fight('ready'); local.pick('strike'); local.fight('commit');
+  assert(!local.node('fight-content').innerHTML.includes('aria-label="本轮生命预估"'));
+  local.fight('ready'); local.pick('guard'); const original = forecast(local.node('fight-content').innerHTML);
+  local.ui.fight.first = 'break'; local.pick('guard'); assert.equal(forecast(local.node('fight-content').innerHTML), original);
+}
+console.log('残局流程、行动后果与武斗确认：21 项检查通过。');
