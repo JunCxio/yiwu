@@ -551,4 +551,29 @@ function retreatReady() {
     assert.equal(JSON.parse(saved.getItem('yiwu.autosave')).commands.length, commands.length + 2);
   }
 }
-console.log('残局流程、走棋反馈与武斗确认：35 项检查通过。');
+{
+  for (const scenario of ['challenge-support', 'challenge-relay', 'challenge-tempo']) for (const difficulty of ['practice', 'standard']) {
+    const p = page(); p.node('difficulty').value = difficulty; p.ui.init(scenario);
+    const before = JSON.stringify(p.ui.state), commands = JSON.parse(p.saved.getItem('yiwu.autosave')).commands;
+    p.action('hint'); assert.equal(JSON.parse(p.saved.getItem('yiwu.autosave')).ui.selected, 'hero');
+    assert(p.node('detail').innerHTML.includes('优先尝试本关指定目标')); assert.equal(JSON.stringify(p.ui.state), before);
+    p.cell(4, 4); assert(p.node('preview').open); assert(p.node('preview-content').innerHTML.includes('本场由'));
+    p.action('cancel-preview'); assert(!p.node('preview').open); assert.equal(JSON.stringify(p.ui.state), before);
+    assert.deepEqual(JSON.parse(p.saved.getItem('yiwu.autosave')).commands, commands); assert.equal(p.timerCount(), 0);
+  }
+}
+{
+  const commands = [['create', 'challenge-tempo'], ['move', 'hero', 4, 4], ['resolve', 'guard', 'focus'],
+    ['resolve', 'focus', 'focus'], ['resolve', 'guard', 'break'], ['retreat'], ['move', 'black_king', 5, 1]];
+  const saved = storage(); saved.setItem('yiwu.autosave', JSON.stringify({version: 1, commands,
+    ui: {opponent: 'computer', difficulty: 'standard', selected: null, preview: null, setupSide: 'red', focusIndex: 85, lesson: null, fight: null}}));
+  const p = page(saved); p.node('resume').onclick(); const s = p.ui.state, before = JSON.stringify(s), hero = p.E.get(s, 'hero');
+  assert.equal(hero.hp, 1);
+  for (const id of Object.keys(p.E.BASE).concat(hero.learned).filter(id => !p.E.availability(s, hero, id, p.E.context(s, hero, p.E.get(s, 'target'))))) {
+    const next = JSON.parse(before); p.E.move(next, 'hero', 4, 4); p.E.resolve(next, id, 'strike'); assert.equal(next.winner, 'black');
+  }
+  p.action('hint'); assert(p.node('notice').textContent.includes('亮框为建议落点'));
+  assert.equal(JSON.stringify(s), before); assert.deepEqual(JSON.parse(saved.getItem('yiwu.autosave')).commands, commands);
+  assert.equal(p.timerCount(), 0); p.cell(4, 6); assert.equal(s.phase, 'board'); assert.equal(p.E.get(s, 'hero').hp, 1); assert.equal(s.ply, 3);
+}
+console.log('残局流程、走棋反馈与武斗确认：37 项检查通过。');

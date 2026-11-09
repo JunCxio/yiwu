@@ -180,4 +180,21 @@ test('首轮能吃子但未满足支援或指定主力时，不能获得挑战�
     assert(ranked.score<1000);assert.equal(JSON.stringify(s),before);
   }
 });
-console.log('终局决策：'+passed+' / 15 项检查通过。');
+test('三关初始局面尚无首轮必胜时，仍优先指定主力进攻目标而非追将',()=>{
+  for(const scenario of Object.keys(E.CHALLENGES)){
+    const s=E.create(scenario),hero=E.get(s,'hero'),target=E.get(s,'target'),before=JSON.stringify(s);
+    const ctx=E.context(s,hero,target);assert.equal(C.battleOutlook(s,ctx).finishes.length,0);
+    if(scenario==='challenge-support')assert(ctx.supportA.length>0);
+    assert(near(s).every(a=>targets(s,a)));
+    for(const roll of [0,.25,.5,.75,.999999])assert(targets(s,C.board(s,()=>roll)));
+    assert.equal(JSON.stringify(s),before);
+  }
+});
+test('残局不为黑将躲避追击增加普通避险分，保护红帅的判断仍保留',()=>{
+  const s=E.create('challenge-support');E.move(s,'helper',1,0);const before=JSON.stringify(s),ranked=C.rankedActions(s);
+  const escape=ranked.find(a=>a.id==='black_king'&&a.x===5&&a.y===1);
+  const redKingThreat=ranked.find(a=>a.id==='enemy_rook'&&a.x===3&&a.y===4);
+  assert(escape&&escape.score<1);assert(redKingThreat&&redKingThreat.score>10);
+  assert(E.canMove(s,E.get(s,'black_king'),5,1));assert.equal(JSON.stringify(s),before);
+});
+console.log('终局决策：'+passed+' / 17 项检查通过。');
