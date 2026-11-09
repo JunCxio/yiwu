@@ -78,4 +78,66 @@ test('电脑达到残局时限即可获胜时，优先落实实际胜局',()=>{
     assert.equal(JSON.stringify(s),before);assert(C.rankedActions(s).every(a=>Number.isFinite(a.score)));
   }
 });
-console.log('终局决策：'+passed+' / 6 项检查通过。');
+function replayCombat(commands){
+  const s=E.create(commands[0][1]);
+  for(const [name,...args]of commands.slice(1))E[name](s,...args);
+  assert.equal(s.phase,'duel');return s;
+}
+const wonRound=[['create','challenge-tempo'],['move','hero',4,4],['resolve','guard','guard'],['resolve','strike','break']];
+const blackRound=[['create','challenge-tempo'],['move','hero',4,4],['resolve','guard','focus'],['resolve','focus','focus'],['resolve','guard','break']];
+const wrongKing=[['create','challenge-support'],['move','helper',1,0],['move','black_king',4,0],['move','helper',4,0],['resolve','break','guard'],['resolve','break','guard'],['resolve','break','guard'],['resolve','strike','guard']];
+function checkPlan(s,side){
+  const before=JSON.stringify(s),plan=C.combatPlan(s,side);assert.equal(JSON.stringify(s),before);
+  assert(plan.length>0);assert(plan.every(x=>Number.isFinite(x.weight)&&x.weight>=0));
+  assert(Math.abs(plan.reduce((n,x)=>n+x.weight,0)-1)<1e-9);return plan;
+}
+test('真实残局中双方本轮可确定获胜时，只从实际获胜招式中选择',()=>{
+  for(const [commands,side]of [[wonRound,'red'],[blackRound,'black']]){
+    const s=replayCombat(commands),ctx=s.duel,a=E.get(s,ctx.a),d=E.get(s,ctx.d),isA=a.side===side;
+    const winning=id=>C.choices(s,isA?d:a,ctx).every(reply=>{const next=copy(s);E.resolve(next,isA?id:reply,isA?reply:id);return next.winner===side;});
+    assert(winning('strike')&&winning('break'));
+    const plan=checkPlan(s,side);assert(plan.every(x=>x.id!=='retreat'&&winning(x.id)));
+    for(const roll of [0,.25,.5,.75,.999999])assert(winning(C.combat(s,side,()=>roll)));
+  }
+});
+test('提前击倒黑将会失败时，首轮与后续武斗不把确定失败作为吃子收益',()=>{
+  for(const opening of [false,true]){
+    const s=replayCombat(opening?wrongKing.slice(0,4):wrongKing);if(opening)E.get(s,'black_king').hp=1;
+    const bad=copy(s);E.resolve(bad,'strike','guard');assert.equal(bad.winner,'black');
+    const plan=checkPlan(s,'red');assert(plan.every(x=>!['strike','break'].includes(x.id)));
+    const best=[...plan].sort((a,b)=>b.weight-a.weight)[0];assert(['focus','retreat'].includes(best.id));
+  }
+});
+test('用错击败者或缺少指定支援时，击倒目标不能冒充挑战成功',()=>{
+  for(const support of [false,true]){
+    const commands=support?[['create','challenge-support'],['move','helper',4,4],['resolve','strike','focus']]
+      :[['create','challenge-support'],['move','helper',1,0],['move','black_king',4,0],['move','hero',4,4],['resolve','strike','focus'],['resolve','strike','guard']];
+    const s=replayCombat(commands),bad=copy(s);E.resolve(bad,'strike','focus');assert.equal(bad.winner,'black');
+    assert(checkPlan(s,'red').every(x=>!['strike','break'].includes(x.id)));
+  }
+});
+test('所有招式均直接失败的构造局面仍返回合法、归一的计划',()=>{
+  const s=E.create('challenge-tempo');s.ply=3;E.get(s,'target').hp=18;E.get(s,'hero').hp=18;
+  E.move(s,'hero',4,4);s.duel.round=6;
+  for(const id of C.choices(s,E.get(s,'hero'),s.duel))for(const reply of C.choices(s,E.get(s,'target'),s.duel)){
+    const next=copy(s);E.resolve(next,id,reply);assert.equal(next.winner,'black');
+  }
+  const ids=C.choices(s,E.get(s,'hero'),s.duel);assert(checkPlan(s,'red').every(x=>ids.includes(x.id)));
+});
+test('武斗终局预演与真实规则一致，非终局不误报，查看不改状态或上下文',()=>{
+  for(const commands of [wonRound,blackRound,wrongKing,[['create','challenge-relay'],['move','veteran',4,4]]]){
+    const s=replayCombat(commands),before=JSON.stringify(s),ctx=copy(s.duel);
+    for(const id of C.choices(s,E.get(s,ctx.a),ctx))for(const reply of C.choices(s,E.get(s,ctx.d),ctx)){
+      const next=copy(s);E.resolve(next,id,reply);const end=C.combatOutcome(s,ctx,id,reply);
+      assert.equal(end?.winner??null,next.phase==='ended'?next.winner:null);
+      if(end)assert.equal(end.reason,next.reason);
+    }
+    assert.equal(JSON.stringify(s),before);assert.equal(JSON.stringify(ctx),JSON.stringify(s.duel));
+  }
+});
+test('练习选招保留按类型等概率的设计，不强制执行标准电脑的终结招',()=>{
+  const s=replayCombat(blackRound),before=JSON.stringify(s),plan=C.practicePlan(s,'black');
+  assert.deepEqual(JSON.parse(JSON.stringify(plan)),['strike','guard','break','focus'].map(id=>({id,weight:.25})));
+  assert.equal(JSON.stringify(s),before);
+});
+console.log('终局决策：'+passed+' / 12 项检查通过。');

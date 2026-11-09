@@ -129,7 +129,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.42 · 撤回终局判断修正</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.43 · 残局武斗判断修正</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -444,17 +444,20 @@ globalThis.YiwuComputer = (() => {
       +(r.toD>=d.hp?VALUE[d.kind]*.5:0)-(r.toA>=a.hp?VALUE[a.kind]*.5:0)))));
     return {finishes,counters,score};
   }
+  function combatOutcome(s,ctx,aId,dId){
+    const a=E.get(s,ctx.a),d=E.get(s,ctx.d),r=E.roundDamage(ctx,aId,dId);
+    if(ctx.round<6&&r.toA<a.hp&&r.toD<d.hp)return null;
+    const next=JSON.parse(JSON.stringify(s));next.phase='duel';next.duel=JSON.parse(JSON.stringify(ctx));
+    E.resolve(next,aId,dId);return next.phase==='ended'?next:null;
+  }
   function winningChoices(s,ctx,side){
     const a=E.get(s,ctx.a),d=E.get(s,ctx.d),isA=a.side===side,mine=isA?a:d,enemy=isA?d:a;
-    if(enemy.kind!=='king')return [];
+    if(enemy.kind!=='king'&&!E.CHALLENGES[s.scenario])return [];
     const replies=choices(s,enemy,ctx);
     return choices(s,mine,ctx).filter(id=>replies.every(other=>{
+      if(E.CHALLENGES[s.scenario])return combatOutcome(s,ctx,isA?id:other,isA?other:id)?.winner===side;
       const r=E.roundDamage(ctx,isA?id:other,isA?other:id);
-      if((isA?r.toD:r.toA)<enemy.hp||mine.kind==='king'&&(isA?r.toA:r.toD)>=mine.hp)return false;
-      if(!E.CHALLENGES[s.scenario])return true;
-      const next=JSON.parse(JSON.stringify(s));next.phase='duel';next.duel=JSON.parse(JSON.stringify(ctx));
-      E.resolve(next,isA?id:other,isA?other:id);
-      return next.phase==='ended'&&next.winner===side;
+      return (isA?r.toD:r.toA)>=enemy.hp&&(mine.kind!=='king'||(isA?r.toA:r.toD)<mine.hp);
     }));
   }
   function retreatOutcome(s){
@@ -464,6 +467,8 @@ globalThis.YiwuComputer = (() => {
   }
   function combatScore(s,ctx,aId,dId){
     const a=E.get(s,ctx.a),d=E.get(s,ctx.d);
+    const end=E.CHALLENGES[s.scenario]&&combatOutcome(s,ctx,aId,dId);
+    if(end)return end.winner==='draw'?0:end.winner===a.side?1000:-1000;
     const r=E.roundDamage(ctx,aId,dId),wa=a.kind==='king'?3:1,wd=d.kind==='king'?3:1;
     const deadA=r.toA>=a.hp,deadD=r.toD>=d.hp;
     const casualty=(p,dead)=>dead?(p.kind==='king'?1000:8):0;
@@ -480,8 +485,10 @@ globalThis.YiwuComputer = (() => {
     if(winning.length)return winning.map(id=>({id,weight:1/winning.length}));
     const end=retreatOutcome(s);
     if(side===a.side&&end?.winner===side)return [{id:'retreat',weight:1}];
+    const isA=side===a.side,loses=id=>E.CHALLENGES[s.scenario]&&id!=='retreat'&&choices(s,isA?d:a,ctx).every(other=>
+      combatOutcome(s,ctx,isA?id:other,isA?other:id)?.winner===E.OTHER[side]);
     if(ctx.round===1){
-      const opening=battleOutlook(s,ctx),safe=side===a.side?opening.finishes:opening.counters;
+      const opening=battleOutlook(s,ctx),safe=(isA?opening.finishes:opening.counters).filter(id=>!loses(id));
       if(safe.length)return safe.map(id=>({id,weight:1/safe.length}));
     }
     const rows=choices(s,a,ctx),cols=choices(s,d,ctx);
@@ -504,7 +511,9 @@ globalThis.YiwuComputer = (() => {
         weights.forEach((v,i)=>{weights[i]=v*.65+(response[i]>=best-.01 ? .35/ties : 0);});
       }
     }
-    return mine.map((id,i)=>({id,weight:weights[i]}));
+    const plan=mine.map((id,i)=>({id,weight:weights[i]})),kept=plan.filter(x=>!loses(x.id));
+    if(kept.length&&kept.length<plan.length){const total=kept.reduce((n,x)=>n+x.weight,0);return kept.map(x=>({id:x.id,weight:x.weight/total}));}
+    return plan;
   }
   function sample(list,rng){let roll=rng();for(const item of list){roll-=item.weight;if(roll<=0)return item.id;}return list[list.length-1].id;}
   function practicePlan(s,side){
@@ -598,7 +607,7 @@ globalThis.YiwuComputer = (() => {
     const near=difficulty==='practice'?ranked.filter(a=>a.score>=ranked[0].score-1.2).slice(0,3):ranked.filter(a=>a.score>=ranked[0].score-.06);
     return near[Math.min(near.length-1,Math.floor(rng()*near.length))];
   }
-  return {actions,choices,battleOutlook,combatPlan,practicePlan,combat,explain,rankedActions,board};
+  return {actions,choices,battleOutlook,combatOutcome,combatPlan,practicePlan,combat,explain,rankedActions,board};
 })();
 </script>
 <script>
@@ -622,9 +631,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.42',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.43',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.42-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.43-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -1311,12 +1320,17 @@ globalThis.YiwuComputer = (() => {
     }
     const card=E.BASE[id]||E.CARDS[id],rows=C.choices(s,enemy,ctx).map(other=>{
       const r=E.roundDamage(ctx,isA?id:other,isA?other:id);
-      return {name:(E.BASE[other]||E.CARDS[other]).name,loss:isA?r.toA:r.toD,damage:isA?r.toD:r.toA,force:isA?r.forceAfterA:r.forceAfterD,loses:r.outcome===(isA?'d':'a')};
+      const end=E.CHALLENGES[s.scenario]?C.combatOutcome(s,ctx,isA?id:other,isA?other:id):null;
+      return {name:(E.BASE[other]||E.CARDS[other]).name,loss:isA?r.toA:r.toD,damage:isA?r.toD:r.toA,force:isA?r.forceAfterA:r.forceAfterD,loses:r.outcome===(isA?'d':'a'),end};
     });
     const range=values=>{const lo=Math.min(...values),hi=Math.max(...values);return lo===hi?String(lo):lo+'–'+hi;};
     const countered=rows.filter(r=>r.loses),dead=rows.filter(r=>r.loss>=who.hp),mutual=dead.filter(r=>r.damage>=enemy.hp);
     advice.reasons.push('面对全部合法回应，本轮可造成 '+range(rows.map(r=>Math.min(enemy.hp,r.damage)))+' 点伤害，自身损失 '+range(rows.map(r=>Math.min(who.hp,r.loss)))+' 点生命。');
     if(rows.every(r=>r.damage>=enemy.hp))advice.reasons.push('对手的所有合法回应都会使其在本轮阵亡；仍需同时结算自身受伤。');
+    if(rows.every(r=>r.end?.winner===who.side))advice.reasons.push('面对对手全部合法招式，本轮结算都会'+(who.side==='red'?'完成本关目标。':'结束挑战，黑方获胜。'));
+    const losses=rows.filter(r=>r.end?.winner===E.OTHER[who.side]),draws=rows.filter(r=>r.end?.winner==='draw');
+    if(losses.length)advice.risks.push('对手用「'+losses.map(r=>r.name).join('、')+'」时，本轮会直接判负。'+[...new Set(losses.map(r=>r.end.reason))].join('；'));
+    if(draws.length)advice.risks.push('对手用「'+draws.map(r=>r.name).join('、')+'」时，本轮会直接判和。'+[...new Set(draws.map(r=>r.end.reason))].join('；'));
     if(card.type==='focus')advice.reasons.push('本轮不攻击；若存活，结算后气势为 '+range(rows.map(r=>r.force))+'/2（含可能的削势）。');
     else if(card.type==='guard')advice.reasons.push('架势克制斩击，保留现有气势；若存活，结算后气势为 '+range(rows.map(r=>r.force))+'/2。');
     else advice.reasons.push(E.TYPE[card.type]+'克制'+(card.type==='strike'?'破势':'架势')+'，也能压制蓄势。');

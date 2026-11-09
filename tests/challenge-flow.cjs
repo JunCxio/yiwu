@@ -349,4 +349,37 @@ function retreatReady() {
     assert.deepEqual(JSON.parse(saved.getItem('yiwu.autosave')).commands, commands);
   }
 }
-console.log('残局流程、行动后果与武斗确认：22 项检查通过。');
+{
+  const saved = storage(), commands = [['create', 'challenge-tempo'], ['move', 'hero', 4, 4],
+    ['resolve', 'guard', 'guard'], ['resolve', 'strike', 'break']];
+  saved.setItem('yiwu.autosave', JSON.stringify({version: 1, commands, ui: {opponent: 'computer', difficulty: 'standard',
+    selected: null, preview: null, setupSide: 'red', focusIndex: 85, lesson: null,
+    fight: {step: 'result', first: null, pending: null, computerChoice: 'break'}}}));
+  const p = page(saved); p.node('resume').onclick(); p.fight('next');
+  const before = JSON.stringify(p.ui.state), locked = p.ui.fight.computerChoice;
+  p.fight('hint'); const hint = JSON.stringify(p.ui.fight.hint);
+  assert(p.ui.fight.hint.reasons.join(' ').includes('本轮结算都会完成本关目标'));
+  assert(['strike', 'break'].includes(p.ui.fight.pending));
+  p.ui.fight.computerChoice = 'focus'; p.fight('hint'); assert.equal(JSON.stringify(p.ui.fight.hint), hint);
+  assert.equal(JSON.stringify(p.ui.state), before); assert.deepEqual(JSON.parse(saved.getItem('yiwu.autosave')).commands, commands);
+  p.ui.fight.computerChoice = locked; p.fight('commit');
+  assert.equal(p.ui.state.winner, 'red'); assert.equal(p.ui.state.ply, 1); assert(!p.E.get(p.ui.state, 'target'));
+  const after = JSON.stringify(p.ui.state), q = page(saved); q.node('resume').onclick();
+  assert.equal(JSON.stringify(q.ui.state), after); assert.equal(q.timerCount(), 0);
+  assert.equal(JSON.parse(saved.getItem('yiwu.autosave')).commands.length, commands.length + 1);
+}
+{
+  const saved = storage();
+  saved.setItem('yiwu.autosave', JSON.stringify({version: 1, commands: [['create', 'challenge-tempo'], ['move', 'hero', 4, 4],
+    ['resolve', 'guard', 'focus'], ['resolve', 'focus', 'focus'], ['resolve', 'guard', 'break']],
+    ui: {opponent: 'computer', difficulty: 'standard', selected: null, preview: null, setupSide: 'red', focusIndex: 85,
+      lesson: null, fight: {step: 'result', first: null, pending: null, computerChoice: 'break'}}}));
+  const p = page(saved); p.node('resume').onclick(); p.fight('next');
+  assert(['strike', 'break'].includes(p.ui.fight.computerChoice));
+  assert(!p.node('fight-content').innerHTML.includes('电脑选招说明'));
+  p.pick('focus'); p.fight('commit'); assert.equal(p.ui.state.winner, 'black');
+  const state = JSON.stringify(p.ui.state), q = page(saved); q.node('resume').onclick();
+  assert.equal(JSON.stringify(q.ui.state), state); assert.equal(q.timerCount(), 0);
+  assert.equal(JSON.parse(saved.getItem('yiwu.autosave')).commands.length, 6);
+}
+console.log('残局流程、行动后果与武斗确认：24 项检查通过。');
