@@ -3,16 +3,17 @@ const path = require('node:path');
 const vm = require('node:vm');
 const assert = require('node:assert/strict');
 
-const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+const html = fs.readFileSync(process.argv[2] || path.join(__dirname, '..', 'index.html'), 'utf8');
 const scripts = [...html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].map(m => m[1]);
 const box = vm.createContext({});
 vm.runInContext(scripts[0], box);
-const helpers = ['cardUnavailable', 'supportDetailsHTML', 'combatForecastHTML'].map(name => {
+vm.runInContext(scripts[1], box);
+const helpers = ['cardUnavailable', 'supportDetailsHTML', 'combatForecastHTML', 'openingAdvice'].map(name => {
   const source = scripts[2].match(new RegExp('  function ' + name + '\\([\\s\\S]*?\\n  \\}'));
   assert(source, '缺少界面函数：' + name);
   return source[0];
 });
-vm.runInContext('const E=Yiwu; let s,lesson=null;\n' + helpers.join('\n'), box);
+vm.runInContext('const E=Yiwu,C=YiwuComputer; let s,lesson=null;\n' + helpers.join('\n'), box);
 const E = box.Yiwu;
 const load = mode => {
   const s = E.create(mode);
@@ -145,4 +146,16 @@ const range = values => {const lo = Math.min(...values), hi = Math.max(...values
   vm.runInContext('lesson={stage:"counter"}', box); assert.equal(box.combatForecastHTML(a, 'strike'), '');
   vm.runInContext('lesson=null', box);
 }
-console.log('配牌条件、支援与本轮生命预估：9 组检查通过。');
+{
+  for (const rotated of [false, true]) {
+    const s = load('attrition'); s.repetitions = {};
+    s.pieces = [E.piece('rk', 'red', 'king', 4, 9), E.piece('bk', 'black', 'king', 3, 0), E.piece('hero', 'red', 'rook', 4, 5), E.piece('attacker', 'black', 'rook', 4, 0), E.piece('target', 'black', 'pawn', 0, 5)];
+    E.get(s, 'rk').hp = 1; E.get(s, 'target').hp = 1;
+    if (rotated) {s.turn = 'black'; for (const p of s.pieces) {p.side = E.OTHER[p.side]; p.x = 8 - p.x; p.y = 9 - p.y;}}
+    const ctx = E.context(s, E.get(s, 'hero'), E.get(s, 'target')), before = JSON.stringify([s, ctx]), advice = box.openingAdvice(ctx);
+    assert(advice.reason.includes('并保住进攻子')); assert(advice.risk.includes('将帅漏防风险'));
+    assert.equal(JSON.stringify([s, ctx]), before);
+    E.get(s, 'rk').hp = 18; assert(!box.openingAdvice(ctx).risk);
+  }
+}
+console.log('配牌条件、支援、本轮生命预估与吃子漏防提示：10 组检查通过。');

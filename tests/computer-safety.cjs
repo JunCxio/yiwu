@@ -89,4 +89,34 @@ test('将帅可确保反杀时不因残血进攻子放弃存活吃子，判断�
     }
   }
 });
+function exposedCapture(rotated=false){
+  const sample={pieces:[['rk','red','king',4,9,1],['bk','black','king',3,0,18],['rr','red','rook',4,5,18],['br','black','rook',4,0,18],['target','black','pawn',0,5,1]]};
+  const s=scene(sample,rotated);s.turn=rotated?'black':'red';return s;
+}
+test('确保存活的吃子仍须核对让开线路后的将帅确定败局，红黑一致',()=>{
+  for(const rotated of [false,true]){
+    const s=exposedCapture(rotated),before=JSON.stringify(s),target=E.get(s,'target'),ctx=E.context(s,E.get(s,'rr'),target),out=C.battleOutlook(s,ctx);
+    assert(out.finishes.length);
+    for(const id of out.finishes)for(const reply of C.choices(s,target,ctx)){
+      const next=copy(s);E.move(next,'rr',target.x,target.y);E.resolve(next,id,reply);
+      assert(!E.get(next,'target'));assert(E.get(next,'rr')?.hp>0);assert(winsAgainstKing(next,'br'));
+    }
+    const capture=a=>a.id==='rr'&&a.x===target.x&&a.y===target.y;
+    assert(C.rankedActions(s).find(capture).score<-500);
+    for(const roll of [0,.25,.5,.75,.999999]){
+      const action=C.board(s,()=>roll);assert(!capture(action));
+      const next=copy(s);E.move(next,action.id,action.x,action.y);assert(!winsAgainstKing(next,'br'));
+    }
+    assert.equal(JSON.stringify(s),before);
+  }
+});
+test('吃子后仍有阻挡或无法确认击倒将帅时，不误报确定败局',()=>{
+  for(const rotated of [false,true])for(const safe of ['blocked','healthy']){
+    const s=exposedCapture(rotated),target=E.get(s,'target');
+    if(safe==='blocked')s.pieces.push(E.piece('blocker',s.turn,'pawn',4,rotated?3:6));
+    else E.get(s,'rk').hp=18;
+    const before=JSON.stringify(s),capture=C.rankedActions(s).find(a=>a.id==='rr'&&a.x===target.x&&a.y===target.y);
+    assert(capture.score>-500);assert.equal(C.board(s,()=>0).id,'rr');assert.equal(JSON.stringify(s),before);
+  }
+});
 console.log('将帅安全：'+checks+' 项检查通过。');
