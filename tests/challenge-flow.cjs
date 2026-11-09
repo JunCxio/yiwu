@@ -24,8 +24,10 @@ function page(saved = storage()) {
   vm.runInContext(scripts[0], box); vm.runInContext(scripts[1], box);
   const startup = "  showScreen('home');\n})();";
   assert(scripts[2].includes(startup));
-  vm.runInContext(scripts[2].replace(startup, "globalThis.ui={init,nextChallenge,get state(){return s;},get screen(){return screen;},get difficulty(){return difficulty;}};\n" + startup), box);
+  vm.runInContext(scripts[2].replace(startup, "globalThis.ui={init,nextChallenge,beginFight,challengeCombatHTML,get state(){return s;},get screen(){return screen;},get difficulty(){return difficulty;}};\n" + startup), box);
   return {ui: box.ui, E: box.Yiwu, node, saved, timerCount: () => timers.size,
+    cell: (x, y) => node('grid').handlers.click({target: {closest: () => ({dataset: {x, y}})}}),
+    pick: choice => node('fight-content').handlers.click({target: {closest: () => ({dataset: {choice}, disabled: false})}}),
     action: action => document.handlers.click({target: {closest: selector => selector === '[data-action]' ? {dataset: {action}} : null}})};
 }
 function finished(won = true) {
@@ -105,4 +107,51 @@ function finished(won = true) {
   p.node('scenario').value = 'full'; p.node('load').onclick();
   assert.equal(p.node('confirm-title').textContent, '切换棋局？'); assert.equal(p.node('confirm-load').textContent, '确认切换');
 }
-console.log('残局衔接：6 项检查通过。');
+{
+  const p = page(); p.ui.init('challenge-support'); const s = p.ui.state, E = p.E;
+  const hero = E.get(s, 'hero'), target = E.get(s, 'target'), ctx = E.context(s, hero, target), before = JSON.stringify(s);
+  const note = p.ui.challengeCombatHTML(ctx);
+  assert(note.includes('本场由红方兵对战指定目标') && note.includes('有效支援 1 名'));
+  assert(note.includes('红方兵、红方帥必须存活') && !note.includes('若击败目标，本关将失败'));
+  assert(!p.ui.challengeCombatHTML(ctx, true).split('<summary>')[0].includes(' open'));
+  ctx.supportA = []; assert(p.ui.challengeCombatHTML(ctx).includes('红兵无支援；若击败目标，本关将失败'));
+  assert(p.ui.challengeCombatHTML(ctx, true).split('<summary>')[0].includes(' open'));
+  const defending = E.context(s, target, hero); defending.supportD = ['helper'];
+  assert(p.ui.challengeCombatHTML(defending).includes('有效支援 1 名'));
+  defending.supportD = []; assert(p.ui.challengeCombatHTML(defending).includes('红兵无支援'));
+  assert.equal(JSON.stringify(s), before);
+}
+{
+  const p = page(); p.ui.init('challenge-support'); const s = p.ui.state, E = p.E;
+  const target = E.get(s, 'target'), helper = E.get(s, 'helper');
+  assert(p.ui.challengeCombatHTML(E.context(s, helper, target)).includes('未使用指定主力红方兵；若击败目标，本关将失败'));
+  assert(p.ui.challengeCombatHTML(E.context(s, helper, E.get(s, 'black_king'))).includes('若先击败黑将，本关将失败'));
+  assert(p.ui.challengeCombatHTML(E.context(s, helper, E.get(s, 'enemy_rook'))).includes('目标黑方砲仍需由红方兵击败'));
+}
+{
+  const p = page(); p.ui.init('challenge-relay'); const E = p.E, s = p.ui.state;
+  assert(p.ui.challengeCombatHTML(E.context(s, E.get(s, 'hero'), E.get(s, 'target'))).includes('红方馬、红方車、红方帥必须存活'));
+  s.phase = 'ended'; assert.equal(p.ui.challengeCombatHTML(s.lastCombat), '');
+  for (const mode of ['quick', 'tutorial', 'tactics']) {
+    p.ui.init(mode); assert.equal(p.ui.challengeCombatHTML(null), '');
+  }
+}
+{
+  const p = page(); p.ui.init('challenge-support'); const before = p.saved.getItem('yiwu.autosave');
+  p.cell(1, 4); p.cell(4, 4);
+  assert(p.node('preview-content').innerHTML.includes('未使用指定主力红方兵'));
+  p.action('cancel-preview');
+  assert.equal(p.ui.state.ply, 0); assert.equal(p.ui.state.phase, 'board');
+  assert.equal(JSON.parse(p.saved.getItem('yiwu.autosave')).commands.length, JSON.parse(before).commands.length);
+  p.cell(4, 5); p.cell(4, 4);
+  assert(p.node('preview-content').innerHTML.includes('有效支援 1 名'));
+  p.action('attack'); assert(p.node('fight-content').innerHTML.includes('有效支援 1 名'));
+  const note = html => html.match(/<details class="challenge-check[\s\S]*?<\/details>/)[0];
+  const original = note(p.node('fight-content').innerHTML), saved = p.saved.getItem('yiwu.autosave');
+  p.pick('strike'); assert.equal(note(p.node('fight-content').innerHTML), original);
+  p.pick('guard'); assert.equal(note(p.node('fight-content').innerHTML), original);
+  const restored = page(p.saved); restored.node('resume').onclick();
+  assert.equal(note(restored.node('fight-content').innerHTML), original);
+  assert.deepEqual(JSON.parse(restored.saved.getItem('yiwu.autosave')).commands, JSON.parse(saved).commands);
+}
+console.log('残局流程与目标核对：10 项检查通过。');
