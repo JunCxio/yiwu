@@ -471,4 +471,65 @@ function retreatReady() {
     assert.deepEqual(JSON.parse(p.saved.getItem('yiwu.autosave')).commands, commands); assert.equal(p.timerCount(), 0);
   }
 }
-console.log('残局流程、行动后果与武斗确认：30 项检查通过。');
+{
+  for (const side of ['red', 'black']) for (const kind of ['rook', 'cannon']) {
+    const p = page(); p.node('opponent').value = 'local'; p.ui.init('full'); p.action('start');
+    if (side === 'black') {p.cell(4, 6); p.cell(4, 5);}
+    const rook = kind === 'rook', x = rook ? 0 : 1, y = side === 'red' ? (rook ? 9 : 7) : (rook ? 0 : 2);
+    const targetY = side === 'red' ? (rook ? 5 : 1) : (rook ? 4 : 8);
+    const piece = p.E.at(p.ui.state, x, y), blocker = p.E.between(p.ui.state, piece, x, targetY)[0];
+    p.cell(x, y); const before = JSON.stringify(p.ui.state), commands = JSON.parse(p.saved.getItem('yiwu.autosave')).commands;
+    for (let n = 0; n < 2; n++) {
+      p.cell(x, targetY); const record = JSON.parse(p.saved.getItem('yiwu.autosave'));
+      assert.equal(record.ui.selected, piece.id); assert.equal(record.ui.preview, null);
+      assert(p.node('notice').textContent.includes('路径上有' + p.E.label(blocker)));
+      assert(p.node('notice').textContent.includes((blocker.x + 1) + '路' + (10 - blocker.y) + '线'));
+      assert.equal(JSON.stringify(p.ui.state), before); assert.deepEqual(record.commands, commands); assert.equal(p.timerCount(), 0);
+    }
+    const restored = page(p.saved); restored.node('resume').onclick();
+    assert.equal(JSON.parse(restored.saved.getItem('yiwu.autosave')).ui.selected, piece.id);
+    assert.equal(JSON.stringify(restored.ui.state), before);
+    restored.cell(x, y + (side === 'red' ? -1 : 1));
+    assert.equal(restored.ui.state.ply, p.ui.state.ply + 1); assert.equal(restored.node('notice').textContent, '');
+  }
+}
+{
+  for (const side of ['red', 'black']) for (const kind of ['rook', 'horse', 'cannon', 'pawn', 'guard', 'elephant', 'king']) {
+    const p = page(); p.node('opponent').value = 'local'; p.ui.init('full'); p.action('start');
+    if (side === 'black') {p.cell(4, 6); p.cell(4, 5);}
+    const piece = p.ui.state.pieces.find(q => q.side === side && q.kind === kind);
+    p.cell(piece.x, piece.y); const before = JSON.stringify(p.ui.state);
+    assert(!p.E.canMove(p.ui.state, piece, 3, 3)); p.cell(3, 3);
+    assert.equal(JSON.parse(p.saved.getItem('yiwu.autosave')).ui.selected, piece.id);
+    assert(p.node('notice').textContent.includes(p.E.label(piece) + '不能走到这里'));
+    assert(p.node('notice').textContent.includes('已保留选中')); assert.equal(JSON.stringify(p.ui.state), before);
+    p.cell(side === 'red' ? 0 : 8, side === 'red' ? 0 : 9);
+    assert.equal(p.node('notice').textContent, ''); assert.equal(JSON.stringify(p.ui.state), before);
+    assert.equal(JSON.parse(p.saved.getItem('yiwu.autosave')).ui.selected, p.E.at(p.ui.state, side === 'red' ? 0 : 8, side === 'red' ? 0 : 9).id);
+  }
+}
+{
+  const p = page(); p.node('opponent').value = 'local'; p.ui.init('full'); p.action('start'); p.action('scout');
+  p.cell(0, 9); p.cell(0, 5); p.cell(0, 8);
+  assert(!p.node('move-preview').hidden); assert(p.node('move-preview').innerHTML.includes('当前尚未移动')); assert.equal(p.ui.state.ply, 0);
+  p.action('confirm-move'); assert.equal(p.ui.state.ply, 1);
+  p.cell(0, 0); p.cell(0, 4); p.cell(1, 2);
+  assert.equal(JSON.parse(p.saved.getItem('yiwu.autosave')).ui.selected, p.E.at(p.ui.state, 1, 2).id);
+  assert.equal(p.node('notice').textContent, '');
+  const q = page(); q.node('opponent').value = 'local'; q.ui.init('tactics');
+  q.cell(4, 5); q.cell(3, 3); q.cell(4, 4);
+  assert(q.node('preview').open); assert.equal(q.ui.state.ply, 0); assert.equal(q.node('notice').textContent, '');
+  q.action('cancel-preview'); assert(!q.node('preview').open); q.cell(4, 4); q.action('attack'); assert.equal(q.ui.state.phase, 'duel');
+}
+{
+  for (const mode of ['full', 'tutorial']) {
+    const p = page(); p.ui.init(mode); const before = JSON.stringify(p.ui.state);
+    p.cell(3, 3); assert.equal(p.node('notice').textContent, ''); assert.equal(JSON.stringify(p.ui.state), before);
+  }
+  const p = finished(); p.cell(3, 3); assert.equal(p.node('notice').textContent, '');
+  const q = page(); q.ui.init('full'); q.action('start'); q.cell(0, 9); q.cell(0, 8);
+  const before = JSON.stringify(q.ui.state); assert.equal(q.timerCount(), 1);
+  q.cell(0, 0); q.cell(0, 4); assert.equal(q.node('notice').textContent, '');
+  assert.equal(JSON.stringify(q.ui.state), before); assert.equal(q.timerCount(), 1);
+}
+console.log('残局流程、走棋反馈与武斗确认：34 项检查通过。');
