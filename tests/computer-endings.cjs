@@ -140,4 +140,44 @@ test('练习选招保留按类型等概率的设计，不强制执行标准电�
   assert.deepEqual(JSON.parse(JSON.stringify(plan)),['strike','guard','break','focus'].map(id=>({id,weight:.25})));
   assert.equal(JSON.stringify(s),before);
 });
-console.log('终局决策：'+passed+' / 12 项检查通过。');
+const boardWins=[
+  [['create','challenge-support'],['move','hero',4,4],['resolve','strike','strike'],['resolve','strike','guard'],['retreat'],['move','black_king',4,0]],
+  [['create','challenge-relay'],['move','hero',4,4],['resolve','strike','guard'],['resolve','strike','break'],['retreat'],['move','black_king',4,0]],
+  [['create','challenge-tempo'],['move','hero',4,4],['resolve','guard','guard'],['resolve','strike','break'],['retreat'],['move','black_king',5,1]]
+];
+test('三个真实残局有确保完成目标的首轮进攻时，不为追将或错误主力吃子放弃胜局',()=>{
+  for(const commands of boardWins){
+    const s=E.create(commands[0][1]);for(const [name,...args] of commands.slice(1))E[name](s,...args);
+    assert.equal(s.phase,'board');const before=JSON.stringify(s),selected=near(s);
+    assert(selected.length&&selected.every(a=>targets(s,a)&&a.score===1000));
+    for(const difficulty of ['standard','practice'])for(const roll of [0,.25,.5,.75,.999999])assert(targets(s,C.board(s,()=>roll,difficulty)));
+    const next=nextState(s,selected[0]),plan=checkPlan(next,'red'),target=E.get(next,'target');
+    for(const option of plan)for(const reply of C.choices(next,target,next.duel)){
+      const result=copy(next);E.resolve(result,option.id,reply);assert.equal(result.phase,'ended');assert.equal(result.winner,'red');
+      assert(E.get(result,'hero'));if(s.scenario==='challenge-relay')assert(E.get(result,'veteran'));
+    }
+    assert.equal(JSON.stringify(s),before);
+  }
+});
+test('黑方击倒指定保护棋子即可完成胜局时，同样优先实际结果',()=>{
+  const s=E.create('challenge-tempo');s.turn='black';E.get(s,'hero').hp=1;s.pieces.push(E.piece('enemy','black','rook',8,8));
+  const before=JSON.stringify(s),hero=E.get(s,'hero'),selected=near(s);
+  assert(selected.length&&selected.every(a=>a.id==='target'&&a.x===hero.x&&a.y===hero.y&&a.score===1000));
+  const next=nextState(s,selected[0]);
+  for(const option of checkPlan(next,'black'))for(const reply of C.choices(next,E.get(next,'hero'),next.duel)){
+    const result=copy(next);E.resolve(result,option.id,reply);assert.equal(result.winner,'black');
+  }
+  assert.equal(JSON.stringify(s),before);
+});
+test('首轮能吃子但未满足支援或指定主力时，不能获得挑战胜局评分',()=>{
+  for(const scenario of ['challenge-support','challenge-relay']){
+    const s=E.create(scenario);E.get(s,'target').hp=1;
+    const id=scenario==='challenge-support'?'hero':'veteran';
+    if(scenario==='challenge-support')s.pieces=s.pieces.filter(p=>p.id!=='helper');
+    const target=E.get(s,'target'),action={type:'move',id,x:target.x,y:target.y},before=JSON.stringify(s),next=nextState(s,action);
+    E.resolve(next,'strike','focus');assert.equal(next.winner,'black');
+    const ranked=C.rankedActions(s).find(a=>a.type===action.type&&a.id===id&&a.x===target.x&&a.y===target.y);
+    assert(ranked.score<1000);assert.equal(JSON.stringify(s),before);
+  }
+});
+console.log('终局决策：'+passed+' / 15 项检查通过。');

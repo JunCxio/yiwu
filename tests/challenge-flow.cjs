@@ -532,4 +532,23 @@ function retreatReady() {
   q.cell(0, 0); q.cell(0, 4); assert.equal(q.node('notice').textContent, '');
   assert.equal(JSON.stringify(q.ui.state), before); assert.equal(q.timerCount(), 1);
 }
-console.log('残局流程、走棋反馈与武斗确认：34 项检查通过。');
+{
+  const records = [
+    [['create', 'challenge-support'], ['move', 'hero', 4, 4], ['resolve', 'strike', 'strike'], ['resolve', 'strike', 'guard'], ['retreat'], ['move', 'black_king', 4, 0]],
+    [['create', 'challenge-relay'], ['move', 'hero', 4, 4], ['resolve', 'strike', 'guard'], ['resolve', 'strike', 'break'], ['retreat'], ['move', 'black_king', 4, 0]],
+    [['create', 'challenge-tempo'], ['move', 'hero', 4, 4], ['resolve', 'guard', 'guard'], ['resolve', 'strike', 'break'], ['retreat'], ['move', 'black_king', 5, 1]]
+  ];
+  for (const commands of records) {
+    const saved = storage(); saved.setItem('yiwu.autosave', JSON.stringify({version: 1, commands,
+      ui: {opponent: 'computer', difficulty: 'standard', selected: null, preview: null, setupSide: 'red', focusIndex: 85, lesson: null, fight: null}}));
+    const p = page(saved); p.node('resume').onclick(); const before = JSON.stringify(p.ui.state);
+    p.action('hint'); assert.equal(JSON.parse(saved.getItem('yiwu.autosave')).ui.selected, 'hero');
+    assert(p.node('detail').innerHTML.includes('优先尝试本关指定目标')); assert.equal(JSON.stringify(p.ui.state), before);
+    assert.deepEqual(JSON.parse(saved.getItem('yiwu.autosave')).commands, commands); assert.equal(p.timerCount(), 0);
+    const q = page(saved); q.node('resume').onclick(); assert.equal(JSON.stringify(q.ui.state), before);
+    q.cell(4, 4); assert(q.node('preview').open); q.action('attack'); q.pick('strike'); q.fight('commit');
+    assert.equal(q.ui.state.phase, 'ended'); assert.equal(q.ui.state.winner, 'red');
+    assert.equal(JSON.parse(saved.getItem('yiwu.autosave')).commands.length, commands.length + 2);
+  }
+}
+console.log('残局流程、走棋反馈与武斗确认：35 项检查通过。');
