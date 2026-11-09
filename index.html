@@ -81,6 +81,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 }
 .pick-forecast{margin-top:5px;border-left:3px solid #93af97;padding-left:8px;color:#dae5d6}.pick-forecast.danger{border-color:#dfa486;color:#ffd1ba}.pick-forecast p{margin:0;font-size:12px;line-height:1.5;font-variant-numeric:tabular-nums}.pick-forecast small{display:block;font-size:11px;line-height:1.5}.pick-forecast .forecast-note{color:#becdbb}@media(max-width:760px){.pick-confirm-info{flex-wrap:wrap}.pick-forecast{flex-basis:100%;margin-top:0}}@media(min-width:600px) and (max-height:500px){.pick-forecast{max-width:250px}.pick-forecast p,.pick-forecast small{font-size:11px}}
 
+.unlearned-cards{margin-top:10px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}.unlearned-cards>summary{min-height:44px;padding:10px 0;cursor:pointer}.unlearned-cards[open]>summary{color:var(--gold)}.unlearned-cards>.tip{margin:0 0 8px;font-size:12px}
 @media(min-width:1000px){
   .app{height:100dvh;min-height:600px;max-width:1500px;padding:12px 20px;display:flex;flex-direction:column}
   .app>header{flex:none;padding-bottom:9px;gap:16px}.app>header h1{font-size:32px}
@@ -135,7 +136,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.32 · 桌面短屏适配</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.33 · 棋子招式分组</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -612,9 +613,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.32',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.33',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.32-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.33-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -763,6 +764,7 @@ globalThis.YiwuComputer = (() => {
     }
   }
   function showScreen(next){
+    $('detail').dataset.piece='';
     cardGuide=null;movePreview=null;scoutMode=false;screen=next;$('home-page').hidden=screen!=='home';$('game-page').hidden=screen!=='game';$('game-tools').hidden=screen!=='game';
     scrollTo(0,0);
     if(screen==='home'){
@@ -993,17 +995,23 @@ globalThis.YiwuComputer = (() => {
     const ps=s.pieces.filter(p=>p.side===setupSide),readonly=opponent==='computer'&&setupSide==='black';
     return '<h3>阵容配牌总览</h3><div class="setup-sides" role="group" aria-label="查看配牌阵营">'+['red','black'].map(side=>'<button data-setup-side="'+side+'" aria-pressed="'+(setupSide===side)+'">'+E.SIDE[side]+(opponent==='computer'&&side==='black'?' · 只读':'')+'</button>').join('')+'</div><p class="setup-summary">已培养 '+ps.filter(p=>p.learned.length).length+' / '+ps.length+' 子 · 剩余 '+s.budget[setupSide]+' 点</p><div class="setup-list" role="group" aria-label="'+E.SIDE[setupSide]+'配牌列表">'+ps.map(p=>'<button class="setup-piece" data-setup-piece="'+p.id+'" aria-pressed="'+(selected===p.id)+'" aria-controls="detail"><span><b>'+E.label(p)+'</b><small>'+ (p.x+1)+' 路 '+(10-p.y)+' 线</small></span><em>'+(p.learned.length?p.learned.map(id=>E.CARDS[id].name).join(' · '):'未培养 · 基础招式可用')+'</em></button>').join('')+'</div><p class="setup-help">'+(readonly?'电脑配牌仅供查看。切回红方可调整自己的招式。':'点击条目查看与调整。未培养棋子也有全部基础招式。')+'</p>';
   }
-  function detailHTML(){
+  function detailHTML(unlearnedOpen=false){
     const p=E.get(s,selected),advice=hint&&s.phase==='board'&&!lesson?adviceHTML(boardAdvice(hint)):'';
     if(!p)return advice+`<h2>选择棋子</h2><p class="tip">点击棋子查看生命、招式与可行动的位置。</p>${logsHTML()}`;
     const canRest=!lesson&&s.phase==='board'&&p.side===s.turn&&!computerTurn(),canLearn=s.phase==='setup'&&(opponent!=='computer'||p.side==='red');
     let html=`<div class="piece-title"><span class="seal ${p.side}">${E.NAMES[p.side][p.kind]}</span><div><h2 id="piece-detail-title" tabindex="-1">${E.label(p)}</h2><span class="thin">${p.x+1} 路 ${10-p.y} 线${s.phase==='setup'?' · 已学 '+p.learned.length+'/2 张':''}</span></div></div><div class="health-row"><span>生命</span><b>${p.hp} / 18</b></div><div class="health-track"><i style="width:${p.hp/18*100}%"></i></div><p class="tip">基础输出 3；每名有效支援加 1，最多加 2。培养不增加基础数值。</p>`;
     html+='<p class="movement-note"><b>走法：</b>'+MOVE_RULES[p.kind]+'</p>'+positionHTML(p);
     const ids=Object.keys(E.CARDS).filter(id=>E.CARDS[id].kind===p.kind);
-    html+='<h3>'+(s.phase==='setup'?'三选二 · 培养招式':'绑定招式')+'</h3>';
+    html+='<h3>'+(s.phase==='setup'?'三选二 · 培养招式':'已学招式 · '+p.learned.length+' 张')+'</h3>';
     if(s.phase==='setup')html+='<div class="setup-message">'+(canLearn?'<b>'+E.SIDE[p.side]+'剩余 '+s.budget[p.side]+' 点 · 本子已学 '+p.learned.length+'/2 张</b>'+(p.learned.length>=2?'本子已满两张。先撤回本子的一张，再学习另一张。':s.budget[p.side]===0?'本方点数已用完。先在本子或总览中的其他棋子上撤回一张，返还 1 点。':'每张花费 1 点，撤回返还 1 点。开始对局后锁定。'):'电脑配牌仅供查看。')+'<button class="small quiet" data-action="setup-overview" aria-controls="setup-roster">返回阵容总览</button></div>';
+    let unlearnedHTML='';
     for(const id of ids){const c=E.CARDS[id],learned=p.learned.includes(id),used=p.exhausted.includes(id);
-      html+=`<div class="card ${used?'exhausted':''}"><div class="card-head"><strong><span class="card-type">${E.TYPE[c.type]}</span>${c.name}</strong>${canLearn?`<button class="small card-learn ${learned?'':'primary'}" data-learn="${id}" aria-label="${learned?'撤回':'学习'}${c.name}${learned?'，返还1点':'，花费1点'}" ${!learned&&(s.budget[p.side]===0||p.learned.length>=2)?'disabled':''}>${learned?'撤回':p.learned.length>=2?'已满两张':s.budget[p.side]===0?'点数已用完':'学习 · 1点'}</button>`:used&&canRest?`<button class="small rest-button" data-rest="${id}" aria-label="整备${c.name}，查看行动代价">整备</button>`:`<span class="thin">${learned?(used?'已耗尽':'未耗尽'):'未学习'}</span>`}</div><p>${c.text}${used?' 整备占用一次走棋，不回血。':''}</p>${cardPlanHTML(p,id)}</div>`;
+      const card=`<div class="card ${used?'exhausted':''}"><div class="card-head"><strong><span class="card-type">${E.TYPE[c.type]}</span>${c.name}</strong>${canLearn?`<button class="small card-learn ${learned?'':'primary'}" data-learn="${id}" aria-label="${learned?'撤回':'学习'}${c.name}${learned?'，返还1点':'，花费1点'}" ${!learned&&(s.budget[p.side]===0||p.learned.length>=2)?'disabled':''}>${learned?'撤回':p.learned.length>=2?'已满两张':s.budget[p.side]===0?'点数已用完':'学习 · 1点'}</button>`:used&&canRest?`<button class="small rest-button" data-rest="${id}" aria-label="整备${c.name}，查看行动代价">整备</button>`:`<span class="thin">${learned?(used?'已耗尽':'未耗尽'):'未学习'}</span>`}</div><p>${c.text}${used?' 整备占用一次走棋，不回血。':''}</p>${cardPlanHTML(p,id)}</div>`;
+      if(s.phase!=='setup'&&!learned)unlearnedHTML+=card;else html+=card;
+    }
+    if(s.phase!=='setup'){
+      if(!p.learned.length)html+='<p class="tip">未学习培养牌。武斗仍有斩击、架势、破势和蓄势。</p>';
+      html+='<details class="unlearned-cards"'+(unlearnedOpen?' open':'')+'><summary>未学招式 · '+(ids.length-p.learned.length)+' 张</summary><p class="tip">本局未学习，不能用于武斗。</p>'+unlearnedHTML+'</details>';
     }
     html+=`<p class="tip">${s.phase==='setup'?(canLearn?'牌与当前这枚棋子绑定，开始后锁定。':'电脑配牌仅供查看，可点选红方棋子调整配牌。'):s.phase==='ended'?'对局已结束，可以查看棋子信息。':p.side===s.turn&&!computerTurn()?'点选落点移动，或在耗尽的牌上整备。':'当前只能查看棋子信息。'}</p>`;
     return advice+html+logsHTML();
@@ -1123,6 +1131,7 @@ globalThis.YiwuComputer = (() => {
     document.title='弈武 · '+(lesson?'分步教学':opponent==='computer'?'电脑对战':'同机双人');
     document.querySelector('.subtitle').innerHTML='象棋走位，招式交锋<br>'+(lesson?'分步教学 · 固定演示':opponent==='computer'?(difficulty==='practice'?'练习电脑':'标准电脑'):'同机双人');
     const boardFocused=$('grid').contains(document.activeElement)&&document.activeElement!==$('grid'),previewWasOpen=previewDialog.open,endgameWasVisible=!$('endgame').hidden;
+    const detail=$('detail'),samePiece=detail.dataset.piece===selected,unlearnedOpen=samePiece&&detail.querySelector('.unlearned-cards')?.open;
     $('teams').innerHTML=teamHTML('black')+teamHTML('red');
     const setupList=$('setup-roster').querySelector('.setup-list'),setupScroll=setupList?.scrollTop||0,previousSetupSide=$('setup-roster').dataset.side;
     $('setup-roster').hidden=s.phase!=='setup';$('setup-roster').innerHTML=setupRosterHTML();$('setup-roster').dataset.side=setupSide;
@@ -1142,7 +1151,9 @@ globalThis.YiwuComputer = (() => {
     if(!lesson&&s.phase==='board'&&!computerTurn()&&!C.actions(s).length)$('start-wrap').innerHTML+='<button class="wide" data-action="pass">跳过受阻回合</button>';
     $('start-wrap').innerHTML=restOptionsHTML()+$('start-wrap').innerHTML;
     const drawProgress=drawProgressHTML();$('draw-info').hidden=!drawProgress;$('draw-info').innerHTML=drawProgress;
-    drawBoard();$('move-preview').hidden=!movePreview;$('move-preview').innerHTML=movePreviewHTML();$('detail').innerHTML=detailHTML();$('notice').textContent=notice;
+    drawBoard();$('move-preview').hidden=!movePreview;$('move-preview').innerHTML=movePreviewHTML();detail.innerHTML=detailHTML(unlearnedOpen);detail.dataset.piece=selected||'';
+    if(!samePiece)detail.scrollTop=0;
+    $('notice').textContent=notice;
     if(cardGuide)$('notice').innerHTML=cardGuideHTML();
     if(hint&&s.phase==='board'&&!lesson)$('notice').innerHTML=esc(notice)+'<button class="small quiet" data-action="hint-details" aria-controls="detail">查看理由与风险</button>';
     $('last-action').innerHTML=!lesson&&s.last?`<strong class="${s.last.side}">上一行动 · ${E.SIDE[s.last.side]}${{move:'移动',rest:'整备',battle:'武斗',pass:'受阻'}[s.last.type]}</strong><p>${esc(s.log[0])}</p>`:'';
