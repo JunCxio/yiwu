@@ -1,6 +1,6 @@
 # 弈武
 
-象棋走位与卡牌武斗结合的二维回合制游戏。当前版本为 **0.6.38 开发测试版**，欢迎试玩并反馈。
+象棋走位与卡牌武斗结合的二维回合制游戏。当前版本为 **0.6.39 开发测试版**，欢迎试玩并反馈。
 
 **[直接试玩](https://juncxio.github.io/yiwu/)** · **[提交试玩反馈](https://github.com/JunCxio/yiwu/issues/new?template=feedback.md)**
 
