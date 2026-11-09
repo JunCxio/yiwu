@@ -284,4 +284,59 @@ for (const hp of [18, 1]) {
   assert(!advice.risks.some(text => text.includes('首轮吃子风险')), '只有几何威胁或同时阵亡不能宣称对手存活吃子');
   assert.equal(JSON.stringify(s), before);
 }
-console.log('配牌条件、支援、本轮生命预估、吃子漏防、兵卒底线、行动终局与落点首轮风险：18 组检查通过。');
+const outcomeRecords = [
+  [['create', 'challenge-support'], ['move', 'helper', 4, 4], ['resolve', 'strike', 'focus']],
+  [['create', 'challenge-tempo'], ['move', 'hero', 4, 4], ['resolve', 'guard', 'guard'], ['resolve', 'strike', 'break']],
+  [['create', 'challenge-tempo'], ['move', 'hero', 4, 4], ['resolve', 'break', 'break']],
+  [['create', 'challenge-tempo'], ['rest', 'hero', 'rook_crush'], ['move', 'black_king', 5, 1], ['move', 'red_king', 4, 9],
+    ['move', 'target', 4, 5], ...Array.from({length: 5}, () => ['resolve', 'guard', 'guard'])]
+];
+const drawRecord = [['create', 'challenge-support']];
+for (let i = 0; i < 4; i++) drawRecord.push(['move', i % 2 ? 'enemy_rook' : 'helper', i % 2 ? 1 : 0, 4],
+  ...Array.from({length: i === 3 ? 5 : 6}, () => ['resolve', 'guard', 'guard']));
+outcomeRecords.push(drawRecord);
+function replayOutcome(commands) {
+  const s = load(commands[0][1]);
+  for (const [name, ...args] of commands.slice(1)) E[name](s, ...args);
+  assert.equal(s.phase, 'duel'); return s;
+}
+for (const commands of outcomeRecords) {
+  const s = replayOutcome(commands), ctx = s.duel;
+  for (const who of [E.get(s, ctx.a), E.get(s, ctx.d)]) {
+    const isA = who.id === ctx.a, enemy = E.get(s, isA ? ctx.d : ctx.a);
+    for (const id of box.YiwuComputer.choices(s, who, ctx)) {
+      const before = JSON.stringify(s), outcomes = box.YiwuComputer.choices(s, enemy, ctx).map(reply => {
+        const next = JSON.parse(before); E.resolve(next, isA ? id : reply, isA ? reply : id);
+        return next.phase === 'ended' ? next.winner : null;
+      });
+      const html = box.combatForecastHTML(who, id);
+      for (const [winner, all, some] of [['red', '必定完成', '可能完成'], ['black', '必定失败', '可能失败'], ['draw', '必定判和', '可能判和']]) {
+        const count = outcomes.filter(outcome => outcome === winner).length;
+        assert.equal(html.includes(all), count === outcomes.length);
+        assert.equal(html.includes(some), count > 0 && count < outcomes.length);
+      }
+      assert.equal(html.includes('本轮挑战：'), outcomes.some(Boolean));
+      if (outcomes.includes('black')) assert(html.includes('pick-forecast danger'));
+      assert.equal(JSON.stringify(s), before);
+    }
+  }
+}
+{
+  for (const index of [0, 3]) {
+    const s = replayOutcome(outcomeRecords[index]), who = E.get(s, s.duel.a).side === 'red' ? E.get(s, s.duel.a) : E.get(s, s.duel.d);
+    const html = box.combatForecastHTML(who, index ? 'focus' : 'strike');
+    assert(html.includes('本子本轮可存活')); assert(html.includes('本轮挑战：必定失败'));
+  }
+  const s = replayOutcome(outcomeRecords[2]), html = box.combatForecastHTML(E.get(s, 'hero'), 'strike');
+  assert(html.includes('本轮挑战：可能完成；可能失败'));
+  const draw = replayOutcome(drawRecord);
+  assert(box.combatForecastHTML(E.get(draw, 'helper'), 'guard').includes('本轮挑战：可能判和'));
+}
+{
+  const {s, a} = combat(), before = JSON.stringify(s);
+  assert(!box.combatForecastHTML(a, 'strike').includes('本轮挑战：'));
+  vm.runInContext('lesson={}', box); assert.equal(box.combatForecastHTML(a, 'strike'), '');
+  vm.runInContext('lesson=null', box); assert.equal(box.combatForecastHTML(a, null), '');
+  assert.equal(JSON.stringify(s), before);
+}
+console.log('配牌条件、支援、本轮生命预估、吃子漏防、兵卒底线、行动终局与落点首轮风险：21 组检查通过。');

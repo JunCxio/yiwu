@@ -576,4 +576,25 @@ function retreatReady() {
   assert.equal(JSON.stringify(s), before); assert.deepEqual(JSON.parse(saved.getItem('yiwu.autosave')).commands, commands);
   assert.equal(p.timerCount(), 0); p.cell(4, 6); assert.equal(s.phase, 'board'); assert.equal(p.E.get(s, 'hero').hp, 1); assert.equal(s.ply, 3);
 }
-console.log('残局流程、走棋反馈与武斗确认：37 项检查通过。');
+{
+  const commands = [['create', 'challenge-tempo'], ['rest', 'hero', 'rook_crush'], ['move', 'black_king', 5, 1],
+    ['move', 'red_king', 4, 9], ['move', 'target', 4, 5], ...Array.from({length: 5}, () => ['resolve', 'guard', 'guard'])];
+  let visible;
+  for (const computerChoice of ['guard', 'strike']) {
+    const saved = storage(); saved.setItem('yiwu.autosave', JSON.stringify({version: 1, commands,
+      ui: {opponent: 'computer', difficulty: 'standard', selected: null, preview: null, setupSide: 'red', focusIndex: 85,
+        lesson: null, fight: {step: 'pickD', first: null, pending: 'focus', computerChoice}}}));
+    const p = page(saved); p.node('resume').onclick(); const before = JSON.stringify(p.ui.state), html = p.node('fight-content').innerHTML;
+    assert(html.includes('本子本轮可存活')); assert(html.includes('本轮挑战：必定失败'));
+    if (visible) assert.equal(html, visible, '预估不得暴露电脑已锁定的暗招'); else visible = html;
+    p.pick('rook_crush'); assert(p.node('fight-content').innerHTML.includes('本轮挑战：可能完成；可能失败'));
+    assert.equal(JSON.stringify(p.ui.state), before); assert.equal(p.ui.fight.computerChoice, computerChoice);
+    assert.deepEqual(JSON.parse(saved.getItem('yiwu.autosave')).commands, commands); assert.equal(p.timerCount(), 0);
+    const restored = page(saved); restored.node('resume').onclick();
+    assert.equal(restored.ui.fight.pending, 'rook_crush'); assert.equal(restored.ui.fight.computerChoice, computerChoice);
+    assert.equal(JSON.stringify(restored.ui.state), before);
+    assert(restored.node('fight-content').innerHTML.includes('本轮挑战：可能完成；可能失败'));
+    assert.deepEqual(JSON.parse(saved.getItem('yiwu.autosave')).commands, commands); assert.equal(restored.timerCount(), 0);
+  }
+}
+console.log('残局流程、走棋反馈与武斗确认：38 项检查通过。');

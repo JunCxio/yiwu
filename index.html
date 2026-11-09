@@ -126,7 +126,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.53 · 残局提示与评分统一</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.54 · 选招挑战结果预估</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -643,9 +643,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.53',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.54',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.53-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.54-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -1456,7 +1456,10 @@ globalThis.YiwuComputer = (() => {
     const enemy=E.get(s,who.id===s.duel.a?s.duel.d:s.duel.a),rows=E.preview(s,who.side,id);
     const hp=(p,lo,hi)=>{const min=p.hp-Math.max(...rows.map(r=>r[hi])),max=p.hp-Math.min(...rows.map(r=>r[lo]));return min===max?String(min):min+'–'+max;};
     const risk=rows.every(r=>r.lossMin>=who.hp)?'本子本轮必定阵亡':rows.some(r=>r.lossMax>=who.hp)?'本子本轮可能阵亡':'本子本轮可存活';
-    return '<div class="pick-forecast'+(rows.some(r=>r.lossMax>=who.hp)?' danger':'')+'" role="group" aria-label="本轮生命预估"><p>本轮后：'+E.SIDE[who.side]+'生命 '+hp(who,'lossMin','lossMax')+' · '+E.SIDE[enemy.side]+'生命 '+hp(enemy,'damageMin','damageMax')+'</p><small>'+risk+' · 双方同时结算</small><small class="forecast-note">按全部合法回应，不预知暗招。</small></div>';
+    const isA=who.id===s.duel.a,ends=E.CHALLENGES[s.scenario]?C.choices(s,enemy,s.duel).map(reply=>C.combatOutcome(s,s.duel,isA?id:reply,isA?reply:id)):[];
+    const wins=ends.filter(end=>end?.winner==='red').length,losses=ends.filter(end=>end?.winner==='black').length,draws=ends.filter(end=>end?.winner==='draw').length;
+    const outcome=[wins?(wins===ends.length?'必定完成':'可能完成'):'',losses?(losses===ends.length?'必定失败':'可能失败'):'',draws?(draws===ends.length?'必定判和':'可能判和'):''].filter(Boolean).join('；');
+    return '<div class="pick-forecast'+(losses||rows.some(r=>r.lossMax>=who.hp)?' danger':'')+'" role="group" aria-label="本轮生命预估"><p>本轮后：'+E.SIDE[who.side]+'生命 '+hp(who,'lossMin','lossMax')+' · '+E.SIDE[enemy.side]+'生命 '+hp(enemy,'damageMin','damageMax')+'</p><small>'+risk+' · 双方同时结算</small>'+(outcome?'<small>本轮挑战：'+outcome+'。</small>':'')+'<small class="forecast-note">按全部合法回应，不预知暗招。</small></div>';
   }
   function combatVerdict(r){
     const {a,d}=fightUI,winner=r.outcome==='a'?a:r.outcome==='d'?d:null;
