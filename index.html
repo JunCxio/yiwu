@@ -51,6 +51,31 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 .combat-scene.is-playing .is-fallen .pixel-impact{animation:pixel-fall .65s steps(4,end)}@keyframes pixel-fall{0%,45%{transform:rotate(0);opacity:1;filter:none}100%{transform:rotate(calc(78deg*var(--toward)));opacity:.65;filter:saturate(.25)}}@media(prefers-reduced-motion:reduce){.combat-scene.is-playing .is-fallen .pixel-impact{animation:none}}
 .combat-history{border:1px solid #637461;border-radius:7px;margin:0 0 14px;padding:0 12px;background:#203b32;font-size:12px;color:#d9e2d4}.combat-history>summary{cursor:pointer;min-height:48px;padding:9px 0;line-height:1.6}.combat-history>summary strong{font-size:13px;color:#f1dfad}.combat-history>summary>span{display:block;margin-left:17px;color:#c5d2bd;font-variant-numeric:tabular-nums}.combat-history>p{font-size:11px;color:var(--muted);margin:3px 0 10px}.combat-history>ol{list-style:none;margin:0;padding:0;max-height:none}.combat-history>ol>li{padding:11px 0;border-top:1px solid #4f6654}.combat-round-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 10px;margin-bottom:8px}.combat-round-head>span{color:#e8d7a7}.combat-round-pair{display:grid;grid-template-columns:1fr 1fr;gap:8px}.combat-round-side{min-width:0;padding:8px 10px;border-left:3px solid #cf8a77;background:#49342f;color:#f1d5c6;overflow-wrap:anywhere}.combat-round-side.black{border-color:#9bb9d8;background:#293c4b;color:#d9e9f7}.combat-round-side>div{display:flex;flex-wrap:wrap;justify-content:space-between;gap:3px 10px}.combat-round-side p{margin:5px 0;font-variant-numeric:tabular-nums}.combat-round-side p span{display:block}.combat-round-side small{display:block;line-height:1.6}.combat-history .damage-history-pair{margin-top:5px}@media(max-width:480px){.combat-round-pair{grid-template-columns:1fr}.combat-history{padding:0 10px}.combat-history>summary>span{font-size:11px}}
 [data-action="export"]{min-height:44px}@media(max-width:480px){.header-tools{width:100%}.header-tools #game-setting{flex-basis:100%;max-width:none;text-align:left}.fight-header .modal-head{display:grid;grid-template-columns:1fr auto auto;gap:6px}.fight-header .modal-head h2{grid-column:1/3;grid-row:1;white-space:nowrap}.fight-header .round-badge{grid-column:3;grid-row:1;margin-left:0}.fight-header [data-action="home"]{grid-column:2;grid-row:2}.fight-header [data-action="export"]{grid-column:3;grid-row:2}}
+.choice-return{display:none}
+@media(max-width:760px){
+  #fight:is([data-step="pickA"],[data-step="pickD"]) .combat-scene{min-height:0;padding:5px 9px;grid-template-columns:minmax(0,1fr) 8px minmax(0,1fr)}
+  #fight:is([data-step="pickA"],[data-step="pickD"]) .combat-scene:before,
+  #fight:is([data-step="pickA"],[data-step="pickD"]) .combat-scene :is(.scene-heading,.scene-caption,.stage-move,.stage-status){display:none}
+  #fight:is([data-step="pickA"],[data-step="pickD"]) .stage-fighter{display:flex;align-items:center;justify-content:center;gap:6px}
+  #fight:is([data-step="pickA"],[data-step="pickD"]) :is(.stage-figure,.pixel-sprite){width:32px;height:40px;margin:0;flex:none}
+  .pick-confirm-info .review-jump,.choice-return,.public-jump{min-height:44px}
+  .choice-return{display:block;width:100%;margin-top:12px}
+}
+@media(max-width:760px) and (max-height:640px){
+  #fight:is([data-step="pickA"],[data-step="pickD"]) .combat-scene{display:none}
+  .fight-body .choice-heading{padding-block:0}
+  .fight-body .combat-legend{gap:2px 12px;margin-bottom:5px}
+}
+@media(min-width:600px) and (max-height:500px){
+  #fight:is([data-step="pickA"],[data-step="pickD"]) .combat-scene,.fight-body :is(.choice-heading,.combat-legend){display:none}
+  .fight-header .duel-fighter{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:2px 8px}
+  .fight-header .duel-side,.fight-header .duel-health{grid-column:1/-1}
+  .fight-header .duel-identity{grid-column:1;grid-row:2;min-width:0}
+  .fight-header .duel-resources{grid-column:2;grid-row:2;display:grid;justify-items:end;gap:0;margin:0}
+  #fight:is([data-step="pickA"],[data-step="pickD"]) .pick-confirm-info{width:auto;flex:none}
+  #fight:is([data-step="pickA"],[data-step="pickD"]) .fight-controls{width:auto;flex:1}
+  #fight:is([data-step="pickA"],[data-step="pickD"]) .fight-footer{flex-wrap:nowrap}
+}
 </style>
 </head>
 <body>
@@ -71,7 +96,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.23 · 首轮交战判断</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.24 · 手机武斗操作</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -539,9 +564,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.23',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.24',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.23-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.24-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -1051,7 +1076,7 @@ globalThis.YiwuComputer = (() => {
     if(lesson&&(lesson.stage!=='attack'||a?.id!=='hero'||d?.id!=='target'))throw new Error('请按教学指引选择交战目标');
     E.move(s,a.id,d.x,d.y);hint=null;if(previewDialog.open)previewDialog.close();
     if(lesson)lesson.stage='counter';
-    fightUI={a,d,ctx:s.duel,step:'handoffA',first:null,result:null,computerChoice:null,pending:null,hint:''};preview=null;prepareRound();renderFight();fight.showModal();
+    fightUI={a,d,ctx:s.duel,step:'handoffA',first:null,result:null,computerChoice:null,pending:null,hint:''};preview=null;delete fight.dataset.step;prepareRound();renderFight();fight.showModal();
   }
   function prepareRound(){
     const ui=fightUI;ui.hint='';ui.first=null;ui.pending=null;
@@ -1220,12 +1245,12 @@ globalThis.YiwuComputer = (() => {
   function publicCardsHTML(who){
     if(lesson)return '';
     const enemy=who===fightUI.a?fightUI.d:fightUI.a;
-    return `<section class="public-cards" id="public-cards" aria-label="对手公开配牌"><h4>${E.label(enemy)}的培养牌</h4><p>公开配牌，不代表对手本轮已选。基础招式不耗牌；满气势不能蓄势。</p>${enemy.learned.length?'<ul>'+enemy.learned.map(id=>{const c=E.CARDS[id],reason=E.availability(s,enemy,id,fightUI.ctx);return `<li class="public-card${reason?' unavailable':''}"><div><strong>${c.name}</strong><span class="card-type">${E.TYPE[c.type]}</span><small>${reason||'本轮可用'}</small></div><p>${c.text}</p></li>`;}).join('')+'</ul>':'<p>对手没有学习培养牌，仍可使用基础招式。</p>'}</section>`;
+    return `<section class="public-cards" id="public-cards" tabindex="-1" aria-label="对手公开配牌"><h4>${E.label(enemy)}的培养牌</h4><p>公开配牌，不代表对手本轮已选。基础招式不耗牌；满气势不能蓄势。</p>${enemy.learned.length?'<ul>'+enemy.learned.map(id=>{const c=E.CARDS[id],reason=E.availability(s,enemy,id,fightUI.ctx);return `<li class="public-card${reason?' unavailable':''}"><div><strong>${c.name}</strong><span class="card-type">${E.TYPE[c.type]}</span><small>${reason||'本轮可用'}</small></div><p>${c.text}</p></li>`;}).join('')+'</ul>':'<p>对手没有学习培养牌，仍可使用基础招式。</p>'}</section>`;
   }
   function reviewHTML(who){
     const ui=fightUI,id=ui.pending,c=E.BASE[id]||E.CARDS[id],range=(lo,hi)=>lo===hi?lo:lo+'–'+hi;
     const publicJump=lesson?'':'<button class="quiet public-jump" data-fight="public-cards" aria-controls="public-cards">对手配牌</button>';
-    let html='<aside class="pick-review '+who.side+'" aria-label="'+E.SIDE[who.side]+'出招推演">'+(ui.hint?adviceHTML(ui.hint):'');
+    let html='<aside class="pick-review '+who.side+'" tabindex="-1" aria-label="'+E.SIDE[who.side]+'出招推演">'+(ui.hint?adviceHTML(ui.hint):'');
     if(c){
       const rows=E.preview(s,who.side,id),lethal=rows.some(row=>row.lossMax>=who.hp);
       const force=who===ui.a?ui.ctx.forceA:ui.ctx.forceD,attacking=c.type==='strike'||c.type==='break';
@@ -1233,7 +1258,7 @@ globalThis.YiwuComputer = (() => {
       const forceText=attacking?(force?'消耗全部 '+force+' 点气势；被克制也会消耗。':'当前气势为 0，没有气势增伤。'):c.type==='focus'?'若存活，蓄势 +'+(1+(c.gain||0))+'，上限 2；可能被削势。':'现有气势保留；仍可能被对手削势。';
       html+=`<div class="review-head"><h3>${E.SIDE[who.side]}已选「${c.name}」<span class="card-type">${E.TYPE[c.type]}</span></h3>${publicJump}</div><p class="tip">${c.text}</p><div class="decision-facts"><span>${relation}</span><span>${forceText}</span><span>${E.CARDS[id]?'培养牌 · 使用后耗尽，需在棋盘整备。':'基础招式 · 不耗牌，可重复使用。'}</span></div><table class="preview-table"><thead><tr><th>对手可能出招</th><th>我造成伤害</th><th>我损失生命</th></tr></thead><tbody>${rows.map(row=>`<tr><td>${E.TYPE[row.type]}<small>${row.names.join('、')}</small></td><td>${range(row.damageMin,row.damageMax)}</td><td class="loss">${range(row.lossMin,row.lossMax)}</td></tr>`).join('')}</tbody></table><p class="tip">范围包含对方所有可用招式，已计入支援、气势和减伤，上限为剩余生命。不能据此知道对手本轮已选哪招。</p>${lethal?'<p class="preview-risk">对手的部分选择可能击倒本枚棋子。双方伤害仍同时结算。</p>':''}`;
     }else html+='<div class="review-head"><h3>先选招，再锁定</h3>'+publicJump+'</div><div class="review-empty"><p>点选招式，查看面对不同招式时会造成多少伤害、损失多少生命。</p><p>选错可以更换，锁定前不会耗牌。也可先点「选招建议」。</p></div>';
-    return html+'</aside>';
+    return html+(lesson?'':'<button class="quiet choice-return" data-fight="choices">返回选择招式</button>')+'</aside>';
   }
   function combatVerdict(r){
     const {a,d}=fightUI,winner=r.outcome==='a'?a:r.outcome==='d'?d:null;
@@ -1254,7 +1279,8 @@ globalThis.YiwuComputer = (() => {
     const computerLocked=p=>opponent==='computer'&&p.side==='black'&&['pickA','pickD'].includes(ui.step);
     let html=`<div class="fight-header"><div class="modal-head"><h2>${lesson?'教学演示':'武斗交锋'}</h2><button class="quiet fight-home" data-action="home">返回首页</button><button class="quiet fight-home" data-action="export" aria-live="polite" title="仅导出已揭示招式，不会自动上传">导出试玩记录</button><span class="round-badge">${ui.step==='retreated'?'已交战 '+round+' 轮':'第 '+round+' / 6 轮'}</span></div>${ui.step==='retreated'?'':`<div class="duel-progress"><span class="${a.side} ${ui.step==='pickA'||ui.step==='handoffA'?'now':''}">${E.SIDE[a.side]}${['handoffD','pickD','result'].includes(ui.step)||computerLocked(a)?'已锁定':'选招'}</span><span class="${d.side} ${ui.step==='pickD'||ui.step==='handoffD'?'now':''}">${E.SIDE[d.side]}${ui.step==='result'||computerLocked(d)?'已锁定':'选招'}</span><span class="${ui.step==='result'?'now':''}">双方揭示</span></div>`}${fightersHTML()}</div>${lesson?'<div class="fight-lesson" role="status">'+lessonHTML(true)+'</div>':''}<div class="fight-body">`,footer='';
     html+=combatSceneHTML(fight.open&&previousStep!==ui.step&&['result','retreated'].includes(ui.step));
-    html+=combatHistoryHTML(previousStep===ui.step&&$('combat-history')?.open);
+    const history=combatHistoryHTML(previousStep===ui.step&&$('combat-history')?.open);
+    if(!['pickA','pickD'].includes(ui.step))html+=history;
     if(s.phase==='ended')html+=`<div class="match-verdict ${s.winner}" role="status"><strong>整局结束 · ${outcomeTitle()}</strong><span>${esc(s.reason)}</span></div>`;
     if(ui.step==='handoffA'||ui.step==='handoffD'){
       const who=ui.step==='handoffA'?a:d;
@@ -1267,7 +1293,7 @@ globalThis.YiwuComputer = (() => {
       html+='</div><div class="learned-heading">已培养的招式<span>使用后耗尽</span></div><div class="skill-actions '+who.side+'">';
       for(const id of who.learned){const c=E.CARDS[id],reason=E.availability(s,who,id,ctx)||(lesson&&id!==lessonChoice()?'请按本课指引选招':'');html+=`<button class="action skill ${lesson&&id===lessonChoice()?'lesson-target':''} ${ui.pending===id?'chosen':''}" data-choice="${id}" aria-pressed="${ui.pending===id}" ${reason?'disabled':''}>${moveIcon(c.type)}<strong>${c.name}<span class="card-type">${E.TYPE[c.type]}</span></strong><span>${c.text}</span><small>${reason||'仅本枚棋子可用'}</small></button>`;}
       html+='</div><p class="tip">斩击、破势会释放全部气势；若被克制，气势仍消耗但不增伤。架势保留气势。</p>';
-      html+='</section>'+reviewHTML(who)+'</div>'+publicCardsHTML(who);
+      html+='</section>'+reviewHTML(who)+'</div>'+history+publicCardsHTML(who);
       const card=E.BASE[ui.pending]||E.CARDS[ui.pending];
       footer=`<div class="pick-confirm-info ${who.side}" aria-live="polite"><strong>${E.SIDE[who.side]} · ${card?'已选「'+card.name+'」':'尚未选招'}</strong><span>${lesson?'教学对手已锁定固定出招；确认后揭示。':opponent==='computer'?'电脑已锁定；确认后同时揭示。':'请在锁定前确认，交接时隐藏所选招式。'}</span>${card?'<button class="quiet review-jump" data-fight="review">查看推演</button>':''}</div><div class="fight-controls"><button class="quiet" data-fight="hint">选招建议</button>${ui.step==='pickA'&&ctx.round>=2&&(!lesson||lesson.stage==='retreat')?'<button class="quiet" data-fight="retreat">'+E.SIDE[a.side]+'主动撤回</button>':''}<button class="primary" data-fight="commit" ${card?'':'disabled'}>${opponent==='computer'||ui.step==='pickD'?'锁定并揭示':'锁定招式'}</button></div>`;
       if(lesson?.stage==='retreat')footer='<p class="tip">本课请撤回，保留棋子并观察持续消耗。</p><button class="primary" data-fight="retreat">红方主动撤回</button>';
@@ -1353,7 +1379,11 @@ globalThis.YiwuComputer = (() => {
         $('combat-scene').outerHTML=combatSceneHTML(true);
         $('fight-content').querySelector('.fight-body')?.scrollTo(0,0);return;
       }
-      if(button.dataset.fight==='review'||button.dataset.fight==='public-cards'){$('fight-content').querySelector(button.dataset.fight==='review'?'.pick-review':'.public-cards')?.scrollIntoView({block:'start'});return;}
+      if(['review','public-cards','choices'].includes(button.dataset.fight)){
+        if(!['pickA','pickD'].includes(fightUI.step))return;
+        const target=button.dataset.fight==='choices'?$('fight-content').querySelector('.pick-options .chosen')||$('fight-content').querySelector('.pick-options [data-choice]:not(:disabled)'):$('fight-content').querySelector(button.dataset.fight==='review'?'.pick-review':'.public-cards');
+        target?.scrollIntoView({block:'start'});target?.focus({preventScroll:true});return;
+      }
       if(button.dataset.fight==='ready'){
         if(!['handoffA','handoffD'].includes(fightUI.step))return;
         fightUI.step=fightUI.step==='handoffA'?'pickA':'pickD';fightUI.pending=null;fightUI.hint='';
