@@ -586,6 +586,7 @@ function retreatReady() {
         lesson: null, fight: {step: 'pickD', first: null, pending: 'focus', computerChoice}}}));
     const p = page(saved); p.node('resume').onclick(); const before = JSON.stringify(p.ui.state), html = p.node('fight-content').innerHTML;
     assert(html.includes('本子本轮可存活')); assert(html.includes('本轮挑战：必定失败'));
+    assert(html.split('<div class="fight-footer">')[1].includes('data-fight="choices">返回选招</button>'), '固定底栏应可直接返回选招');
     assert(html.includes('aria-label="本轮挑战结果"'));
     assert(html.includes('已达到 4 次棋盘行动的限制'));
     if (visible) assert.equal(html, visible, '预估不得暴露电脑已锁定的暗招'); else visible = html;

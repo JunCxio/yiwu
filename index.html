@@ -74,7 +74,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
   .fight-header .duel-side,.fight-header .duel-health{grid-column:1/-1}
   .fight-header .duel-identity{grid-column:1;grid-row:2;min-width:0}
   .fight-header .duel-resources{grid-column:2;grid-row:2;display:grid;justify-items:end;gap:0;margin:0}
-  #fight:is([data-step="pickA"],[data-step="pickD"]) .pick-confirm-info{width:auto;flex:none}
+  #fight:is([data-step="pickA"],[data-step="pickD"]) .pick-confirm-info{width:auto;flex:1}
   #fight:is([data-step="pickA"],[data-step="pickD"]) .fight-controls{width:auto;flex:1}
   #fight:is([data-step="pickA"],[data-step="pickD"]) .fight-footer{flex-wrap:nowrap}
 }
@@ -126,7 +126,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.55 · 终局间距与回应说明</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.56 · 武斗快捷返回选招</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -643,9 +643,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.55',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.56',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.55-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.56-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -1515,7 +1515,7 @@ globalThis.YiwuComputer = (() => {
       html+='</div><p class="tip">斩击、破势会释放全部气势；若被克制，气势仍消耗但不增伤。架势保留气势。</p>';
       html+='</section>'+reviewHTML(who)+'</div>'+history+publicCardsHTML(who);
       const card=E.BASE[ui.pending]||E.CARDS[ui.pending];
-      footer=`<div class="pick-confirm-info ${who.side}" aria-live="polite"><strong>${E.SIDE[who.side]} · ${card?'已选「'+card.name+'」':'尚未选招'}</strong><span>${lesson?'教学对手已锁定固定出招；确认后揭示。':opponent==='computer'?'电脑已锁定；确认后同时揭示。':'请在锁定前确认，交接时隐藏所选招式。'}</span>${card?'<button class="quiet review-jump" data-fight="review">查看推演</button>':''}${combatForecastHTML(who,ui.pending)}</div><div class="fight-controls"><button class="quiet" data-fight="hint">选招建议</button>${ui.step==='pickA'&&ctx.round>=2&&(!lesson||lesson.stage==='retreat')?'<button class="quiet" data-fight="retreat">'+E.SIDE[a.side]+'主动撤回</button>':''}<button class="primary" data-fight="commit" ${card?'':'disabled'}>${opponent==='computer'||ui.step==='pickD'?'锁定并揭示':'锁定招式'}</button></div>`;
+      footer=`<div class="pick-confirm-info ${who.side}" aria-live="polite"><strong>${E.SIDE[who.side]} · ${card?'已选「'+card.name+'」':'尚未选招'}</strong><span>${lesson?'教学对手已锁定固定出招；确认后揭示。':opponent==='computer'?'电脑已锁定；确认后同时揭示。':'请在锁定前确认，交接时隐藏所选招式。'}</span>${card?'<button class="quiet review-jump" data-fight="review">查看推演</button>':''}${lesson?'':'<button class="quiet review-jump" data-fight="choices">返回选招</button>'}${combatForecastHTML(who,ui.pending)}</div><div class="fight-controls"><button class="quiet" data-fight="hint">选招建议</button>${ui.step==='pickA'&&ctx.round>=2&&(!lesson||lesson.stage==='retreat')?'<button class="quiet" data-fight="retreat">'+E.SIDE[a.side]+'主动撤回</button>':''}<button class="primary" data-fight="commit" ${card?'':'disabled'}>${opponent==='computer'||ui.step==='pickD'?'锁定并揭示':'锁定招式'}</button></div>`;
       if(lesson?.stage==='retreat')footer='<p class="tip">本课请撤回，保留棋子并观察持续消耗。</p><button class="primary" data-fight="retreat">红方主动撤回</button>';
     }else if(ui.step==='result'){
       const r=ui.result,winner=r.outcome==='a'?a:r.outcome==='d'?d:null,verdict=combatVerdict(r);
