@@ -99,7 +99,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.27 · 残局交战目标核对</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.28 · 行动时限与后果提示</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -568,9 +568,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.27',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.28',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.27-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.28-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -872,7 +872,8 @@ globalThis.YiwuComputer = (() => {
   function previewHTML(){
       const p=E.get(s,selected);
       const d=E.get(s,preview),ctx=E.context(s,p,d),opening=openingAdvice(ctx);
-      return `<div class="preview-header"><h2 id="preview-title">交战预览</h2><p>${E.label(p)} 进攻 ${E.label(d)}</p></div><div class="preview-body">${challengeCombatHTML(ctx)}<div class="stats"><div><b>${p.hp}</b><small>进攻方生命</small></div><div><b>${d.hp}</b><small>守方生命</small></div><div><b>6</b><small>最多轮数</small></div></div><div class="card"><h3>进攻方输出 ${E.power(ctx,true)}</h3>${supportDetailsHTML(ctx,true)}</div><div class="card"><h3>守方输出 ${E.power(ctx,false)}</h3>${supportDetailsHTML(ctx,false)}</div><div class="card"><h3>首轮判断</h3>${opening.reason?'<p>'+esc(opening.reason)+'</p>':opening.risk?'<p class="preview-risk">'+esc(opening.risk)+'</p>':'<p>未发现可确保首轮击倒的招式。双方仍需按克制选择。</p>'}<p class="tip">按双方当前全部可用招式判断；不预测暗招，不判断后续轮次。</p></div>${E.power(ctx,true)<E.power(ctx,false)?'<p class="preview-risk">对方支援更多：输出 '+E.power(ctx,true)+' 对 '+E.power(ctx,false)+'。可先调动友军支援，或换一个交战目标。</p>':''}<p class="tip">进攻方首轮有效伤害加 1。支援关系在开战时固定；伤势和招式消耗保留。</p></div><div class="preview-actions"><button class="quiet" data-action="cancel-preview">取消进攻</button>${lesson?.stage==='support-preview'?'<button class="primary lesson-target" data-action="lesson-finish">完成教学</button>':'<button class="primary'+(lesson?' lesson-target':'')+'" data-action="attack">发起武斗</button>'}</div>`;
+      const risk=actionOutcomeRisk({type:'move',id:p.id,x:d.x,y:d.y});
+      return `<div class="preview-header"><h2 id="preview-title">交战预览</h2><p>${E.label(p)} 进攻 ${E.label(d)}</p></div><div class="preview-body">${challengeCombatHTML(ctx)}${risk?'<p class="draw-warning" role="status">'+esc(risk)+'</p>':''}<div class="stats"><div><b>${p.hp}</b><small>进攻方生命</small></div><div><b>${d.hp}</b><small>守方生命</small></div><div><b>6</b><small>最多轮数</small></div></div><div class="card"><h3>进攻方输出 ${E.power(ctx,true)}</h3>${supportDetailsHTML(ctx,true)}</div><div class="card"><h3>守方输出 ${E.power(ctx,false)}</h3>${supportDetailsHTML(ctx,false)}</div><div class="card"><h3>首轮判断</h3>${opening.reason?'<p>'+esc(opening.reason)+'</p>':opening.risk?'<p class="preview-risk">'+esc(opening.risk)+'</p>':'<p>未发现可确保首轮击倒的招式。双方仍需按克制选择。</p>'}<p class="tip">按双方当前全部可用招式判断；不预测暗招，不判断后续轮次。</p></div>${E.power(ctx,true)<E.power(ctx,false)?'<p class="preview-risk">对方支援更多：输出 '+E.power(ctx,true)+' 对 '+E.power(ctx,false)+'。可先调动友军支援，或换一个交战目标。</p>':''}<p class="tip">进攻方首轮有效伤害加 1。支援关系在开战时固定；伤势和招式消耗保留。</p></div><div class="preview-actions"><button class="quiet" data-action="cancel-preview">取消进攻</button>${lesson?.stage==='support-preview'?'<button class="primary lesson-target" data-action="lesson-finish">完成教学</button>':'<button class="primary'+(lesson?' lesson-target':'')+'" data-action="attack">发起武斗</button>'}</div>`;
   }
   function cardTargets(p,id){
     const targets=s.pieces.filter(q=>q.side!==p.side&&E.canMove(s,p,q.x,q.y));
@@ -911,15 +912,23 @@ globalThis.YiwuComputer = (() => {
     const warning=(times>=2?'当前局面已出现两次，再次形成相同完整局面将判和。':'')+(left<=20?'再有 '+left+' 次棋盘行动没有损血，将判和。':'');
     return `<section class="draw-progress ${warning?'is-warning':''}" aria-label="判和进度">${warning?'<p class="draw-warning" role="status">'+warning+'</p>':''}<details><summary><strong>判和进度</strong><span>无伤 ${s.quiet} / ${E.DRAW.quiet}</span><span>当前局面 ${times} / ${E.DRAW.repetitions}</span><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" aria-hidden="true"><path d="m3 6 5 5 5-5"/></svg></summary><p>双方行动均计数，整场武斗计一次。移动、整备和无伤武斗不会清零；造成损血的武斗结束后，无伤计数归零。</p><p>各枚棋子的身份、位置、生命、已学牌、耗尽状态和行动方均相同，才算同一完整局面。损血只重置无伤计数，不会清除局面出现记录。</p></details><progress value="${s.quiet}" max="${E.DRAW.quiet}" aria-label="连续无伤行动"></progress></section>`;
   }
-  function actionDrawRisk(action){
+  function actionOutcomeRisk(action){
     if(lesson||s.phase!=='board')return '';
-    if(action.type==='move'&&E.at(s,action.x,action.y))return s.quiet===E.DRAW.quiet-1?'发起武斗不会立即清零无伤计数。若本场没有造成损血，结束时可能判和；最终以交战结果为准。':'';
+    const challenge=E.CHALLENGES[s.scenario],left=challenge?challenge.limit-s.ply:0;
+    const deadline=challenge&&left<=2?'本关仅剩 '+left+' 次双方棋盘行动，本次也计入。':'';
+    if(action.type==='move'&&E.at(s,action.x,action.y)){
+      const limit=deadline+(deadline?(left===1?'本场是时限内最后一次行动，需在本场完成目标。':'若本场未完成挑战，结束后仅剩 '+(left-1)+' 次棋盘行动。'):'');
+      const draw=s.quiet===E.DRAW.quiet-1&&(!challenge||left>1)?'发起武斗不会立即清零无伤计数。若本场没有造成损血，结束时可能判和；最终以交战结果为准。':'';
+      return [limit,draw].filter(Boolean).join(' ');
+    }
     const next=JSON.parse(JSON.stringify(s));
     if(action.type==='move')Yiwu.move(next,action.id,action.x,action.y);
     else if(action.type==='rest')Yiwu.rest(next,action.id,action.card);
     else Yiwu.pass(next);
-    if(next.phase==='ended')return next.winner==='draw'?'执行此步将直接判和：'+next.reason+'。':'';
-    return next.repetitions[E.key(next)]>=2?'此步后的完整局面将是第二次出现；以后再次形成，将判和。':'';
+    if(next.phase==='ended')return next.winner==='draw'?'执行此步将直接判和：'+next.reason+'。':challenge?'执行此步将直接结束挑战：'+next.reason:'';
+    const limit=deadline?deadline+'此步后仅剩 '+(left-1)+' 次棋盘行动，轮到'+E.SIDE[next.turn]+'。':'';
+    const repetition=next.repetitions[E.key(next)]>=2?'此步后的完整局面将是第二次出现；以后再次形成，将判和。':'';
+    return [limit,repetition].filter(Boolean).join(' ');
   }
   function restOptionsHTML(){
     if(lesson||s.phase!=='board'||computerTurn())return '';
@@ -931,7 +940,7 @@ globalThis.YiwuComputer = (() => {
     pendingRest={id,card,fromList};
     $('rest-target').textContent=E.label(p)+' · '+E.CARDS[card].name+' · '+(p.x+1)+' 路 '+(10-p.y)+' 线';
     $('rest-content').innerHTML='<p id="rest-cost" class="rest-cost">占用'+E.SIDE[p.side]+'本次棋盘行动，并让出走棋机会。</p><p>仅恢复「'+E.CARDS[card].name+'」这一张牌；生命保持 '+p.hp+' / 18，棋子留在原位。</p><p class="rest-effect"><b>招式效果：</b>'+E.CARDS[card].text+'</p><p class="tip">恢复后仍需满足招式的使用条件。返回棋盘可继续考虑，不消耗行动；刷新会关闭本次确认。</p>';
-    const drawRisk=actionDrawRisk({type:'rest',id,card});if(drawRisk)$('rest-content').innerHTML+='<p class="draw-warning" role="status">'+drawRisk+'</p>';
+    const risk=actionOutcomeRisk({type:'rest',id,card});if(risk)$('rest-content').innerHTML+='<p class="draw-warning" role="status">'+esc(risk)+'</p>';
     restDialog.showModal();$('cancel-rest').focus();
   }
   function setupRosterHTML(){
@@ -1074,8 +1083,8 @@ globalThis.YiwuComputer = (() => {
     $('setup-roster').hidden=s.phase!=='setup';$('setup-roster').innerHTML=setupRosterHTML();$('setup-roster').dataset.side=setupSide;
     if(s.phase==='setup'&&previousSetupSide===setupSide&&setupList)$('setup-roster').querySelector('.setup-list').scrollTop=setupScroll;
     $('endgame').innerHTML=endgameHTML();$('endgame').hidden=!!lesson||s.phase!=='ended';$('endgame').className='endgame '+(s.phase==='ended'?s.winner:'');
-    const challenge=E.CHALLENGES[s.scenario];
-    $('challenge-info').hidden=!challenge;$('challenge-info').innerHTML=challenge?'<h2>残局挑战 · '+challenge.title+'</h2><p>第 '+(CHALLENGE_MODES.indexOf(s.scenario)+1)+' / '+CHALLENGE_MODES.length+' 关 · '+challenge.goal+'</p><p>已完成 '+s.ply+' / '+challenge.limit+' 次棋盘行动（双方行动均计数，整场武斗计一次）。</p><p>'+challenge.tip+'</p><small>预置残局，阵容与培养不对等，不计公平对局；电脑使用所选难度，自由走棋、暗选招式。</small>':'';
+    const challenge=E.CHALLENGES[s.scenario],left=challenge?Math.max(0,challenge.limit-s.ply):0;
+    $('challenge-info').hidden=!challenge;$('challenge-info').innerHTML=challenge?'<h2>残局挑战 · '+challenge.title+'</h2><p>第 '+(CHALLENGE_MODES.indexOf(s.scenario)+1)+' / '+CHALLENGE_MODES.length+' 关 · '+challenge.goal+'</p><p'+(s.phase!=='ended'&&left<=2?' class="draw-warning"':'')+'>已完成 '+s.ply+' / '+challenge.limit+' 次棋盘行动'+(s.phase!=='ended'?'；剩余 '+left+' 次'+(s.phase==='duel'?'（含本场武斗）':''):'')+'。双方行动均计数，整场武斗计一次。</p><p>'+challenge.tip+'</p><small>预置残局，阵容与培养不对等，不计公平对局；电脑使用所选难度，自由走棋、暗选招式。</small>':'';
     $('lesson').hidden=!lesson;$('lesson').innerHTML=lessonHTML();
     $('game-setting').textContent=(lesson?'分步教学':s.scenario==='quick'?'快速对局':s.scenario==='full'?'标准棋局':challenge?'残局 · '+challenge.title:'规则试验')+' · '+(lesson?'固定演示':opponent==='local'?'同机双人':difficulty==='practice'?'练习电脑':'标准电脑');
     $('phase').textContent=lesson?'分步教学':s.phase==='ended'?'对局结束':challenge?'残局挑战':!['full','quick'].includes(s.scenario)?'规则试验':s.phase==='setup'?'配牌阶段':'第 '+(Math.floor(s.ply/2)+1)+' 回合';
@@ -1152,7 +1161,7 @@ globalThis.YiwuComputer = (() => {
   }
   function boardAdvice(action){
     const advice={title:'走棋建议',reasons:[],risks:[],note:'依据当前站位、生命、可用牌和己方阵形重复情况评分；未搜索对手后续回应，不代表武斗必胜。'};
-    const drawRisk=actionDrawRisk(action);if(drawRisk)advice.risks.push(drawRisk);
+    const risk=actionOutcomeRisk(action);if(risk)advice.risks.push(risk);
     if(action.type==='pass'){
       advice.reasons.push('当前没有合法移动或可整备招式，只能跳过受阻回合。');
       advice.risks.push('行动交给对手；仍计入重复局面与无伤行动判和。');return advice;

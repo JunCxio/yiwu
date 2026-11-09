@@ -24,7 +24,7 @@ function page(saved = storage()) {
   vm.runInContext(scripts[0], box); vm.runInContext(scripts[1], box);
   const startup = "  showScreen('home');\n})();";
   assert(scripts[2].includes(startup));
-  vm.runInContext(scripts[2].replace(startup, "globalThis.ui={init,nextChallenge,beginFight,challengeCombatHTML,get state(){return s;},get screen(){return screen;},get difficulty(){return difficulty;}};\n" + startup), box);
+  vm.runInContext(scripts[2].replace(startup, "globalThis.ui={init,nextChallenge,beginFight,challengeCombatHTML,actionOutcomeRisk,requestRest,get state(){return s;},get screen(){return screen;},get difficulty(){return difficulty;}};\n" + startup), box);
   return {ui: box.ui, E: box.Yiwu, node, saved, timerCount: () => timers.size,
     cell: (x, y) => node('grid').handlers.click({target: {closest: () => ({dataset: {x, y}})}}),
     pick: choice => node('fight-content').handlers.click({target: {closest: () => ({dataset: {choice}, disabled: false})}}),
@@ -154,4 +154,62 @@ function finished(won = true) {
   assert.equal(note(restored.node('fight-content').innerHTML), original);
   assert.deepEqual(JSON.parse(restored.saved.getItem('yiwu.autosave')).commands, JSON.parse(saved).commands);
 }
-console.log('残局流程与目标核对：10 项检查通过。');
+function nearDeadline() {
+  const p = page(), E = p.E, state = E.create('challenge-relay');
+  const commands = [['create', 'challenge-relay'], ['rest', 'veteran', 'rook_crush'], ['move', 'black_king', 5, 1], ['move', 'hero', 1, 3], ['move', 'black_king', 5, 0]];
+  for (const [name, ...args] of commands.slice(1)) E[name](state, ...args);
+  assert.equal(state.ply, 4); assert.equal(state.phase, 'board'); assert.equal(state.turn, 'red');
+  p.saved.setItem('yiwu.autosave', JSON.stringify({version: 1, commands, ui: {opponent: 'computer', difficulty: 'standard', selected: 'veteran', preview: null, setupSide: 'red', focusIndex: 49, lesson: null, fight: null}}));
+  const restored = page(p.saved); restored.node('resume').onclick(); return restored;
+}
+{
+  const p = nearDeadline(), before = p.saved.getItem('yiwu.autosave'), state = JSON.stringify(p.ui.state);
+  assert(p.node('challenge-info').innerHTML.includes('剩余 2 次'));
+  p.ui.requestRest('veteran', 'rook_hold', true);
+  assert(p.node('rest-content').innerHTML.includes('此步后仅剩 1 次棋盘行动，轮到黑方'));
+  assert(p.node('rest-content').innerHTML.includes('不回血') || p.node('rest-content').innerHTML.includes('生命保持 5 / 18'));
+  p.node('cancel-rest').onclick();
+  assert.equal(JSON.stringify(p.ui.state), state);
+  assert.equal(p.saved.getItem('yiwu.autosave'), before);
+  const refreshed = page(p.saved); refreshed.node('resume').onclick();
+  assert(refreshed.node('challenge-info').innerHTML.includes('剩余 2 次'));
+}
+{
+  const p = nearDeadline(), before = JSON.stringify(p.ui.state);
+  p.action('scout'); p.cell(4, 5); p.cell(4, 6);
+  assert(p.node('move-preview').innerHTML.includes('此步后仅剩 1 次棋盘行动，轮到黑方'));
+  p.action('cancel-move'); assert.equal(JSON.stringify(p.ui.state), before);
+  const action = {type: 'move', id: 'veteran', x: 4, y: 6};
+  p.E.move(p.ui.state, action.id, action.x, action.y);
+  const blackBefore = JSON.stringify(p.ui.state), risk = p.ui.actionOutcomeRisk({type: 'move', id: 'black_king', x: 5, y: 1});
+  assert(risk.includes('执行此步将直接结束挑战') && risk.includes('6 次棋盘行动'));
+  assert.equal(JSON.stringify(p.ui.state), blackBefore);
+}
+{
+  const p = page(); p.ui.init('challenge-tempo'); const s = p.ui.state, E = p.E;
+  E.rest(s, 'hero', 'rook_crush'); E.move(s, 'black_king', 5, 1);
+  const before = JSON.stringify(s);
+  p.cell(4, 4);
+  assert(p.node('preview-content').innerHTML.includes('若本场未完成挑战，结束后仅剩 1 次棋盘行动'));
+  assert.equal(JSON.stringify(s), before);
+  E.move(s, 'hero', 4, 4); E.resolve(s, 'break', 'guard');
+  assert.equal(s.winner, 'red');
+  const q = page(); q.ui.init('challenge-tempo'); const final = q.ui.state;
+  q.E.rest(final, 'hero', 'rook_crush'); q.E.move(final, 'black_king', 5, 1); q.E.move(final, 'red_king', 4, 9);
+  assert(q.ui.actionOutcomeRisk({type: 'move', id: 'target', x: 4, y: 5}).includes('本场是时限内最后一次行动'));
+  final.quiet = 79;
+  assert(!q.ui.actionOutcomeRisk({type: 'move', id: 'target', x: 4, y: 5}).includes('结束时可能判和'));
+  q.E.move(final, 'target', 4, 5);
+  while (final.phase === 'duel') q.E.resolve(final, 'guard', 'break');
+  assert.equal(final.ply, 4); assert.equal(final.winner, 'red');
+}
+{
+  const p = page(); p.ui.init('attrition'); const s = p.ui.state;
+  s.quiet = 79; const before = JSON.stringify(s); p.cell(4, 4);
+  const preview = p.node('preview-content').innerHTML;
+  assert(preview.includes('若本场没有造成损血，结束时可能判和'));
+  assert(!preview.includes('若本场没有造成损血，结束时必定判和'));
+  p.action('cancel-preview'); assert.equal(JSON.stringify(s), before);
+  s.quiet = 0; p.cell(4, 4); assert(!p.node('preview-content').innerHTML.includes('结束时可能判和'));
+}
+console.log('残局流程、目标与行动后果：14 项检查通过。');
