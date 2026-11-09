@@ -126,7 +126,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.58 · 结算文字与操作区布局</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.59 · 普通武斗的胜负判断</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -477,7 +477,7 @@ globalThis.YiwuComputer = (() => {
   }
   function combatScore(s,ctx,aId,dId){
     const a=E.get(s,ctx.a),d=E.get(s,ctx.d);
-    const end=E.CHALLENGES[s.scenario]&&combatOutcome(s,ctx,aId,dId);
+    const end=combatOutcome(s,ctx,aId,dId);
     if(end)return end.winner==='draw'?0:end.winner===a.side?1000:-1000;
     const r=E.roundDamage(ctx,aId,dId),wa=a.kind==='king'?3:1,wd=d.kind==='king'?3:1;
     const deadA=r.toA>=a.hp,deadD=r.toD>=d.hp;
@@ -495,7 +495,7 @@ globalThis.YiwuComputer = (() => {
     if(winning.length)return winning.map(id=>({id,weight:1/winning.length}));
     const end=retreatOutcome(s);
     if(side===a.side&&end?.winner===side)return [{id:'retreat',weight:1}];
-    const isA=side===a.side,loses=id=>E.CHALLENGES[s.scenario]&&id!=='retreat'&&choices(s,isA?d:a,ctx).every(other=>
+    const isA=side===a.side,loses=id=>(E.CHALLENGES[s.scenario]||(isA?a:d).kind==='king')&&id!=='retreat'&&choices(s,isA?d:a,ctx).every(other=>
       combatOutcome(s,ctx,isA?id:other,isA?other:id)?.winner===E.OTHER[side]);
     if(ctx.round===1){
       const opening=battleOutlook(s,ctx);
@@ -651,9 +651,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.58',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.59',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.58-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.59-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}

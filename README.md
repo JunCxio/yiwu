@@ -1,6 +1,6 @@
 # 弈武
 
-象棋走位与卡牌武斗结合的二维回合制游戏。当前版本为 **0.6.58 开发测试版**，欢迎试玩并反馈。
+象棋走位与卡牌武斗结合的二维回合制游戏。当前版本为 **0.6.59 开发测试版**，欢迎试玩并反馈。
 
 **[直接试玩](https://juncxio.github.io/yiwu/)** · **[提交试玩反馈](https://github.com/JunCxio/yiwu/issues/new?template=feedback.md)**
 
@@ -54,6 +54,8 @@
 普通棋局的交战预览与走棋建议会补充「将帅漏防风险」：某些招式虽能在首轮吃子并保住进攻子，吃子后的落位却会让对手下一次行动确定击倒己方将帅。两条说明同时展示，避免把本子存活误解为整局安全。判断复用实际首轮结算，不消耗行动或培养牌；仍有阻挡、无法确认击倒或本局已结束时，不作此项确定败局提示。
 
 标准电脑与选招建议在将帅首轮进攻时，会比较多种可确保存活吃子的招式。若存在面对全部合法回应都能避开战后下一手确定击倒的选择，就排除有此风险的其他招式。直接获胜仍优先；守方反杀后轮到己方行动，不套用敌方立即进攻的判断。没有完整避险替代时仍返回合法选择，此检查不代表后续安全，也不读取暗招。
+
+普通棋局的武斗也按实际终局评估：本轮已经获胜、判负或判和时，不再附加伤害、气势或耗牌收益。将帅参战时，若有其他选择，标准电脑与选招建议会排除面对对手全部合法招式都直接判负的招式；剩余选择仍可能被某些回应击败，不能视为保证存活。判断只用公开状态和合法招式，不读取暗选，练习电脑保留原有分布。本批对照没有证明整体更强或更快，部分棋局变长，完整范围见测试文档。
 
 ## 主要规则
 
@@ -112,4 +114,4 @@ python -m http.server 8000
 
 然后访问 `http://localhost:8000/`。
 
-已安装 Node.js 时，可运行 `node tests/computer-opening.cjs` 检查首轮判断及电脑决策，运行 `node tests/computer-safety.cjs` 检查将帅安全与终局判断，运行 `node tests/computer-retreat.cjs` 检查撤回的直接胜负与判和，运行 `node tests/combat-help.cjs` 检查配牌条件、支援、吃子漏防与兵卒底线说明，运行 `node tests/challenge-flow.cjs` 检查残局目标、行动后果、切换与续局，运行 `node tests/piece-panel.cjs` 检查棋子招式分组与配牌、整备入口，均不需要安装依赖。
+已安装 Node.js 时，可运行 `node tests/computer-opening.cjs` 检查首轮判断及电脑决策，运行 `node tests/computer-safety.cjs` 检查将帅安全与终局判断，运行 `node tests/computer-retreat.cjs` 检查撤回的直接胜负与判和，运行 `node tests/computer-combat.cjs` 检查普通武斗终局评分与将帅必败招式排除，运行 `node tests/combat-help.cjs` 检查配牌条件、支援、吃子漏防与兵卒底线说明，运行 `node tests/challenge-flow.cjs` 检查残局目标、行动后果、切换与续局，运行 `node tests/piece-panel.cjs` 检查棋子招式分组与配牌、整备入口，均不需要安装依赖。
