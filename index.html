@@ -55,12 +55,14 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 @media(max-width:480px){.endgame-actions [data-action="next-challenge"]{flex-basis:100%}}
 .support-sources{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:5px}.support-sources li{display:flex;justify-content:space-between;flex-wrap:wrap;gap:3px 12px;padding:5px 8px;border-left:2px solid #a5b8cc;background:#183129;font-size:12px}.support-sources strong{font-weight:500}.support-sources span{color:var(--muted);font-variant-numeric:tabular-nums}
 .challenge-check{margin:10px 0;padding:10px 12px;border-left:3px solid #a6bc8c;background:#243e30;overflow-wrap:anywhere}.challenge-check strong,.challenge-check summary{font-size:13px;font-weight:700;color:#e0e9c6}.challenge-check p{font-size:13px;line-height:1.6;margin:4px 0}.challenge-check small{display:block;color:#c5d2bd;font-size:12px;line-height:1.6}.challenge-check.risk{border-color:#e3ab81;background:#49382e}.challenge-check.risk strong,.challenge-check.risk summary{color:#ffd0a8}details.challenge-check{padding:0 12px}details.challenge-check summary{min-height:44px;padding:10px 0;cursor:pointer}details.challenge-check small{padding-bottom:10px}
-@media(max-width:760px){
+@media(max-width:760px), (min-width:1000px){
   #fight:is([data-step="pickA"],[data-step="pickD"]) .combat-scene{min-height:0;padding:5px 9px;grid-template-columns:minmax(0,1fr) 8px minmax(0,1fr)}
   #fight:is([data-step="pickA"],[data-step="pickD"]) .combat-scene:before,
   #fight:is([data-step="pickA"],[data-step="pickD"]) .combat-scene :is(.scene-heading,.scene-caption,.stage-move,.stage-status){display:none}
   #fight:is([data-step="pickA"],[data-step="pickD"]) .stage-fighter{display:flex;align-items:center;justify-content:center;gap:6px}
   #fight:is([data-step="pickA"],[data-step="pickD"]) :is(.stage-figure,.pixel-sprite){width:32px;height:40px;margin:0;flex:none}
+}
+@media(max-width:760px){
   .pick-confirm-info .review-jump,.choice-return,.public-jump{min-height:44px}
   .choice-return{display:block;width:100%;margin-top:12px}
 }
@@ -83,6 +85,10 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 
 .unlearned-cards{margin-top:10px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}.unlearned-cards>summary{min-height:44px;padding:10px 0;cursor:pointer}.unlearned-cards[open]>summary{color:var(--gold)}.unlearned-cards>.tip{margin:0 0 8px;font-size:12px}
 @media(min-width:1000px){
+  .pick-options .actions{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .pick-options .learned-heading{margin-top:6px}.pick-options .skill-actions{margin-top:3px}
+  #fight:is([data-step="pickA"],[data-step="pickD"]) .combat-scene{margin-bottom:6px}
+  .fight-body .choice-heading{padding-block:0}
   .app{height:100dvh;min-height:600px;max-width:1500px;padding:12px 20px;display:flex;flex-direction:column}
   .app>header{flex:none;padding-bottom:9px;gap:16px}.app>header h1{font-size:32px}
   .app>.footer{flex:none;margin-top:8px;padding-top:6px;font-size:11px;line-height:1.5}
@@ -116,6 +122,12 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
   .home-settings>label{margin:8px 0 4px}.home-settings .tip{margin:4px 0}.home-settings select,.home-settings button{min-height:44px}
   .mode-description{min-height:0;margin:6px 0;padding:5px 0;font-size:12px}.resume-wrap{margin-top:8px;display:grid;grid-template-columns:1fr 1fr;column-gap:8px;align-items:start}.resume-wrap p{grid-column:1/-1;margin:6px 0}.resume-wrap button{font-size:13px;padding-inline:8px}
 }
+@media(min-width:1000px) and (max-height:720px){
+  #fight:is([data-step="pickA"],[data-step="pickD"],[data-step="handoffA"],[data-step="handoffD"]) .combat-scene{display:none}
+}
+@media(min-width:1000px) and (min-height:700px){
+  .pick-options{position:sticky;top:3px}
+}
 </style>
 </head>
 <body>
@@ -136,7 +148,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.33 · 棋子招式分组</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.34 · 桌面选招布局</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -613,9 +625,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.33',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.34',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.33-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.34-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
