@@ -52,6 +52,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 .combat-history{border:1px solid #637461;border-radius:7px;margin:0 0 14px;padding:0 12px;background:#203b32;font-size:12px;color:#d9e2d4}.combat-history>summary{cursor:pointer;min-height:48px;padding:9px 0;line-height:1.6}.combat-history>summary strong{font-size:13px;color:#f1dfad}.combat-history>summary>span{display:block;margin-left:17px;color:#c5d2bd;font-variant-numeric:tabular-nums}.combat-history>p{font-size:11px;color:var(--muted);margin:3px 0 10px}.combat-history>ol{list-style:none;margin:0;padding:0;max-height:none}.combat-history>ol>li{padding:11px 0;border-top:1px solid #4f6654}.combat-round-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 10px;margin-bottom:8px}.combat-round-head>span{color:#e8d7a7}.combat-round-pair{display:grid;grid-template-columns:1fr 1fr;gap:8px}.combat-round-side{min-width:0;padding:8px 10px;border-left:3px solid #cf8a77;background:#49342f;color:#f1d5c6;overflow-wrap:anywhere}.combat-round-side.black{border-color:#9bb9d8;background:#293c4b;color:#d9e9f7}.combat-round-side>div{display:flex;flex-wrap:wrap;justify-content:space-between;gap:3px 10px}.combat-round-side p{margin:5px 0;font-variant-numeric:tabular-nums}.combat-round-side p span{display:block}.combat-round-side small{display:block;line-height:1.6}.combat-history .damage-history-pair{margin-top:5px}@media(max-width:480px){.combat-round-pair{grid-template-columns:1fr}.combat-history{padding:0 10px}.combat-history>summary>span{font-size:11px}}
 [data-action="export"]{min-height:44px}@media(max-width:480px){.header-tools{width:100%}.header-tools #game-setting{flex-basis:100%;max-width:none;text-align:left}.fight-header .modal-head{display:grid;grid-template-columns:1fr auto auto;gap:6px}.fight-header .modal-head h2{grid-column:1/3;grid-row:1;white-space:nowrap}.fight-header .round-badge{grid-column:3;grid-row:1;margin-left:0}.fight-header [data-action="home"]{grid-column:2;grid-row:2}.fight-header [data-action="export"]{grid-column:3;grid-row:2}}
 .choice-return{display:none}
+.support-sources{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:5px}.support-sources li{display:flex;justify-content:space-between;flex-wrap:wrap;gap:3px 12px;padding:5px 8px;border-left:2px solid #a5b8cc;background:#183129;font-size:12px}.support-sources strong{font-weight:500}.support-sources span{color:var(--muted);font-variant-numeric:tabular-nums}
 @media(max-width:760px){
   #fight:is([data-step="pickA"],[data-step="pickD"]) .combat-scene{min-height:0;padding:5px 9px;grid-template-columns:minmax(0,1fr) 8px minmax(0,1fr)}
   #fight:is([data-step="pickA"],[data-step="pickD"]) .combat-scene:before,
@@ -96,7 +97,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.24 · 手机武斗操作</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.25 · 配牌条件与支援说明</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -564,9 +565,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.24',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.25',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.24-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.25-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -822,6 +823,23 @@ globalThis.YiwuComputer = (() => {
     $('grid').innerHTML=html;
   }
   function supportText(ctx,isA){const ids=isA?ctx.supportA:ctx.supportD;return ids.length?ids.slice(0,2).map(id=>E.label(E.get(s,id))).join('、')+(ids.length>2?'（其余不计）':''):'无支援';}
+  function supportDetailsHTML(ctx,isA){
+    const ids=isA?ctx.supportA:ctx.supportD;
+    return '<p>基础 3 + 支援 '+(E.power(ctx,isA)-3)+'</p>'+(ids.length?'<ul class="support-sources">'+ids.map(id=>{const p=E.get(s,id);return '<li><strong>'+E.label(p)+'</strong><span>'+(p.x+1)+' 路 '+(10-p.y)+' 线</span></li>';}).join('')+'</ul>'+(ids.length>2?'<p class="tip">'+ids.length+' 名支援，输出最多加 2。</p>':''):'<p>无支援</p>');
+  }
+  function cardUnavailable(p,id,ctx){
+    const reason=E.availability(s,p,id,ctx);if(reason!=='站位条件未满足')return reason;
+    const isA=p.id===ctx.a,mine=isA?ctx.supportA:ctx.supportD,enemy=isA?ctx.supportD:ctx.supportA;
+    const needs={
+      isolatedEnemy:E.SIDE[E.OTHER[p.side]]+'有 '+enemy.length+' 名支援；需要对手无支援。',
+      supported:E.SIDE[p.side]+'无支援；友军须能攻击交战目标格。',
+      friendlyScreen:isA?'本场未使用己方炮架；借架需要己方棋子作炮架。':'本子是守方；借架仅限主动进攻时使用。',
+      unsupported:E.SIDE[p.side]+'有 '+mine.length+' 名支援；需要己方无支援。',
+      adjacent:'本兵没有正交相邻的友军；需要上下左右相邻，斜对角不算。',
+      crossed:'本兵尚未过河。',nearKing:'本子不在己方将帅周围一格内。'
+    };
+    return needs[E.CARDS[id].condition];
+  }
   function openingAdvice(ctx){
     const out=C.battleOutlook(s,ctx),names=ids=>ids.map(id=>'「'+(E.BASE[id]||E.CARDS[id]).name+'」').join('或');
     return {
@@ -832,7 +850,7 @@ globalThis.YiwuComputer = (() => {
   function previewHTML(){
       const p=E.get(s,selected);
       const d=E.get(s,preview),ctx=E.context(s,p,d),opening=openingAdvice(ctx);
-      return `<div class="preview-header"><h2 id="preview-title">交战预览</h2><p>${E.label(p)} 进攻 ${E.label(d)}</p></div><div class="preview-body"><div class="stats"><div><b>${p.hp}</b><small>进攻方生命</small></div><div><b>${d.hp}</b><small>守方生命</small></div><div><b>6</b><small>最多轮数</small></div></div><div class="card"><h3>进攻方输出 ${E.power(ctx,true)}</h3><p>${supportText(ctx,true)}</p></div><div class="card"><h3>守方输出 ${E.power(ctx,false)}</h3><p>${supportText(ctx,false)}</p></div><div class="card"><h3>首轮判断</h3>${opening.reason?'<p>'+esc(opening.reason)+'</p>':opening.risk?'<p class="preview-risk">'+esc(opening.risk)+'</p>':'<p>未发现可确保首轮击倒的招式。双方仍需按克制选择。</p>'}<p class="tip">按双方当前全部可用招式判断；不预测暗招，不判断后续轮次。</p></div>${E.power(ctx,true)<E.power(ctx,false)?'<p class="preview-risk">对方支援更多：输出 '+E.power(ctx,true)+' 对 '+E.power(ctx,false)+'。可先调动友军支援，或换一个交战目标。</p>':''}<p class="tip">进攻方首轮有效伤害加 1。支援关系在开战时固定；伤势和招式消耗保留。</p></div><div class="preview-actions"><button class="quiet" data-action="cancel-preview">取消进攻</button>${lesson?.stage==='support-preview'?'<button class="primary lesson-target" data-action="lesson-finish">完成教学</button>':'<button class="primary'+(lesson?' lesson-target':'')+'" data-action="attack">发起武斗</button>'}</div>`;
+      return `<div class="preview-header"><h2 id="preview-title">交战预览</h2><p>${E.label(p)} 进攻 ${E.label(d)}</p></div><div class="preview-body"><div class="stats"><div><b>${p.hp}</b><small>进攻方生命</small></div><div><b>${d.hp}</b><small>守方生命</small></div><div><b>6</b><small>最多轮数</small></div></div><div class="card"><h3>进攻方输出 ${E.power(ctx,true)}</h3>${supportDetailsHTML(ctx,true)}</div><div class="card"><h3>守方输出 ${E.power(ctx,false)}</h3>${supportDetailsHTML(ctx,false)}</div><div class="card"><h3>首轮判断</h3>${opening.reason?'<p>'+esc(opening.reason)+'</p>':opening.risk?'<p class="preview-risk">'+esc(opening.risk)+'</p>':'<p>未发现可确保首轮击倒的招式。双方仍需按克制选择。</p>'}<p class="tip">按双方当前全部可用招式判断；不预测暗招，不判断后续轮次。</p></div>${E.power(ctx,true)<E.power(ctx,false)?'<p class="preview-risk">对方支援更多：输出 '+E.power(ctx,true)+' 对 '+E.power(ctx,false)+'。可先调动友军支援，或换一个交战目标。</p>':''}<p class="tip">进攻方首轮有效伤害加 1。支援关系在开战时固定；伤势和招式消耗保留。</p></div><div class="preview-actions"><button class="quiet" data-action="cancel-preview">取消进攻</button>${lesson?.stage==='support-preview'?'<button class="primary lesson-target" data-action="lesson-finish">完成教学</button>':'<button class="primary'+(lesson?' lesson-target':'')+'" data-action="attack">发起武斗</button>'}</div>`;
   }
   function cardTargets(p,id){
     const targets=s.pieces.filter(q=>q.side!==p.side&&E.canMove(s,p,q.x,q.y));
@@ -1245,7 +1263,7 @@ globalThis.YiwuComputer = (() => {
   function publicCardsHTML(who){
     if(lesson)return '';
     const enemy=who===fightUI.a?fightUI.d:fightUI.a;
-    return `<section class="public-cards" id="public-cards" tabindex="-1" aria-label="对手公开配牌"><h4>${E.label(enemy)}的培养牌</h4><p>公开配牌，不代表对手本轮已选。基础招式不耗牌；满气势不能蓄势。</p>${enemy.learned.length?'<ul>'+enemy.learned.map(id=>{const c=E.CARDS[id],reason=E.availability(s,enemy,id,fightUI.ctx);return `<li class="public-card${reason?' unavailable':''}"><div><strong>${c.name}</strong><span class="card-type">${E.TYPE[c.type]}</span><small>${reason||'本轮可用'}</small></div><p>${c.text}</p></li>`;}).join('')+'</ul>':'<p>对手没有学习培养牌，仍可使用基础招式。</p>'}</section>`;
+    return `<section class="public-cards" id="public-cards" tabindex="-1" aria-label="对手公开配牌"><h4>${E.label(enemy)}的培养牌</h4><p>公开配牌，不代表对手本轮已选。基础招式不耗牌；满气势不能蓄势。</p>${enemy.learned.length?'<ul>'+enemy.learned.map(id=>{const c=E.CARDS[id],reason=cardUnavailable(enemy,id,fightUI.ctx);return `<li class="public-card${reason?' unavailable':''}"><div><strong>${c.name}</strong><span class="card-type">${E.TYPE[c.type]}</span><small>${reason||'本轮可用'}</small></div><p>${c.text}</p></li>`;}).join('')+'</ul>':'<p>对手没有学习培养牌，仍可使用基础招式。</p>'}</section>`;
   }
   function reviewHTML(who){
     const ui=fightUI,id=ui.pending,c=E.BASE[id]||E.CARDS[id],range=(lo,hi)=>lo===hi?lo:lo+'–'+hi;
@@ -1291,7 +1309,7 @@ globalThis.YiwuComputer = (() => {
       html+=`<div class="choice-heading ${who.side}"><strong>${E.SIDE[who.side]}正在出招</strong><span>${E.label(who)} · 先点选，再锁定</span></div><div class="combat-legend"><span>斩击 克 破势</span><span>破势 克 架势</span><span>架势 克 斩击</span><span>攻击可压制蓄势</span></div><div class="pick-layout"><section class="pick-options" aria-label="选择招式"><div class="actions ${who.side}">`;
       for(const [id,c]of Object.entries(E.BASE)){const reason=E.availability(s,who,id,ctx)||(lesson&&id!==lessonChoice()?'请按本课指引选招':'');html+=`<button class="action ${lesson&&id===lessonChoice()?'lesson-target':''} ${ui.pending===id?'chosen':''}" data-choice="${id}" aria-pressed="${ui.pending===id}" ${reason?'disabled':''}>${moveIcon(c.type)}<strong>${c.name}</strong><span>${c.text}</span><small>${reason||'基础招式 · 不耗牌'}</small></button>`;}
       html+='</div><div class="learned-heading">已培养的招式<span>使用后耗尽</span></div><div class="skill-actions '+who.side+'">';
-      for(const id of who.learned){const c=E.CARDS[id],reason=E.availability(s,who,id,ctx)||(lesson&&id!==lessonChoice()?'请按本课指引选招':'');html+=`<button class="action skill ${lesson&&id===lessonChoice()?'lesson-target':''} ${ui.pending===id?'chosen':''}" data-choice="${id}" aria-pressed="${ui.pending===id}" ${reason?'disabled':''}>${moveIcon(c.type)}<strong>${c.name}<span class="card-type">${E.TYPE[c.type]}</span></strong><span>${c.text}</span><small>${reason||'仅本枚棋子可用'}</small></button>`;}
+      for(const id of who.learned){const c=E.CARDS[id],reason=cardUnavailable(who,id,ctx)||(lesson&&id!==lessonChoice()?'请按本课指引选招':'');html+=`<button class="action skill ${lesson&&id===lessonChoice()?'lesson-target':''} ${ui.pending===id?'chosen':''}" data-choice="${id}" aria-pressed="${ui.pending===id}" ${reason?'disabled':''}>${moveIcon(c.type)}<strong>${c.name}<span class="card-type">${E.TYPE[c.type]}</span></strong><span>${c.text}</span><small>${reason||'仅本枚棋子可用'}</small></button>`;}
       html+='</div><p class="tip">斩击、破势会释放全部气势；若被克制，气势仍消耗但不增伤。架势保留气势。</p>';
       html+='</section>'+reviewHTML(who)+'</div>'+history+publicCardsHTML(who);
       const card=E.BASE[ui.pending]||E.CARDS[ui.pending];
