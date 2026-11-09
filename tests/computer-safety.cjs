@@ -63,4 +63,30 @@ test('残局未完成指定目标时，击败黑将不能冒充确定获胜',()=
   s.turn='black';const quiet=C.rankedActions(s).find(a=>a.id===king.id&&a.x===king.x&&a.y===king.y+1);
   assert(quiet&&quiet.score>-500,'不能把红方提前击败黑将误作黑方确定败局');
 });
+test('将帅可确保反杀时不因残血进攻子放弃存活吃子，判断与实际防守一致',()=>{
+  const sample={pieces:[['rk','red','king',4,9,18],['bk','black','king',3,0,18],['rr','red','rook',0,5,18],['br','black','horse',5,7,1],['bp','black','rook',0,4,2],['block','black','pawn',3,3,18]]};
+  for(const rotated of [false,true]){
+    const s=scene(sample,rotated);s.turn=rotated?'black':'red';
+    const king=E.get(s,'rk'),attacker=E.get(s,'br'),target=E.get(s,'bp'),before=JSON.stringify(s);
+    const threat=copy(s);threat.turn=attacker.side;E.move(threat,attacker.id,king.x,king.y);
+    const plan=C.combatPlan(threat,king.side);assert(plan.length);
+    for(const option of plan)for(const id of C.choices(threat,E.get(threat,attacker.id),threat.duel)){
+      const result=copy(threat);E.resolve(result,id,option.id);
+      assert(!E.get(result,attacker.id));assert(E.get(result,king.id)?.hp>0);
+    }
+    for(const roll of [0,.25,.5,.75,.999999]){
+      const action=C.board(s,()=>roll);assert.equal(action.id,'rr');assert.equal(action.x,target.x);assert.equal(action.y,target.y);
+    }
+    const capture=copy(s);E.move(capture,'rr',target.x,target.y);
+    for(const option of C.combatPlan(capture,s.turn))for(const id of C.choices(capture,E.get(capture,target.id),capture.duel)){
+      const result=copy(capture);E.resolve(result,option.id,id);assert(!E.get(result,target.id));assert(E.get(result,'rr')?.hp>0);
+    }
+    assert.equal(JSON.stringify(s),before);
+    for(const [kingHp,attackerHp] of [[18,18],[1,1]]){
+      E.get(s,king.id).hp=kingHp;E.get(s,attacker.id).hp=attackerHp;
+      assert.equal(C.battleOutlook(s,E.context(s,E.get(s,attacker.id),E.get(s,king.id))).counters.length,0);
+      assert.equal(C.board(s,()=>0).id,king.id,'不能确认反杀时仍优先将帅避险');
+    }
+  }
+});
 console.log('将帅安全：'+checks+' 项检查通过。');

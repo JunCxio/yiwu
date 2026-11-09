@@ -129,7 +129,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.39 · 终局标题间距修正</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.40 · 将帅威胁判断修正</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -518,7 +518,9 @@ globalThis.YiwuComputer = (() => {
   function position(s,side,repeated=false){
     let score=0;
     for(const p of s.pieces){
-      const sign=p.side===side?1:-1,v=VALUE[p.kind],enemies=s.pieces.filter(q=>q.side!==p.side&&E.geometry(s,q,p.x,p.y,true));
+      const sign=p.side===side?1:-1,v=VALUE[p.kind];
+      let enemies=s.pieces.filter(q=>q.side!==p.side&&E.geometry(s,q,p.x,p.y,true));
+      if(p.kind==='king'&&!E.CHALLENGES[s.scenario])enemies=enemies.filter(q=>!battleOutlook(s,E.context(s,q,p)).counters.length);
       const guards=E.support(s,p,p.x,p.y,[p.id]).length;
       let value=v*(.5+p.hp/36)+.15*(p.learned.length-p.exhausted.length);
       // 反复回到原阵形的追将未取得进展，保留己方将帅避险的完整权重。
@@ -607,9 +609,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.39',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.40',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.39-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.40-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
