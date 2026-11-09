@@ -52,6 +52,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 .combat-history{border:1px solid #637461;border-radius:7px;margin:0 0 14px;padding:0 12px;background:#203b32;font-size:12px;color:#d9e2d4}.combat-history>summary{cursor:pointer;min-height:48px;padding:9px 0;line-height:1.6}.combat-history>summary strong{font-size:13px;color:#f1dfad}.combat-history>summary>span{display:block;margin-left:17px;color:#c5d2bd;font-variant-numeric:tabular-nums}.combat-history>p{font-size:11px;color:var(--muted);margin:3px 0 10px}.combat-history>ol{list-style:none;margin:0;padding:0;max-height:none}.combat-history>ol>li{padding:11px 0;border-top:1px solid #4f6654}.combat-round-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 10px;margin-bottom:8px}.combat-round-head>span{color:#e8d7a7}.combat-round-pair{display:grid;grid-template-columns:1fr 1fr;gap:8px}.combat-round-side{min-width:0;padding:8px 10px;border-left:3px solid #cf8a77;background:#49342f;color:#f1d5c6;overflow-wrap:anywhere}.combat-round-side.black{border-color:#9bb9d8;background:#293c4b;color:#d9e9f7}.combat-round-side>div{display:flex;flex-wrap:wrap;justify-content:space-between;gap:3px 10px}.combat-round-side p{margin:5px 0;font-variant-numeric:tabular-nums}.combat-round-side p span{display:block}.combat-round-side small{display:block;line-height:1.6}.combat-history .damage-history-pair{margin-top:5px}@media(max-width:480px){.combat-round-pair{grid-template-columns:1fr}.combat-history{padding:0 10px}.combat-history>summary>span{font-size:11px}}
 [data-action="export"]{min-height:44px}@media(max-width:480px){.header-tools{width:100%}.header-tools #game-setting{flex-basis:100%;max-width:none;text-align:left}.fight-header .modal-head{display:grid;grid-template-columns:1fr auto auto;gap:6px}.fight-header .modal-head h2{grid-column:1/3;grid-row:1;white-space:nowrap}.fight-header .round-badge{grid-column:3;grid-row:1;margin-left:0}.fight-header [data-action="home"]{grid-column:2;grid-row:2}.fight-header [data-action="export"]{grid-column:3;grid-row:2}}
 .choice-return{display:none}
+@media(max-width:480px){.endgame-actions [data-action="next-challenge"]{flex-basis:100%}}
 .support-sources{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:5px}.support-sources li{display:flex;justify-content:space-between;flex-wrap:wrap;gap:3px 12px;padding:5px 8px;border-left:2px solid #a5b8cc;background:#183129;font-size:12px}.support-sources strong{font-weight:500}.support-sources span{color:var(--muted);font-variant-numeric:tabular-nums}
 @media(max-width:760px){
   #fight:is([data-step="pickA"],[data-step="pickD"]) .combat-scene{min-height:0;padding:5px 9px;grid-template-columns:minmax(0,1fr) 8px minmax(0,1fr)}
@@ -97,7 +98,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.25 · 配牌条件与支援说明</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.26 · 残局通关衔接</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -558,6 +559,7 @@ globalThis.YiwuComputer = (() => {
     elephant:'走田字，不得过河；斜向中点有棋子时不能通过。',
     king:'只在己方九宫内，横向或纵向移动一格；将帅同线且中间无子时可发起飞将武斗。'
   };
+  const CHALLENGE_MODES=Object.keys(E.CHALLENGES);
   // 规则数值或命令格式变化时，同步提升续局版本。
   const SAVE_VERSION=1,SAVE_KEY='yiwu.autosave',BACKUP_KEY=SAVE_KEY+'.backup';
   const COMMAND_LENGTH={create:2,learn:3,auto:2,start:1,move:4,rest:3,pass:1,resolve:3,retreat:1};
@@ -565,9 +567,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.25',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.26',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.25-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.26-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -693,6 +695,8 @@ globalThis.YiwuComputer = (() => {
   function act(fn){try{notice='';fn();}catch(e){notice=e.message;}render();}
   function requestNewGame(mode,settings={opponent,difficulty}){
     pendingNewGame={mode,opponent:mode==='tutorial'||E.CHALLENGES[mode]?'computer':settings.opponent,difficulty:settings.difficulty};
+    const switching=s&&mode!==(lesson?'tutorial':s.scenario);
+    $('confirm-title').textContent=switching?'切换棋局？':'重开棋局？';$('confirm-load').textContent=switching?'确认切换':'确认重开';
     const name=Array.from($('scenario').options).find(option=>option.value===mode).textContent;
     const setting=mode==='tutorial'?'电脑对战 · 固定演示':pendingNewGame.opponent==='local'?'同机双人':pendingNewGame.difficulty==='practice'?'电脑对战 · 练习电脑':'电脑对战 · 标准电脑';
     $('confirm-target').textContent='将载入：'+name+'；'+setting+'。';$('confirm-note').textContent=saveBlocked?'确认开始新局后，将替换现有本机续局。':'当前棋盘、伤势和配牌将重置，新局会替换本机续局。';confirmDialog.showModal();
@@ -1028,9 +1032,14 @@ globalThis.YiwuComputer = (() => {
     if(!['full','quick'].includes(s.scenario))html+='<p class="tip">本局为规则试验，阵容与预算不对等，复盘不作为平衡性结论。</p>';
     $('review-content').innerHTML=html;$('review').showModal();$('review-title').focus();
   }
+  function nextChallenge(){
+    const index=CHALLENGE_MODES.indexOf(s?.scenario);
+    return !lesson&&s?.phase==='ended'&&s.winner==='red'&&index>=0?CHALLENGE_MODES[index+1]||null:null;
+  }
   function endgameHTML(){
     if(lesson||s.phase!=='ended')return '';
-    return `<div class="endgame-head"><span class="endgame-seal" aria-hidden="true">${E.CHALLENGES[s.scenario]?(s.winner==='red'?'成':'败'):s.winner==='draw'?'和':'胜'}</span><div class="endgame-copy"><span>${E.CHALLENGES[s.scenario]?'残局挑战结束':'整局结束'}</span><h2 id="endgame-title" tabindex="-1">${outcomeTitle()}</h2><p>${esc(s.reason)}</p></div><div class="endgame-actions"><button class="primary" data-action="review">查看对局复盘</button><button class="quiet" data-action="new">再开当前棋局</button></div></div><div class="endgame-stats"><div><b>${s.ply}</b><span>已完成行动</span></div>${['red','black'].map(side=>'<div><b>'+s.pieces.filter(p=>p.side===side).length+'</b><span>'+E.SIDE[side]+'存活</span></div>').join('')}</div><p class="tip">可以继续点选棋子查看终局；重开前会确认，取消可保留终局。${['full','quick'].includes(s.scenario)?'':' 规则试验局面，阵容与预算不对等，不作为平衡性依据。'}</p>${challengeFeedbackHTML()}`;
+    const next=nextChallenge(),finalChallenge=E.CHALLENGES[s.scenario]&&s.winner==='red'&&!next;
+    return `<div class="endgame-head"><span class="endgame-seal" aria-hidden="true">${E.CHALLENGES[s.scenario]?(s.winner==='red'?'成':'败'):s.winner==='draw'?'和':'胜'}</span><div class="endgame-copy"><span>${E.CHALLENGES[s.scenario]?'残局挑战结束 · 第 '+(CHALLENGE_MODES.indexOf(s.scenario)+1)+' / '+CHALLENGE_MODES.length+' 关':'整局结束'}</span><h2 id="endgame-title" tabindex="-1">${outcomeTitle()}</h2><p>${esc(s.reason)}</p></div><div class="endgame-actions">${next?'<button class="primary" data-action="next-challenge">下一关 · '+E.CHALLENGES[next].title+'</button>':''}<button class="${next?'quiet':'primary'}" data-action="review">查看对局复盘</button><button class="quiet" data-action="new">再开当前棋局</button>${finalChallenge?'<button class="quiet" data-action="home">选择其他棋局</button>':''}</div></div><div class="endgame-stats"><div><b>${s.ply}</b><span>已完成行动</span></div>${['red','black'].map(side=>'<div><b>'+s.pieces.filter(p=>p.side===side).length+'</b><span>'+E.SIDE[side]+'存活</span></div>').join('')}</div><p class="tip">可以继续点选棋子查看终局；重开或切换前会确认，取消可保留终局。${finalChallenge?' 这是最后一关，可复盘后返回首页选择其他棋局。':''}${['full','quick'].includes(s.scenario)?'':' 规则试验局面，阵容与预算不对等，不作为平衡性依据。'}</p>${challengeFeedbackHTML()}`;
   }
   function render(){
     if(restDialog.open&&!restAllowed(E.get(s,pendingRest?.id),pendingRest?.card))restDialog.close();
@@ -1048,7 +1057,7 @@ globalThis.YiwuComputer = (() => {
     if(s.phase==='setup'&&previousSetupSide===setupSide&&setupList)$('setup-roster').querySelector('.setup-list').scrollTop=setupScroll;
     $('endgame').innerHTML=endgameHTML();$('endgame').hidden=!!lesson||s.phase!=='ended';$('endgame').className='endgame '+(s.phase==='ended'?s.winner:'');
     const challenge=E.CHALLENGES[s.scenario];
-    $('challenge-info').hidden=!challenge;$('challenge-info').innerHTML=challenge?'<h2>残局挑战 · '+challenge.title+'</h2><p>'+challenge.goal+'</p><p>已完成 '+s.ply+' / '+challenge.limit+' 次棋盘行动（双方行动均计数，整场武斗计一次）。</p><p>'+challenge.tip+'</p><small>预置残局，阵容与培养不对等，不计公平对局；电脑使用所选难度，自由走棋、暗选招式。</small>':'';
+    $('challenge-info').hidden=!challenge;$('challenge-info').innerHTML=challenge?'<h2>残局挑战 · '+challenge.title+'</h2><p>第 '+(CHALLENGE_MODES.indexOf(s.scenario)+1)+' / '+CHALLENGE_MODES.length+' 关 · '+challenge.goal+'</p><p>已完成 '+s.ply+' / '+challenge.limit+' 次棋盘行动（双方行动均计数，整场武斗计一次）。</p><p>'+challenge.tip+'</p><small>预置残局，阵容与培养不对等，不计公平对局；电脑使用所选难度，自由走棋、暗选招式。</small>':'';
     $('lesson').hidden=!lesson;$('lesson').innerHTML=lessonHTML();
     $('game-setting').textContent=(lesson?'分步教学':s.scenario==='quick'?'快速对局':s.scenario==='full'?'标准棋局':challenge?'残局 · '+challenge.title:'规则试验')+' · '+(lesson?'固定演示':opponent==='local'?'同机双人':difficulty==='practice'?'练习电脑':'标准电脑');
     $('phase').textContent=lesson?'分步教学':s.phase==='ended'?'对局结束':challenge?'残局挑战':!['full','quick'].includes(s.scenario)?'规则试验':s.phase==='setup'?'配牌阶段':'第 '+(Math.floor(s.ply/2)+1)+' 回合';
@@ -1378,6 +1387,7 @@ globalThis.YiwuComputer = (() => {
         const entry=$('setup-roster').querySelector('[data-setup-piece="'+selected+'"]');entry?.scrollIntoView({block:'center'});entry?.focus({preventScroll:true});return;
       }
       if(action.dataset.action==='review'){act(openReview);return;}
+      if(action.dataset.action==='next-challenge'){const next=nextChallenge();if(next)requestNewGame(next);return;}
       if(action.dataset.action==='close-review'){$('review').close();return;}
       if(action.dataset.action==='hint-details'){
         const panel=$('detail').querySelector('.advice');panel?.scrollIntoView({block:'start'});panel?.focus({preventScroll:true});return;

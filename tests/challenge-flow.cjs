@@ -1,0 +1,108 @@
+const fs = require('node:fs'), path = require('node:path'), vm = require('node:vm'), assert = require('node:assert/strict');
+const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+const scripts = [...html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].map(m => m[1]);
+const options = [...html.match(/<select id="scenario"[^>]*>([\s\S]*?)<\/select>/)[1].matchAll(/<option value="([^"]+)"[^>]*>([^<]+)<\/option>/g)].map(m => ({value: m[1], textContent: m[2]}));
+function storage() {
+  const data = new Map();
+  return {getItem: key => data.get(key) ?? null, setItem: (key, value) => data.set(key, String(value))};
+}
+function page(saved = storage()) {
+  const nodes = new Map();
+  const node = id => {
+    if (!nodes.has(id)) nodes.set(id, {
+      dataset: {}, value: id === 'opponent' ? 'computer' : id === 'difficulty' ? 'standard' : 'quick', options,
+      innerHTML: '', textContent: '', children: [], handlers: {}, open: false,
+      addEventListener(type, fn) {this.handlers[type] = fn;}, contains() {return false;}, querySelector() {return null;},
+      showModal() {this.open = true;}, close() {this.open = false; this.handlers.close?.();}, focus() {document.activeElement = this;}
+    });
+    return nodes.get(id);
+  };
+  const document = {getElementById: node, querySelector: node, activeElement: null, handlers: {}, addEventListener(type, fn) {this.handlers[type] = fn;}};
+  const timers = new Map(); let timerId = 0;
+  const box = vm.createContext({document, localStorage: saved, navigator: {locks: {request(name, fn) {fn(); return Promise.resolve();}}},
+    scrollTo() {}, requestAnimationFrame: fn => fn(), setTimeout(fn) {timers.set(++timerId, fn); return timerId;}, clearTimeout(id) {timers.delete(id);}});
+  vm.runInContext(scripts[0], box); vm.runInContext(scripts[1], box);
+  const startup = "  showScreen('home');\n})();";
+  assert(scripts[2].includes(startup));
+  vm.runInContext(scripts[2].replace(startup, "globalThis.ui={init,nextChallenge,get state(){return s;},get screen(){return screen;},get difficulty(){return difficulty;}};\n" + startup), box);
+  return {ui: box.ui, E: box.Yiwu, node, saved, timerCount: () => timers.size,
+    action: action => document.handlers.click({target: {closest: selector => selector === '[data-action]' ? {dataset: {action}} : null}})};
+}
+function finished(won = true) {
+  const E = page().E, state = E.create('challenge-support'), commands = [['create', 'challenge-support']];
+  E.move(state, 'hero', 4, 4); commands.push(['move', 'hero', 4, 4]);
+  while (state.phase === 'duel') {
+    const a = won ? 'guard' : 'strike', d = won ? 'strike' : 'guard';
+    E.resolve(state, a, d); commands.push(['resolve', a, d]);
+  }
+  assert.equal(state.winner, won ? 'red' : 'black');
+  const saved = storage();
+  saved.setItem('yiwu.autosave', JSON.stringify({version: 1, commands, ui: {opponent: 'computer', difficulty: 'standard', selected: null,
+    preview: null, setupSide: 'red', focusIndex: 85, lesson: null, fight: null}}));
+  const p = page(saved); p.node('resume').onclick(); return p;
+}
+
+{
+  const p = finished(), before = p.saved.getItem('yiwu.autosave');
+  assert(p.node('endgame').innerHTML.includes('下一关 · 主力轮换'));
+  assert(p.node('challenge-info').innerHTML.includes('第 1 / 3 关'));
+  p.action('review'); assert(p.node('review').open); p.action('close-review');
+  p.action('next-challenge'); assert(p.node('confirm').open);
+  assert.equal(p.node('confirm-title').textContent, '切换棋局？');
+  assert(p.node('confirm-target').textContent.includes('主力轮换'));
+  assert.equal(p.saved.getItem('yiwu.autosave'), before);
+  p.node('cancel-load').onclick(); assert.equal(p.ui.state.scenario, 'challenge-support');
+  p.action('next-challenge'); p.node('confirm').handlers.cancel(); p.node('confirm').close();
+  p.node('confirm-load').onclick(); assert.equal(p.saved.getItem('yiwu.autosave'), before);
+  assert.equal(p.timerCount(), 0);
+}
+{
+  const p = finished(); p.action('next-challenge');
+  p.node('scenario').value = 'full'; p.node('difficulty').value = 'practice';
+  p.node('confirm-load').onclick();
+  assert.equal(p.ui.state.scenario, 'challenge-relay'); assert.equal(p.ui.difficulty, 'standard');
+  assert.equal(p.ui.state.phase, 'board'); assert.equal(p.ui.state.ply, 0);
+  assert(p.node('challenge-info').innerHTML.includes('第 2 / 3 关'));
+  const before = p.saved.getItem('yiwu.autosave');
+  p.action('next-challenge'); p.node('confirm-load').onclick();
+  assert.equal(p.saved.getItem('yiwu.autosave'), before); assert.equal(p.timerCount(), 0);
+}
+{
+  const p = finished(); p.action('next-challenge');
+  const q = page(p.saved); assert(!q.node('confirm').open); assert.equal(q.ui.screen, 'home');
+  q.node('resume').onclick(); assert(q.node('endgame').innerHTML.includes('下一关 · 主力轮换'));
+  q.action('next-challenge'); q.node('confirm-load').onclick();
+  const restored = page(q.saved); restored.node('resume').onclick();
+  assert.equal(restored.ui.state.scenario, 'challenge-relay'); assert.equal(restored.ui.state.ply, 0);
+}
+{
+  const p = page(); p.ui.init('challenge-relay'); p.ui.state.phase = 'ended'; p.ui.state.winner = 'red';
+  p.action('cancel-preview'); assert.equal(p.ui.nextChallenge(), 'challenge-tempo');
+  assert(p.node('endgame').innerHTML.includes('下一关 · 整备还是抢攻'));
+  p.ui.init('challenge-tempo'); p.ui.state.phase = 'ended'; p.ui.state.winner = 'red'; p.action('cancel-preview');
+  const before = JSON.stringify(p.ui.state);
+  assert.equal(p.ui.nextChallenge(), null); assert(!p.node('endgame').innerHTML.includes('data-action="next-challenge"'));
+  assert(p.node('endgame').innerHTML.includes('这是最后一关')); assert(p.node('endgame').innerHTML.includes('选择其他棋局'));
+  p.action('next-challenge'); assert(!p.node('confirm').open);
+  p.action('home'); assert.equal(p.ui.screen, 'home'); assert.equal(JSON.stringify(p.ui.state), before);
+}
+{
+  const lost = finished(false); assert(!lost.node('endgame').innerHTML.includes('data-action="next-challenge"'));
+  lost.action('next-challenge'); assert(!lost.node('confirm').open);
+  for (const mode of ['challenge-support', 'quick', 'full', 'tactics', 'tutorial']) {
+    const p = page(); p.ui.init(mode); assert.equal(p.ui.nextChallenge(), null);
+    p.action('next-challenge'); assert(!p.node('confirm').open);
+    if (mode === 'quick' || mode === 'full') {
+      p.ui.state.phase = 'ended'; p.ui.state.winner = 'red'; p.action('cancel-preview');
+      assert.equal(p.ui.nextChallenge(), null); assert(!p.node('endgame').innerHTML.includes('data-action="next-challenge"'));
+    }
+  }
+}
+{
+  const p = finished(); p.action('new');
+  assert.equal(p.node('confirm-title').textContent, '重开棋局？'); assert.equal(p.node('confirm-load').textContent, '确认重开');
+  p.node('cancel-load').onclick(); p.node('back-home').onclick();
+  p.node('scenario').value = 'full'; p.node('load').onclick();
+  assert.equal(p.node('confirm-title').textContent, '切换棋局？'); assert.equal(p.node('confirm-load').textContent, '确认切换');
+}
+console.log('残局衔接：6 项检查通过。');
