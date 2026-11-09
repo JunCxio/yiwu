@@ -8,12 +8,14 @@ const scripts = [...html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].map(m =
 const box = vm.createContext({});
 vm.runInContext(scripts[0], box);
 vm.runInContext(scripts[1], box);
-const helpers = ['cardUnavailable', 'supportDetailsHTML', 'combatForecastHTML', 'openingAdvice'].map(name => {
+const helpers = ['cardUnavailable', 'supportDetailsHTML', 'combatForecastHTML', 'openingAdvice', 'pawnEndRankRisk', 'actionOutcomeRisk', 'boardAdvice', 'challengeCombatHTML', 'previewHTML'].map(name => {
   const source = scripts[2].match(new RegExp('  function ' + name + '\\([\\s\\S]*?\\n  \\}'));
   assert(source, '缺少界面函数：' + name);
   return source[0];
 });
-vm.runInContext('const E=Yiwu,C=YiwuComputer; let s,lesson=null;\n' + helpers.join('\n'), box);
+const escape = scripts[2].match(/,esc=([^\n]+);/);
+assert(escape);
+vm.runInContext('const E=Yiwu,C=YiwuComputer,esc=' + escape[1] + '; let s,lesson=null,selected,preview;\n' + helpers.join('\n'), box);
 const E = box.Yiwu;
 const load = mode => {
   const s = E.create(mode);
@@ -158,4 +160,52 @@ const range = values => {const lo = Math.min(...values), hi = Math.max(...values
     E.get(s, 'rk').hp = 18; assert(!box.openingAdvice(ctx).risk);
   }
 }
-console.log('配牌条件、支援、本轮生命预估与吃子漏防提示：10 组检查通过。');
+function edgeScene(side, y, target = false) {
+  const s = load('tactics'), edge = side === 'red' ? 0 : 9;
+  s.turn = side; s.repetitions = {};
+  s.pieces = [E.piece('rk', 'red', 'king', 4, 9), E.piece('bk', 'black', 'king', 5, 0), E.piece('pawn', side, 'pawn', 3, y)];
+  if (target) s.pieces.push(E.piece('target', E.OTHER[side], 'pawn', 3, edge));
+  return s;
+}
+const edgeNotes = advice => advice.risks.filter(text => text.includes('位于对方底线'));
+for (const side of ['red', 'black']) {
+  const edge = side === 'red' ? 0 : 9, beforeEdge = side === 'red' ? 1 : 8;
+  for (const [y, x] of [[beforeEdge, 3], [edge, 2]]) {
+    const s = edgeScene(side, y), before = JSON.stringify(s), action = {type: 'move', id: 'pawn', x, y: edge};
+    const advice = box.boardAdvice(action), notes = edgeNotes(advice);
+    assert.equal(notes.length, 1);
+    assert(notes[0].startsWith('移动后，') && notes[0].includes('只能横移，不能后退，也不会升变'));
+    assert.equal(JSON.stringify(s), before, '查看落点后果不能移动或追加行动');
+    const next = JSON.parse(before); E.move(next, action.id, action.x, action.y);
+    const pawn = E.get(next, 'pawn'), moves = E.moves(next, pawn);
+    assert.equal(pawn.kind, 'pawn'); assert(moves.length > 0);
+    assert(moves.every(move => move.y === edge && Math.abs(move.x - pawn.x) === 1));
+  }
+}
+
+for (const side of ['red', 'black']) {
+  const edge = side === 'red' ? 0 : 9, s = edgeScene(side, side === 'red' ? 1 : 8, true);
+  E.get(s, 'target').hp = 1;
+  box.pawnId = 'pawn'; box.targetId = 'target'; vm.runInContext('selected=pawnId;preview=targetId', box);
+  const before = JSON.stringify(s), action = {type: 'move', id: 'pawn', x: 3, y: edge};
+  const notes = edgeNotes(box.boardAdvice(action)), previewHTML = box.previewHTML();
+  assert.equal(notes.length, 1); assert(notes[0].startsWith('若获胜并占位，'));
+  assert(previewHTML.includes(notes[0]) && previewHTML.includes('发起武斗'));
+  assert.equal(JSON.stringify(s), before, '查看进攻建议和交战预览不能提前吃子');
+  const next = JSON.parse(before); E.move(next, 'pawn', 3, edge); E.resolve(next, 'strike', 'focus');
+  assert(!E.get(next, 'target')); assert.equal(E.get(next, 'pawn').kind, 'pawn');
+  assert.equal(E.get(next, 'pawn').y, edge);
+}
+
+for (const side of ['red', 'black']) {
+  const s = edgeScene(side, side === 'red' ? 2 : 7), pawn = E.get(s, 'pawn');
+  assert.equal(edgeNotes(box.boardAdvice({type: 'move', id: pawn.id, x: 3, y: side === 'red' ? 1 : 8})).length, 0);
+  pawn.y = side === 'red' ? 0 : 9; pawn.learned = ['pawn_grit']; pawn.exhausted = ['pawn_grit'];
+  const before = JSON.stringify(s);
+  assert.equal(edgeNotes(box.boardAdvice({type: 'rest', id: pawn.id, card: 'pawn_grit'})).length, 0);
+  for (const kind of ['rook', 'horse', 'cannon', 'guard', 'elephant', 'king']) {
+    assert.equal(box.pawnEndRankRisk({...pawn, kind}, pawn.y), '');
+  }
+  assert.equal(JSON.stringify(s), before);
+}
+console.log('配牌条件、支援、本轮生命预估、吃子漏防与兵卒底线提示：13 组检查通过。');

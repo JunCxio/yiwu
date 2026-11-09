@@ -1,6 +1,6 @@
 # 弈武
 
-象棋走位与卡牌武斗结合的二维回合制游戏。当前版本为 **0.6.47 开发测试版**，欢迎试玩并反馈。
+象棋走位与卡牌武斗结合的二维回合制游戏。当前版本为 **0.6.48 开发测试版**，欢迎试玩并反馈。
 
 **[直接试玩](https://juncxio.github.io/yiwu/)** · **[提交试玩反馈](https://github.com/JunCxio/yiwu/issues/new?template=feedback.md)**
 
@@ -44,6 +44,7 @@
 ## 主要规则
 
 - 保留象棋走法、阻挡、九宫和过河限制。不判将军或将死，将帅阵亡判负。
+- 兵卒到底线后只能横移，不能后退或升变。落点预览、走棋建议和交战预览会提前说明这一限制；交战提醒以获胜并占位为条件，不表示已经吃子。
 - 斩击克破势，破势克架势，架势克斩击。蓄势放弃本轮攻击，积累气势。
 - 各类棋子基础生命和输出相同，培养用于学习招式，不增加基础数值。
 - 站位可提供支援；伤势和培养牌消耗跨战斗保留。整备一张耗尽牌会占用一次行动，不回血。
@@ -97,4 +98,4 @@ python -m http.server 8000
 
 然后访问 `http://localhost:8000/`。
 
-已安装 Node.js 时，可运行 `node tests/computer-opening.cjs` 检查首轮判断及电脑决策，运行 `node tests/computer-safety.cjs` 检查将帅安全与终局判断，运行 `node tests/computer-retreat.cjs` 检查撤回的直接胜负与判和，运行 `node tests/combat-help.cjs` 检查配牌条件、支援与吃子漏防说明，运行 `node tests/challenge-flow.cjs` 检查残局目标、行动后果、切换与续局，运行 `node tests/piece-panel.cjs` 检查棋子招式分组与配牌、整备入口，均不需要安装依赖。
+已安装 Node.js 时，可运行 `node tests/computer-opening.cjs` 检查首轮判断及电脑决策，运行 `node tests/computer-safety.cjs` 检查将帅安全与终局判断，运行 `node tests/computer-retreat.cjs` 检查撤回的直接胜负与判和，运行 `node tests/combat-help.cjs` 检查配牌条件、支援、吃子漏防与兵卒底线说明，运行 `node tests/challenge-flow.cjs` 检查残局目标、行动后果、切换与续局，运行 `node tests/piece-panel.cjs` 检查棋子招式分组与配牌、整备入口，均不需要安装依赖。
