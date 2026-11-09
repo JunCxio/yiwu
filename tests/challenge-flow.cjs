@@ -321,4 +321,32 @@ function retreatReady() {
   local.fight('ready'); local.pick('guard'); const original = forecast(local.node('fight-content').innerHTML);
   local.ui.fight.first = 'break'; local.pick('guard'); assert.equal(forecast(local.node('fight-content').innerHTML), original);
 }
-console.log('残局流程、行动后果与武斗确认：21 项检查通过。');
+{
+  for (const difficulty of ['standard', 'practice']) {
+    const saved = storage();
+    saved.setItem('yiwu.autosave', JSON.stringify({version: 1, commands: [
+      ['create', 'challenge-tempo'], ['rest', 'hero', 'rook_crush'], ['move', 'black_king', 5, 1],
+      ['move', 'red_king', 3, 8], ['move', 'target', 4, 5], ['resolve', 'focus', 'focus']
+    ], ui: {opponent: 'computer', difficulty, selected: null, preview: null, setupSide: 'red', focusIndex: 85,
+      lesson: null, fight: {step: 'result', first: null, pending: null, computerChoice: 'focus'}}}));
+    const p = page(saved); p.node('resume').onclick();
+    assert.equal(p.ui.state.phase, 'duel'); assert.equal(p.ui.state.ply, 3);
+    assert.equal(p.ui.fight.ctx.round, 2); p.fight('next');
+    assert.equal(p.ui.fight.step, 'retreated'); assert.equal(p.ui.fight.computerChoice, 'retreat');
+    assert.equal(p.ui.state.phase, 'ended'); assert.equal(p.ui.state.winner, 'black'); assert.equal(p.ui.state.ply, 4);
+    const reason = p.ui.fight.computerReason, state = JSON.stringify(p.ui.state);
+    assert(reason.includes('撤回直接结束本局：黑方获胜') && reason.includes(p.ui.state.reason));
+    assert(!reason.includes('生命较低')); assert(p.node('fight-content').innerHTML.includes(reason));
+    const commands = JSON.parse(saved.getItem('yiwu.autosave')).commands;
+    assert.equal(commands.length, 7); assert.deepEqual(commands.at(-1), ['retreat']);
+    const q = page(saved); q.node('resume').onclick();
+    assert.equal(q.ui.fight.computerReason, reason); assert.equal(JSON.stringify(q.ui.state), state);
+    assert.equal(q.timerCount(), 0); q.fight('hint'); q.fight('confirm-retreat');
+    assert.deepEqual(JSON.parse(saved.getItem('yiwu.autosave')).commands, commands);
+    q.fight('next'); assert.equal(q.ui.fight, null); assert.equal(JSON.stringify(q.ui.state), state);
+    const r = page(saved); r.node('resume').onclick(); assert.equal(JSON.stringify(r.ui.state), state);
+    assert.equal(r.timerCount(), 0); assert(!r.node('endgame').hidden);
+    assert.deepEqual(JSON.parse(saved.getItem('yiwu.autosave')).commands, commands);
+  }
+}
+console.log('残局流程、行动后果与武斗确认：22 项检查通过。');

@@ -129,7 +129,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.41 · 终局焦点样式修正</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.42 · 撤回终局判断修正</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -457,9 +457,13 @@ globalThis.YiwuComputer = (() => {
       return next.phase==='ended'&&next.winner===side;
     }));
   }
+  function retreatOutcome(s){
+    if(s.phase!=='duel'||s.duel.round<2)return null;
+    const next=JSON.parse(JSON.stringify(s));E.retreat(next);
+    return next.phase==='ended'?next:null;
+  }
   function combatScore(s,ctx,aId,dId){
     const a=E.get(s,ctx.a),d=E.get(s,ctx.d);
-    if(aId==='retreat')return -.6;
     const r=E.roundDamage(ctx,aId,dId),wa=a.kind==='king'?3:1,wd=d.kind==='king'?3:1;
     const deadA=r.toA>=a.hp,deadD=r.toD>=d.hp;
     const casualty=(p,dead)=>dead?(p.kind==='king'?1000:8):0;
@@ -474,13 +478,16 @@ globalThis.YiwuComputer = (() => {
     if(side!==a.side&&side!==d.side)throw new Error('无效阵营');
     const winning=winningChoices(s,ctx,side);
     if(winning.length)return winning.map(id=>({id,weight:1/winning.length}));
+    const end=retreatOutcome(s);
+    if(side===a.side&&end?.winner===side)return [{id:'retreat',weight:1}];
     if(ctx.round===1){
       const opening=battleOutlook(s,ctx),safe=side===a.side?opening.finishes:opening.counters;
       if(safe.length)return safe.map(id=>({id,weight:1/safe.length}));
     }
     const rows=choices(s,a,ctx),cols=choices(s,d,ctx);
-    if(ctx.round>=2)rows.push('retreat');
-    const matrix=rows.map(x=>cols.map(y=>combatScore(s,ctx,x,y))),ra=rows.map(()=>0),rd=cols.map(()=>0),sa=rows.map(()=>0),sd=cols.map(()=>0);
+    if(ctx.round>=2&&end?.winner!==d.side)rows.push('retreat');
+    const retreatScore=end?.winner==='draw'?0:end?.winner===a.side?1000:-.6;
+    const matrix=rows.map(x=>cols.map(y=>x==='retreat'?retreatScore:combatScore(s,ctx,x,y))),ra=rows.map(()=>0),rd=cols.map(()=>0),sa=rows.map(()=>0),sd=cols.map(()=>0);
     // shortcut: 只评估本轮收益和剩余气势；需要高难度对手时再搜索后续武斗轮次。
     for(let n=0;n<160;n++){
       const pa=distribution(ra),pd=distribution(rd),va=rows.map((_,i)=>cols.reduce((v,__,j)=>v+matrix[i][j]*pd[j],0));
@@ -505,13 +512,19 @@ globalThis.YiwuComputer = (() => {
     const ctx=s.duel,a=E.get(s,ctx.a),d=E.get(s,ctx.d);
     if(side!==a.side&&side!==d.side)throw new Error('无效阵营');
     const p=side===a.side?a:d;
-    if(p===a&&ctx.round>=2&&p.hp<=4)return [{id:'retreat',weight:1}];
+    if(p===a&&ctx.round>=2){
+      const end=retreatOutcome(s);
+      if(end?.winner===side||p.hp<=4&&end?.winner!==d.side)return [{id:'retreat',weight:1}];
+    }
     const ids=choices(s,p,ctx),types=[...new Set(ids.map(id=>(E.BASE[id]||E.CARDS[id]).type))];
     return ids.map(id=>({id,weight:1/types.length/ids.filter(other=>(E.BASE[other]||E.CARDS[other]).type===(E.BASE[id]||E.CARDS[id]).type).length}));
   }
   function combat(s,side,rng=Math.random,difficulty='standard'){return sample(difficulty==='practice'?practicePlan(s,side):combatPlan(s,side),rng);}
-  function explain(id,difficulty='standard'){
-    if(id==='retreat')return '进攻方生命较低，撤回可以保留棋子；伤势与耗尽牌仍然保留。';
+  function explain(id,difficulty='standard',s){
+    if(id==='retreat'){
+      const end=s.phase==='ended'?s:retreatOutcome(s);
+      return (end?'撤回直接结束本局：'+(end.winner==='draw'?'判和':E.SIDE[end.winner]+'获胜')+'。'+end.reason:'主动撤回以保留棋子和当前生命，不再结算本轮伤害。')+'伤势与耗尽牌保留，气势清零。';
+    }
     const c=E.BASE[id]||E.CARDS[id];
     return (difficulty==='practice'?'练习电脑在可用招式类型之间等概率选择，再从该类中选一招；不针对历史出招调整。':'标准电脑优先抓住可确认的获胜机会；其他局面依据公开状态评估本轮收益，并参考已揭示的出招历史。')+'本轮选择「'+c.name+'」：'+c.text;
   }
@@ -609,9 +622,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.41',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.42',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.41-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.42-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -666,7 +679,7 @@ globalThis.YiwuComputer = (() => {
           check(f.step===(battle.a.side==='red'?'pickA':'pickD')&&validChoice(f.computerChoice)&&!Yiwu.availability(state,computer,f.computerChoice,battle.ctx));
         }
       }
-      restoredFight={...battle,step:f.step,first:f.first,pending:f.pending,computerChoice:f.computerChoice,hint:'',result:selecting?null:result,computerReason:ui.opponent==='computer'&&f.computerChoice?C.explain(f.computerChoice,ui.difficulty):''};
+      restoredFight={...battle,step:f.step,first:f.first,pending:f.pending,computerChoice:f.computerChoice,hint:'',result:selecting?null:result,computerReason:ui.opponent==='computer'&&f.computerChoice?C.explain(f.computerChoice,ui.difficulty,state):''};
     }else check(state.phase!=='duel');
     return {data,state,fight:restoredFight};
   }
@@ -1193,7 +1206,7 @@ globalThis.YiwuComputer = (() => {
     if(opponent!=='computer'){ui.step='handoffA';return;}
     // 电脑先提交决定，后续人类点击只负责揭示与结算。
     ui.computerChoice=C.combat(s,'black',Math.random,difficulty);
-    ui.computerReason=C.explain(ui.computerChoice,difficulty);
+    ui.computerReason=C.explain(ui.computerChoice,difficulty,s);
     if(ui.a.side==='black'&&ui.computerChoice==='retreat'){ui.result=E.retreat(s);ui.step='retreated';return;}
     ui.step=ui.a.side==='red'?'pickA':'pickD';
   }
@@ -1201,9 +1214,12 @@ globalThis.YiwuComputer = (() => {
     const ui=fightUI;
     return screen==='game'&&s.phase==='duel'&&ui?.ctx===s.duel&&s.duel.round>=2&&ui.a.hp>0&&ui.d.hp>0&&['handoffA','pickA'].includes(ui.step)&&(!lesson||lesson.stage==='retreat')&&(opponent!=='computer'||ui.a.side==='red');
   }
+  function retreatConsequence(next){
+    return next.phase==='ended'?'撤回将直接结束本局：'+(next.winner==='draw'?'判和':E.SIDE[next.winner]+'获胜')+'。'+next.reason:'本场武斗计一次棋盘行动，撤回后轮到'+E.SIDE[next.turn]+'行动。';
+  }
   function retreatPreviewHTML(){
     const {a,d,ctx}=fightUI,next=JSON.parse(JSON.stringify(s));Yiwu.retreat(next);
-    const consequence=next.phase==='ended'?'撤回将直接结束本局：'+(next.winner==='draw'?'判和':E.SIDE[next.winner]+'获胜')+'。'+next.reason:'本场武斗计一次棋盘行动，撤回后轮到'+E.SIDE[next.turn]+'行动。';
+    const consequence=retreatConsequence(next);
     const challenge=E.CHALLENGES[s.scenario];
     return '<section class="retreat-confirm combat-summary" aria-labelledby="retreat-title"><h3 id="retreat-title">确认主动撤回？</h3><p>'+E.label(a)+'停止进攻，双方留在交战前的位置；不再结算本轮伤害。</p><p class="draw-warning">'+esc(consequence)+'</p><div class="decision-facts">'+[a,d].map(p=>'<div><b>'+E.label(p)+'</b> · 生命保持 '+p.hp+' / 18 · 气势 '+(p===a?ctx.forceA:ctx.forceD)+' → 0<br>已耗尽：'+(p.exhausted.length?p.exhausted.map(id=>E.CARDS[id].name).join('、'):'无')+'</div>').join('')+'</div>'+(challenge&&next.phase!=='ended'?'<p>撤回后本关剩余 '+(challenge.limit-next.ply)+' 次棋盘行动，双方行动均计数。</p>':'')+'<p class="tip">撤回不回血、不恢复培养牌。返回选招或按 Esc 可继续考虑；取消不耗行动，也不改变已锁定暗招。</p></section>';
   }
@@ -1289,8 +1305,9 @@ globalThis.YiwuComputer = (() => {
     const ctx=s.duel,isA=who.id===ctx.a,enemy=E.get(s,isA?ctx.d:ctx.a),force=isA?ctx.forceA:ctx.forceD;
     const advice={title:id==='retreat'?'建议主动撤回':'建议「'+(E.BASE[id]||E.CARDS[id]).name+'」',reasons:[],risks:[],note:'依据本轮伤害、阵亡风险、气势、耗牌和已揭示历史综合推荐；不预知暗招，也未搜索后续轮次。'};
     if(id==='retreat'){
-      advice.reasons.push('撤回保留当前 '+who.hp+' 点生命，不再结算本轮伤害。');
-      advice.risks.push('结束本次棋盘行动，交给对手；位置不变，伤势与耗尽牌保留，气势清零。');return advice;
+      const next=JSON.parse(JSON.stringify(s));Yiwu.retreat(next);
+      advice.reasons.push('撤回保留当前 '+who.hp+' 点生命，不再结算本轮伤害。',retreatConsequence(next));
+      advice.risks.push('位置不变，伤势与耗尽牌保留，气势清零。');return advice;
     }
     const card=E.BASE[id]||E.CARDS[id],rows=C.choices(s,enemy,ctx).map(other=>{
       const r=E.roundDamage(ctx,isA?id:other,isA?other:id);
@@ -1433,6 +1450,7 @@ globalThis.YiwuComputer = (() => {
       footer=`<p class="tip">${r.finished?'气势离场归零，伤势和耗尽牌保留。':'观察对手的剩余气势与招式，再决定下一轮。'}</p><div class="fight-controls"><button class="quiet" data-fight="replay">重看出招</button><button class="primary" data-fight="next">${r.finished?(s.phase==='ended'?'查看终局':'返回棋盘'):lesson?.stage==='counter'?'继续学习气势':lesson?.stage==='release'?'继续学习撤回':'下一轮'}</button></div>`;
     }else if(ui.step==='retreated'){
       html+=`<div class="combat-summary"><h3>${E.SIDE[a.side]}主动撤回</h3><p>${esc(ui.result.summary)}</p><p class="tip">双方回到交战前的位置。没有回血、没有恢复招式；${s.phase==='ended'?'本局已结束：'+s.reason:'由'+E.SIDE[s.turn]+'行动'}。</p></div>`;
+      if(ui.computerChoice==='retreat'&&ui.computerReason)html+='<div class="coach"><strong>电脑撤回说明</strong><p>'+esc(ui.computerReason)+'</p></div>';
       footer='<p class="tip">伤势与消耗保留，气势归零。</p><div class="fight-controls"><button class="quiet" data-fight="replay">重看撤回</button><button class="primary" data-fight="next">'+(lesson?'继续学习支援':s.phase==='ended'?'查看终局':'返回棋盘')+'</button></div>';
     }
     if(lesson&&(ui.pending||ui.step==='result'||ui.step==='retreated'||lesson.stage==='retreat'))footer=footer.replace('class="primary"','class="primary lesson-target"');
