@@ -866,4 +866,36 @@ function mirroredSetup(state) {
   p.action('scout'); assert.equal(p.active(), button); p.action('scout'); assert.equal(p.active(), button);
   assert.equal(JSON.stringify(p.ui.state), before); assert.equal(JSON.stringify(JSON.parse(p.saved.getItem('yiwu.autosave')).commands), commands);
 }
-console.log('残局流程、走棋反馈与武斗确认：38 项检查通过；教学键盘入口与续局：2 组、教学完成衔接：2 组、武斗滚动：3 组、武斗焦点：3 组、默认配牌与旧续局：3 组、两轮预览续局隔离：1 组、棋盘操作焦点：3 组检查通过。');
+{
+  for (const mode of ['quick', 'full', 'tutorial', 'challenge-support']) {
+    const p = page(); p.ui.init(mode);
+    if (['quick', 'full'].includes(mode)) {p.action('start'); p.cell(0, 9); p.cell(1, 8);}
+    if (mode === 'challenge-support') p.action('hint');
+    const state = JSON.stringify(p.ui.state), saved = p.saved.getItem('yiwu.autosave');
+    const ids = ['start-wrap', 'grid', 'detail', 'notice', 'lesson'], content = new Map(); let replaced = 0;
+    for (const id of ids) {
+      content.set(id, p.node(id).innerHTML);
+      Object.defineProperty(p.node(id), 'innerHTML', {get() {return content.get(id);}, set(value) {content.set(id, value); replaced++;}});
+    }
+    const notice = p.node('notice').textContent;
+    for (let i = 0; i < 2; i++) {
+      p.action('rules'); assert(p.node('rules').open);
+      assert.equal(replaced, 0, '查看规则不能重建棋盘或替换原操作控件');
+      assert.equal(p.node('notice').textContent, notice, '保留原来的走法反馈或建议');
+      assert.equal(JSON.stringify(p.ui.state), state); assert.equal(p.saved.getItem('yiwu.autosave'), saved);
+      p.node('close-rules').onclick(); assert(!p.node('rules').open); assert.equal(p.timerCount(), 0);
+    }
+  }
+}
+{
+  const p = page(); p.ui.init('quick'); p.action('start'); p.cell(4, 6); p.cell(4, 5);
+  const state = JSON.stringify(p.ui.state), saved = p.saved.getItem('yiwu.autosave');
+  assert.equal(p.timerCount(), 1); p.action('rules');
+  p.computerMove({type: 'pass'});
+  assert.equal(JSON.stringify(p.ui.state), state); assert.equal(p.saved.getItem('yiwu.autosave'), saved);
+  assert.equal(p.timerCount(), 0); p.node('close-rules').onclick(); assert.equal(p.timerCount(), 1);
+  p.computerMove({type: 'move', id: p.E.at(p.ui.state, 4, 3).id, x: 4, y: 4});
+  assert.equal(p.ui.state.ply, 2); assert.equal(p.ui.state.turn, 'red'); assert.equal(p.timerCount(), 0);
+  assert.equal(JSON.parse(p.saved.getItem('yiwu.autosave')).commands.length, JSON.parse(saved).commands.length + 1);
+}
+console.log('残局流程、走棋反馈与武斗确认：38 项检查通过；教学键盘入口与续局：2 组、教学完成衔接：2 组、武斗滚动：3 组、武斗焦点：3 组、默认配牌与旧续局：3 组、两轮预览续局隔离：1 组、棋盘操作焦点：3 组、规则窗口：2 组检查通过。');
