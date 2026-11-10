@@ -133,7 +133,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.81 · 倒地演出不遮文字</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.82 · 减少长局重复计算</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -428,6 +428,7 @@ globalThis.Yiwu = (() => {
 globalThis.YiwuComputer = (() => {
   'use strict';
   const E=Yiwu,VALUE={king:60,rook:9,cannon:8,horse:8,pawn:6,guard:6,elephant:6};
+  const formations={red:new WeakMap(),black:new WeakMap()};
   function actions(s){
     if(s.phase!=='board')return [];
     const out=[];
@@ -629,13 +630,18 @@ globalThis.YiwuComputer = (() => {
   function rankedActions(s){
     const side=s.turn,base=position(s,side);
     const own=new Set(s.pieces.filter(p=>p.side===side).map(p=>p.id)),visits=new Map();
+    const signature=JSON.stringify([...own].sort());
+    let cached=formations[side].get(s.repetitions);
+    if(cached?.signature!==signature){cached={signature,keys:new Map()};formations[side].set(s.repetitions,cached);}
     const formation=key=>{
       const [turn,pieces]=JSON.parse(key);
       return JSON.stringify([turn,pieces.map(([id,x,y,...state])=>own.has(id)?[id,x,y,...state]:[id,...state])]);
     };
-    // 对方调动不抹去己方的重复站位；损血、阵亡和耗牌变化仍区分局面。
+    // 仅缓存已有历史的阵形解析，次数实时读取；试算落点不进入缓存。
     for(const [key,count] of Object.entries(s.repetitions)){
-      const k=formation(key);visits.set(k,(visits.get(k)||0)+count);
+      let k=cached.keys.get(key);
+      if(k===undefined){k=formation(key);cached.keys.set(key,k);}
+      visits.set(k,(visits.get(k)||0)+count);
     }
     return actions(s).map(action=>{
       const p=E.get(s,action.id),next={...s,pieces:s.pieces.map(q=>({...q})),repetitions:{...s.repetitions},log:[...s.log]};
@@ -705,9 +711,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.81',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.82',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.81-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.82-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
