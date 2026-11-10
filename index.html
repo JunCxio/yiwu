@@ -132,7 +132,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.74 · 气势提示校准</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.75 · 电脑选招校准</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -503,7 +503,7 @@ globalThis.YiwuComputer = (() => {
     const deadA=r.toA>=a.hp,deadD=r.toD>=d.hp;
     const casualty=(p,dead)=>dead?(p.kind==='king'?1000:8):0;
     return Math.min(d.hp,r.toD)*wd-Math.min(a.hp,r.toA)*wa+casualty(d,deadD)-casualty(a,deadA)
-      +(ctx.round<6?1.1*((deadD?0:r.forceAfterD)*-1+(deadA?0:r.forceAfterA)):0)
+      +(ctx.round<6&&!deadA&&!deadD?1.1*(r.forceAfterA-r.forceAfterD):0)
       +(E.CARDS[dId] ? .25 : 0)-(E.CARDS[aId] ? .25 : 0);
   }
   function distribution(regret){const sum=regret.reduce((n,r)=>n+Math.max(0,r),0);return regret.map(r=>sum?Math.max(0,r)/sum:1/regret.length);}
@@ -679,9 +679,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.74',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.75',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.74-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.75-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}

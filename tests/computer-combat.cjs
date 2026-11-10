@@ -75,4 +75,26 @@ test('尚未结束的普通武斗继续计算本轮收益，不提前判和或�
   assert.equal(next.phase,'duel');assert.equal(C.combatOutcome(s,s.duel,'horse_turn','guard'),null);
   assert(C.combatScore(s,s.duel,'horse_turn','guard')>0);assert.equal(JSON.stringify(s),before);
 });
-console.log('普通武斗终局：'+checks+' / 5 项检查通过。');
+test('自然标准局中韧劲击倒对手后的气势归零，不再计入留存收益',()=>{
+  const fixture=require('./computer-force-fixture.json');let s;
+  for(const [op,...args]of fixture.commands){if(op==='create')s=E.create(...args);else E[op](s,...args);}
+  assert.equal(s.ply,40);assert.equal(s.duel.round,2);
+  const before=JSON.stringify(s),ctx=s.duel,next=copy(s),r=E.resolve(next,fixture.attackerChoice,fixture.defenderChoice);
+  assert(r.finished);assert.equal(next.phase,'board');assert.equal(r.hpBeforeA,17);assert.equal(r.hpA,16);assert.equal(r.hpBeforeD,1);assert.equal(r.hpD,0);
+  assert.equal(r.forceAfterA,1);assert.equal(next.lastCombat.forceA,0);assert.equal(next.lastCombat.forceD,0);
+  assert.equal(C.combatScore(s,ctx,fixture.attackerChoice,fixture.defenderChoice),7.75);
+  checkedPlan(s,'red');checkedPlan(s,'black');assert.equal(JSON.stringify(s),before);
+});
+test('进守和红黑双方仅在交战继续时计入气势收益，末轮与提前离场一致',()=>{
+  for(const mirrored of [false,true])for(const round of [2,6])for(const survivor of ['a','d','both']){
+    const s=E.create('tactics');E.get(s,'target').kind='pawn';E.get(s,'target').learned=['pawn_grit'];
+    if(mirrored)for(const p of s.pieces){p.side=E.OTHER[p.side];p.x=8-p.x;p.y=9-p.y;}
+    const a=E.get(s,'hero'),d=E.get(s,'target');s.turn=a.side;E.move(s,a.id,d.x,d.y);E.resolve(s,'guard','guard');s.duel.round=round;
+    if(survivor==='a')d.hp=1;else if(survivor==='d')a.hp=1;
+    const id=survivor==='d'?'strike':'pawn_grit',reply=survivor==='d'?'pawn_grit':'strike',before=JSON.stringify(s),next=copy(s),r=E.resolve(next,id,reply);
+    assert.equal(C.combatScore(s,s.duel,id,reply),survivor==='a'?7.75:survivor==='d'?-7.75:round===2?4.85:3.75);
+    if(r.finished){assert.equal(next.lastCombat.forceA,0);assert.equal(next.lastCombat.forceD,0);}else assert.equal(next.duel.forceA,1);
+    assert.equal(JSON.stringify(s),before);
+  }
+});
+console.log('普通武斗终局：'+checks+' / 7 项检查通过。');
