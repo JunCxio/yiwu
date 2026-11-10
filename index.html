@@ -133,7 +133,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.83 · 复盘核对即时胜负</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.84 · 削势按实际可用气势显示</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -711,9 +711,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.83',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.84',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.83-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.84-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -1553,9 +1553,14 @@ globalThis.YiwuComputer = (() => {
     if(b.base&&b.reduceLimit>b.reduction)note+='有效伤害最低为 1，因此减伤只抵消 '+b.reduction+' 点。';
     return '<details class="damage-breakdown" aria-label="'+E.SIDE[p.side]+'伤害拆解"><summary><span>'+E.SIDE[p.side]+'伤害拆解</span><b>'+formula+'</b></summary><dl>'+rows.map(([label,value])=>'<div><dt>'+esc(label)+'</dt><dd>'+value+'</dd></div>').join('')+'<div class="damage-total"><dt>结算伤害</dt><dd>'+damage+'</dd></div></dl>'+(note?'<p>'+esc(note)+'</p>':'')+'<p>对方生命 '+hpBefore+' → '+hpAfter+'，实际扣除 '+(hpBefore-hpAfter)+' 点。'+(damage>hpBefore?'结算伤害超过剩余生命，实际只扣到 0。':'')+'</p></details>';
   }
+  function actualSuppression(r,isA){
+    const before=isA?r.forceBeforeA:r.forceBeforeD,spent=isA?r.spentA:r.spentD,gain=isA?r.gainA:r.gainD,limit=isA?r.suppressedA:r.suppressedD;
+    // 阵亡也会清零气势，削势量应按释放与获得后的可用气势计算。
+    return Math.min(limit,Math.min(2,before-spent+gain));
+  }
   function revealCard(p,isA,r){
     const name=isA?r.aName:r.dName,type=isA?r.aType:r.dType,damage=isA?r.toD:r.toA,taken=(isA?r.hpBeforeA-r.hpA:r.hpBeforeD-r.hpD),hpBefore=isA?r.hpBeforeA:r.hpBeforeD,hpAfter=isA?r.hpA:r.hpD;
-    const spent=isA?r.spentA:r.spentD,suppressed=isA?r.suppressedA:r.suppressedD,before=isA?r.forceBeforeA:r.forceBeforeD,after=r.finished?0:(isA?r.forceAfterA:r.forceAfterD);
+    const spent=isA?r.spentA:r.spentD,suppressed=actualSuppression(r,isA),before=isA?r.forceBeforeA:r.forceBeforeD,after=r.finished?0:(isA?r.forceAfterA:r.forceAfterD);
     return `<article class="reveal-card ${p.side}" aria-label="${E.SIDE[p.side]}出招 ${name}"><div class="reveal-label">${E.SIDE[p.side]}出招 <span>${isA?'进攻':'守方'}</span></div><div class="reveal-move">${moveIcon(type)}<h3>${name}</h3><span>${E.TYPE[type]}</span></div><div class="reveal-damage"><div><strong>${damage}</strong><span>造成结算伤害</span></div><div><b>−${taken}</b><span>自身实际损血</span></div></div><p class="reveal-health">自身生命 ${hpBefore} → ${hpAfter}</p>${damageBreakdownHTML(p,isA,r)}<div class="force-change">${spent?'释放 '+spent+' 点；':''}${suppressed?'被削势 '+suppressed+' 点；':''}气势 ${before}/2 变为 ${after}/2${r.finished?'（离场归零）':''}</div></article>`;
   }
   function publicCardsHTML(who){
@@ -1629,7 +1634,7 @@ globalThis.YiwuComputer = (() => {
     const {a,d,ctx}=fightUI;if(!ctx.history.length)return '';
     const order=[a,d].sort((x,y)=>x.side==='red'?-1:1),loss=p=>ctx.history.reduce((n,r)=>n+(p===a?r.hpBeforeA-r.hpA:r.hpBeforeD-r.hpD),0);
     return `<details class="combat-history" id="combat-history" aria-label="本场交锋记录" ${open?'open':''}><summary><strong>交锋记录 · 已揭示 ${ctx.history.length} 轮</strong><span>累计实际损血 · ${order.map(p=>E.SIDE[p.side]+' '+loss(p)).join(' / ')}</span></summary><p>最新轮次在前，只显示已揭示结果；气势为各轮结算时数值，离场后归零。</p><ol reversed>${[...ctx.history].reverse().map(r=>`<li data-round="${r.round}"><div class="combat-round-head"><strong>第 ${r.round} 轮</strong><span>${esc(combatVerdict(r))}</span></div><div class="combat-round-pair">${order.map(p=>{
-      const isA=p===a,name=isA?r.aName:r.dName,before=isA?r.hpBeforeA:r.hpBeforeD,after=isA?r.hpA:r.hpD,forceBefore=isA?r.forceBeforeA:r.forceBeforeD,forceAfter=isA?r.forceAfterA:r.forceAfterD,spent=isA?r.spentA:r.spentD,suppressed=isA?r.suppressedA:r.suppressedD;
+      const isA=p===a,name=isA?r.aName:r.dName,before=isA?r.hpBeforeA:r.hpBeforeD,after=isA?r.hpA:r.hpD,forceBefore=isA?r.forceBeforeA:r.forceBeforeD,forceAfter=isA?r.forceAfterA:r.forceAfterD,spent=isA?r.spentA:r.spentD,suppressed=actualSuppression(r,isA);
       return `<section class="combat-round-side ${p.side}" aria-label="第 ${r.round} 轮${E.SIDE[p.side]}记录"><div><b>${E.SIDE[p.side]}</b><strong>${esc(name)}</strong></div><p>生命 ${before} → ${after}<span>实际损血 ${before-after}${after===0?' · 阵亡':''}</span></p><small>气势 ${forceBefore}/2 → ${forceAfter}/2${spent?' · 释放 '+spent:''}${suppressed?' · 被削势 '+suppressed:''}</small></section>`;
     }).join('')}</div><div class="damage-history-pair">${order.map(p=>damageBreakdownHTML(p,p===a,r)).join('')}</div></li>`).join('')}</ol></details>`;
   }
