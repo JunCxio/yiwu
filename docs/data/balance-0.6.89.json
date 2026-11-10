@@ -1,0 +1,8448 @@
+{
+  "version": "0.6.89",
+  "sourceSHA256": "6bc926b65fde94b71764897d9327edca2b4e85db4d942f63f1fadb5e594ec225",
+  "difficulty": "standard",
+  "opponentStyle": "default",
+  "allocations": [
+    {
+      "scenario": "quick",
+      "style": "default",
+      "variant": 0,
+      "aSide": "red",
+      "points": 6,
+      "trained": 6,
+      "pieces": [
+        {
+          "id": "red_guard_1",
+          "kind": "guard",
+          "cards": [
+            "guard_palace"
+          ]
+        },
+        {
+          "id": "red_elephant_2",
+          "kind": "elephant",
+          "cards": [
+            "elephant_step"
+          ]
+        },
+        {
+          "id": "red_rook_3",
+          "kind": "rook",
+          "cards": [
+            "rook_crush"
+          ]
+        },
+        {
+          "id": "red_horse_4",
+          "kind": "horse",
+          "cards": [
+            "horse_evade"
+          ]
+        },
+        {
+          "id": "red_cannon_5",
+          "kind": "cannon",
+          "cards": [
+            "cannon_pressure"
+          ]
+        },
+        {
+          "id": "red_pawn_6",
+          "kind": "pawn",
+          "cards": [
+            "pawn_grit"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "quick",
+      "style": "default",
+      "variant": 0,
+      "aSide": "black",
+      "points": 6,
+      "trained": 6,
+      "pieces": [
+        {
+          "id": "black_guard_1",
+          "kind": "guard",
+          "cards": [
+            "guard_palace"
+          ]
+        },
+        {
+          "id": "black_elephant_2",
+          "kind": "elephant",
+          "cards": [
+            "elephant_step"
+          ]
+        },
+        {
+          "id": "black_rook_3",
+          "kind": "rook",
+          "cards": [
+            "rook_crush"
+          ]
+        },
+        {
+          "id": "black_horse_4",
+          "kind": "horse",
+          "cards": [
+            "horse_evade"
+          ]
+        },
+        {
+          "id": "black_cannon_5",
+          "kind": "cannon",
+          "cards": [
+            "cannon_pressure"
+          ]
+        },
+        {
+          "id": "black_pawn_6",
+          "kind": "pawn",
+          "cards": [
+            "pawn_grit"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "quick",
+      "style": "default",
+      "variant": 1,
+      "aSide": "red",
+      "points": 6,
+      "trained": 6,
+      "pieces": [
+        {
+          "id": "red_guard_1",
+          "kind": "guard",
+          "cards": [
+            "guard_palace"
+          ]
+        },
+        {
+          "id": "red_elephant_2",
+          "kind": "elephant",
+          "cards": [
+            "elephant_step"
+          ]
+        },
+        {
+          "id": "red_rook_3",
+          "kind": "rook",
+          "cards": [
+            "rook_crush"
+          ]
+        },
+        {
+          "id": "red_horse_4",
+          "kind": "horse",
+          "cards": [
+            "horse_evade"
+          ]
+        },
+        {
+          "id": "red_cannon_5",
+          "kind": "cannon",
+          "cards": [
+            "cannon_pressure"
+          ]
+        },
+        {
+          "id": "red_pawn_6",
+          "kind": "pawn",
+          "cards": [
+            "pawn_grit"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "quick",
+      "style": "default",
+      "variant": 1,
+      "aSide": "black",
+      "points": 6,
+      "trained": 6,
+      "pieces": [
+        {
+          "id": "black_guard_1",
+          "kind": "guard",
+          "cards": [
+            "guard_palace"
+          ]
+        },
+        {
+          "id": "black_elephant_2",
+          "kind": "elephant",
+          "cards": [
+            "elephant_step"
+          ]
+        },
+        {
+          "id": "black_rook_3",
+          "kind": "rook",
+          "cards": [
+            "rook_crush"
+          ]
+        },
+        {
+          "id": "black_horse_4",
+          "kind": "horse",
+          "cards": [
+            "horse_evade"
+          ]
+        },
+        {
+          "id": "black_cannon_5",
+          "kind": "cannon",
+          "cards": [
+            "cannon_pressure"
+          ]
+        },
+        {
+          "id": "black_pawn_6",
+          "kind": "pawn",
+          "cards": [
+            "pawn_grit"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "quick",
+      "style": "default",
+      "variant": 2,
+      "aSide": "red",
+      "points": 6,
+      "trained": 6,
+      "pieces": [
+        {
+          "id": "red_guard_1",
+          "kind": "guard",
+          "cards": [
+            "guard_palace"
+          ]
+        },
+        {
+          "id": "red_elephant_2",
+          "kind": "elephant",
+          "cards": [
+            "elephant_step"
+          ]
+        },
+        {
+          "id": "red_rook_3",
+          "kind": "rook",
+          "cards": [
+            "rook_crush"
+          ]
+        },
+        {
+          "id": "red_horse_4",
+          "kind": "horse",
+          "cards": [
+            "horse_evade"
+          ]
+        },
+        {
+          "id": "red_cannon_5",
+          "kind": "cannon",
+          "cards": [
+            "cannon_pressure"
+          ]
+        },
+        {
+          "id": "red_pawn_6",
+          "kind": "pawn",
+          "cards": [
+            "pawn_grit"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "quick",
+      "style": "default",
+      "variant": 2,
+      "aSide": "black",
+      "points": 6,
+      "trained": 6,
+      "pieces": [
+        {
+          "id": "black_guard_1",
+          "kind": "guard",
+          "cards": [
+            "guard_palace"
+          ]
+        },
+        {
+          "id": "black_elephant_2",
+          "kind": "elephant",
+          "cards": [
+            "elephant_step"
+          ]
+        },
+        {
+          "id": "black_rook_3",
+          "kind": "rook",
+          "cards": [
+            "rook_crush"
+          ]
+        },
+        {
+          "id": "black_horse_4",
+          "kind": "horse",
+          "cards": [
+            "horse_evade"
+          ]
+        },
+        {
+          "id": "black_cannon_5",
+          "kind": "cannon",
+          "cards": [
+            "cannon_pressure"
+          ]
+        },
+        {
+          "id": "black_pawn_6",
+          "kind": "pawn",
+          "cards": [
+            "pawn_grit"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "quick",
+      "style": "spread",
+      "variant": 0,
+      "aSide": "red",
+      "points": 6,
+      "trained": 6,
+      "pieces": [
+        {
+          "id": "red_guard_1",
+          "kind": "guard",
+          "cards": [
+            "guard_order"
+          ]
+        },
+        {
+          "id": "red_rook_3",
+          "kind": "rook",
+          "cards": [
+            "rook_crush"
+          ]
+        },
+        {
+          "id": "red_horse_4",
+          "kind": "horse",
+          "cards": [
+            "horse_evade"
+          ]
+        },
+        {
+          "id": "red_cannon_5",
+          "kind": "cannon",
+          "cards": [
+            "cannon_pressure"
+          ]
+        },
+        {
+          "id": "red_pawn_6",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank"
+          ]
+        },
+        {
+          "id": "red_pawn_7",
+          "kind": "pawn",
+          "cards": [
+            "pawn_advance"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "quick",
+      "style": "spread",
+      "variant": 0,
+      "aSide": "black",
+      "points": 6,
+      "trained": 6,
+      "pieces": [
+        {
+          "id": "black_guard_1",
+          "kind": "guard",
+          "cards": [
+            "guard_order"
+          ]
+        },
+        {
+          "id": "black_rook_3",
+          "kind": "rook",
+          "cards": [
+            "rook_crush"
+          ]
+        },
+        {
+          "id": "black_horse_4",
+          "kind": "horse",
+          "cards": [
+            "horse_evade"
+          ]
+        },
+        {
+          "id": "black_cannon_5",
+          "kind": "cannon",
+          "cards": [
+            "cannon_pressure"
+          ]
+        },
+        {
+          "id": "black_pawn_6",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank"
+          ]
+        },
+        {
+          "id": "black_pawn_7",
+          "kind": "pawn",
+          "cards": [
+            "pawn_advance"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "quick",
+      "style": "spread",
+      "variant": 1,
+      "aSide": "red",
+      "points": 6,
+      "trained": 6,
+      "pieces": [
+        {
+          "id": "red_guard_1",
+          "kind": "guard",
+          "cards": [
+            "guard_palace"
+          ]
+        },
+        {
+          "id": "red_rook_3",
+          "kind": "rook",
+          "cards": [
+            "rook_hold"
+          ]
+        },
+        {
+          "id": "red_horse_4",
+          "kind": "horse",
+          "cards": [
+            "horse_turn"
+          ]
+        },
+        {
+          "id": "red_cannon_5",
+          "kind": "cannon",
+          "cards": [
+            "cannon_screen"
+          ]
+        },
+        {
+          "id": "red_pawn_6",
+          "kind": "pawn",
+          "cards": [
+            "pawn_advance"
+          ]
+        },
+        {
+          "id": "red_pawn_7",
+          "kind": "pawn",
+          "cards": [
+            "pawn_grit"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "quick",
+      "style": "spread",
+      "variant": 1,
+      "aSide": "black",
+      "points": 6,
+      "trained": 6,
+      "pieces": [
+        {
+          "id": "black_guard_1",
+          "kind": "guard",
+          "cards": [
+            "guard_palace"
+          ]
+        },
+        {
+          "id": "black_rook_3",
+          "kind": "rook",
+          "cards": [
+            "rook_hold"
+          ]
+        },
+        {
+          "id": "black_horse_4",
+          "kind": "horse",
+          "cards": [
+            "horse_turn"
+          ]
+        },
+        {
+          "id": "black_cannon_5",
+          "kind": "cannon",
+          "cards": [
+            "cannon_screen"
+          ]
+        },
+        {
+          "id": "black_pawn_6",
+          "kind": "pawn",
+          "cards": [
+            "pawn_advance"
+          ]
+        },
+        {
+          "id": "black_pawn_7",
+          "kind": "pawn",
+          "cards": [
+            "pawn_grit"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "quick",
+      "style": "spread",
+      "variant": 2,
+      "aSide": "red",
+      "points": 6,
+      "trained": 6,
+      "pieces": [
+        {
+          "id": "red_guard_1",
+          "kind": "guard",
+          "cards": [
+            "guard_king"
+          ]
+        },
+        {
+          "id": "red_rook_3",
+          "kind": "rook",
+          "cards": [
+            "rook_lock"
+          ]
+        },
+        {
+          "id": "red_horse_4",
+          "kind": "horse",
+          "cards": [
+            "horse_join"
+          ]
+        },
+        {
+          "id": "red_cannon_5",
+          "kind": "cannon",
+          "cards": [
+            "cannon_hold"
+          ]
+        },
+        {
+          "id": "red_pawn_6",
+          "kind": "pawn",
+          "cards": [
+            "pawn_grit"
+          ]
+        },
+        {
+          "id": "red_pawn_7",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "quick",
+      "style": "spread",
+      "variant": 2,
+      "aSide": "black",
+      "points": 6,
+      "trained": 6,
+      "pieces": [
+        {
+          "id": "black_guard_1",
+          "kind": "guard",
+          "cards": [
+            "guard_king"
+          ]
+        },
+        {
+          "id": "black_rook_3",
+          "kind": "rook",
+          "cards": [
+            "rook_lock"
+          ]
+        },
+        {
+          "id": "black_horse_4",
+          "kind": "horse",
+          "cards": [
+            "horse_join"
+          ]
+        },
+        {
+          "id": "black_cannon_5",
+          "kind": "cannon",
+          "cards": [
+            "cannon_hold"
+          ]
+        },
+        {
+          "id": "black_pawn_6",
+          "kind": "pawn",
+          "cards": [
+            "pawn_grit"
+          ]
+        },
+        {
+          "id": "black_pawn_7",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "quick",
+      "style": "attack",
+      "variant": 0,
+      "aSide": "red",
+      "points": 6,
+      "trained": 3,
+      "pieces": [
+        {
+          "id": "red_rook_3",
+          "kind": "rook",
+          "cards": [
+            "rook_crush",
+            "rook_hold"
+          ]
+        },
+        {
+          "id": "red_horse_4",
+          "kind": "horse",
+          "cards": [
+            "horse_join",
+            "horse_evade"
+          ]
+        },
+        {
+          "id": "red_cannon_5",
+          "kind": "cannon",
+          "cards": [
+            "cannon_screen",
+            "cannon_hold"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "quick",
+      "style": "attack",
+      "variant": 0,
+      "aSide": "black",
+      "points": 6,
+      "trained": 3,
+      "pieces": [
+        {
+          "id": "black_rook_3",
+          "kind": "rook",
+          "cards": [
+            "rook_crush",
+            "rook_hold"
+          ]
+        },
+        {
+          "id": "black_horse_4",
+          "kind": "horse",
+          "cards": [
+            "horse_join",
+            "horse_evade"
+          ]
+        },
+        {
+          "id": "black_cannon_5",
+          "kind": "cannon",
+          "cards": [
+            "cannon_screen",
+            "cannon_hold"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "quick",
+      "style": "attack",
+      "variant": 1,
+      "aSide": "red",
+      "points": 6,
+      "trained": 3,
+      "pieces": [
+        {
+          "id": "red_rook_3",
+          "kind": "rook",
+          "cards": [
+            "rook_crush",
+            "rook_lock"
+          ]
+        },
+        {
+          "id": "red_horse_4",
+          "kind": "horse",
+          "cards": [
+            "horse_join",
+            "horse_turn"
+          ]
+        },
+        {
+          "id": "red_cannon_5",
+          "kind": "cannon",
+          "cards": [
+            "cannon_screen",
+            "cannon_pressure"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "quick",
+      "style": "attack",
+      "variant": 1,
+      "aSide": "black",
+      "points": 6,
+      "trained": 3,
+      "pieces": [
+        {
+          "id": "black_rook_3",
+          "kind": "rook",
+          "cards": [
+            "rook_crush",
+            "rook_lock"
+          ]
+        },
+        {
+          "id": "black_horse_4",
+          "kind": "horse",
+          "cards": [
+            "horse_join",
+            "horse_turn"
+          ]
+        },
+        {
+          "id": "black_cannon_5",
+          "kind": "cannon",
+          "cards": [
+            "cannon_screen",
+            "cannon_pressure"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "quick",
+      "style": "attack",
+      "variant": 2,
+      "aSide": "red",
+      "points": 6,
+      "trained": 3,
+      "pieces": [
+        {
+          "id": "red_rook_3",
+          "kind": "rook",
+          "cards": [
+            "rook_hold",
+            "rook_lock"
+          ]
+        },
+        {
+          "id": "red_horse_4",
+          "kind": "horse",
+          "cards": [
+            "horse_evade",
+            "horse_turn"
+          ]
+        },
+        {
+          "id": "red_cannon_5",
+          "kind": "cannon",
+          "cards": [
+            "cannon_hold",
+            "cannon_pressure"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "quick",
+      "style": "attack",
+      "variant": 2,
+      "aSide": "black",
+      "points": 6,
+      "trained": 3,
+      "pieces": [
+        {
+          "id": "black_rook_3",
+          "kind": "rook",
+          "cards": [
+            "rook_hold",
+            "rook_lock"
+          ]
+        },
+        {
+          "id": "black_horse_4",
+          "kind": "horse",
+          "cards": [
+            "horse_evade",
+            "horse_turn"
+          ]
+        },
+        {
+          "id": "black_cannon_5",
+          "kind": "cannon",
+          "cards": [
+            "cannon_hold",
+            "cannon_pressure"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "quick",
+      "style": "defense",
+      "variant": 0,
+      "aSide": "red",
+      "points": 6,
+      "trained": 3,
+      "pieces": [
+        {
+          "id": "red_guard_1",
+          "kind": "guard",
+          "cards": [
+            "guard_palace",
+            "guard_king"
+          ]
+        },
+        {
+          "id": "red_pawn_6",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank",
+            "pawn_advance"
+          ]
+        },
+        {
+          "id": "red_pawn_7",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank",
+            "pawn_advance"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "quick",
+      "style": "defense",
+      "variant": 0,
+      "aSide": "black",
+      "points": 6,
+      "trained": 3,
+      "pieces": [
+        {
+          "id": "black_guard_1",
+          "kind": "guard",
+          "cards": [
+            "guard_palace",
+            "guard_king"
+          ]
+        },
+        {
+          "id": "black_pawn_6",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank",
+            "pawn_advance"
+          ]
+        },
+        {
+          "id": "black_pawn_7",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank",
+            "pawn_advance"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "quick",
+      "style": "defense",
+      "variant": 1,
+      "aSide": "red",
+      "points": 6,
+      "trained": 3,
+      "pieces": [
+        {
+          "id": "red_guard_1",
+          "kind": "guard",
+          "cards": [
+            "guard_palace",
+            "guard_order"
+          ]
+        },
+        {
+          "id": "red_pawn_6",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank",
+            "pawn_grit"
+          ]
+        },
+        {
+          "id": "red_pawn_7",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank",
+            "pawn_grit"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "quick",
+      "style": "defense",
+      "variant": 1,
+      "aSide": "black",
+      "points": 6,
+      "trained": 3,
+      "pieces": [
+        {
+          "id": "black_guard_1",
+          "kind": "guard",
+          "cards": [
+            "guard_palace",
+            "guard_order"
+          ]
+        },
+        {
+          "id": "black_pawn_6",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank",
+            "pawn_grit"
+          ]
+        },
+        {
+          "id": "black_pawn_7",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank",
+            "pawn_grit"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "quick",
+      "style": "defense",
+      "variant": 2,
+      "aSide": "red",
+      "points": 6,
+      "trained": 3,
+      "pieces": [
+        {
+          "id": "red_guard_1",
+          "kind": "guard",
+          "cards": [
+            "guard_king",
+            "guard_order"
+          ]
+        },
+        {
+          "id": "red_pawn_6",
+          "kind": "pawn",
+          "cards": [
+            "pawn_advance",
+            "pawn_grit"
+          ]
+        },
+        {
+          "id": "red_pawn_7",
+          "kind": "pawn",
+          "cards": [
+            "pawn_advance",
+            "pawn_grit"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "quick",
+      "style": "defense",
+      "variant": 2,
+      "aSide": "black",
+      "points": 6,
+      "trained": 3,
+      "pieces": [
+        {
+          "id": "black_guard_1",
+          "kind": "guard",
+          "cards": [
+            "guard_king",
+            "guard_order"
+          ]
+        },
+        {
+          "id": "black_pawn_6",
+          "kind": "pawn",
+          "cards": [
+            "pawn_advance",
+            "pawn_grit"
+          ]
+        },
+        {
+          "id": "black_pawn_7",
+          "kind": "pawn",
+          "cards": [
+            "pawn_advance",
+            "pawn_grit"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "quick",
+      "style": "mixed",
+      "variant": 0,
+      "aSide": "red",
+      "points": 6,
+      "trained": 3,
+      "pieces": [
+        {
+          "id": "red_guard_1",
+          "kind": "guard",
+          "cards": [
+            "guard_palace",
+            "guard_king"
+          ]
+        },
+        {
+          "id": "red_rook_3",
+          "kind": "rook",
+          "cards": [
+            "rook_crush",
+            "rook_hold"
+          ]
+        },
+        {
+          "id": "red_pawn_6",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank",
+            "pawn_advance"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "quick",
+      "style": "mixed",
+      "variant": 0,
+      "aSide": "black",
+      "points": 6,
+      "trained": 3,
+      "pieces": [
+        {
+          "id": "black_guard_1",
+          "kind": "guard",
+          "cards": [
+            "guard_palace",
+            "guard_king"
+          ]
+        },
+        {
+          "id": "black_rook_3",
+          "kind": "rook",
+          "cards": [
+            "rook_crush",
+            "rook_hold"
+          ]
+        },
+        {
+          "id": "black_pawn_6",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank",
+            "pawn_advance"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "quick",
+      "style": "mixed",
+      "variant": 1,
+      "aSide": "red",
+      "points": 6,
+      "trained": 3,
+      "pieces": [
+        {
+          "id": "red_guard_1",
+          "kind": "guard",
+          "cards": [
+            "guard_palace",
+            "guard_order"
+          ]
+        },
+        {
+          "id": "red_rook_3",
+          "kind": "rook",
+          "cards": [
+            "rook_crush",
+            "rook_lock"
+          ]
+        },
+        {
+          "id": "red_pawn_6",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank",
+            "pawn_grit"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "quick",
+      "style": "mixed",
+      "variant": 1,
+      "aSide": "black",
+      "points": 6,
+      "trained": 3,
+      "pieces": [
+        {
+          "id": "black_guard_1",
+          "kind": "guard",
+          "cards": [
+            "guard_palace",
+            "guard_order"
+          ]
+        },
+        {
+          "id": "black_rook_3",
+          "kind": "rook",
+          "cards": [
+            "rook_crush",
+            "rook_lock"
+          ]
+        },
+        {
+          "id": "black_pawn_6",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank",
+            "pawn_grit"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "quick",
+      "style": "mixed",
+      "variant": 2,
+      "aSide": "red",
+      "points": 6,
+      "trained": 3,
+      "pieces": [
+        {
+          "id": "red_guard_1",
+          "kind": "guard",
+          "cards": [
+            "guard_king",
+            "guard_order"
+          ]
+        },
+        {
+          "id": "red_rook_3",
+          "kind": "rook",
+          "cards": [
+            "rook_hold",
+            "rook_lock"
+          ]
+        },
+        {
+          "id": "red_pawn_6",
+          "kind": "pawn",
+          "cards": [
+            "pawn_advance",
+            "pawn_grit"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "quick",
+      "style": "mixed",
+      "variant": 2,
+      "aSide": "black",
+      "points": 6,
+      "trained": 3,
+      "pieces": [
+        {
+          "id": "black_guard_1",
+          "kind": "guard",
+          "cards": [
+            "guard_king",
+            "guard_order"
+          ]
+        },
+        {
+          "id": "black_rook_3",
+          "kind": "rook",
+          "cards": [
+            "rook_hold",
+            "rook_lock"
+          ]
+        },
+        {
+          "id": "black_pawn_6",
+          "kind": "pawn",
+          "cards": [
+            "pawn_advance",
+            "pawn_grit"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "full",
+      "style": "default",
+      "variant": 0,
+      "aSide": "red",
+      "points": 12,
+      "trained": 12,
+      "pieces": [
+        {
+          "id": "red_rook_0",
+          "kind": "rook",
+          "cards": [
+            "rook_crush"
+          ]
+        },
+        {
+          "id": "red_horse_1",
+          "kind": "horse",
+          "cards": [
+            "horse_turn"
+          ]
+        },
+        {
+          "id": "red_elephant_2",
+          "kind": "elephant",
+          "cards": [
+            "elephant_store"
+          ]
+        },
+        {
+          "id": "red_guard_3",
+          "kind": "guard",
+          "cards": [
+            "guard_palace"
+          ]
+        },
+        {
+          "id": "red_guard_5",
+          "kind": "guard",
+          "cards": [
+            "guard_king"
+          ]
+        },
+        {
+          "id": "red_elephant_6",
+          "kind": "elephant",
+          "cards": [
+            "elephant_hold"
+          ]
+        },
+        {
+          "id": "red_horse_7",
+          "kind": "horse",
+          "cards": [
+            "horse_join"
+          ]
+        },
+        {
+          "id": "red_rook_8",
+          "kind": "rook",
+          "cards": [
+            "rook_hold"
+          ]
+        },
+        {
+          "id": "red_cannon_1",
+          "kind": "cannon",
+          "cards": [
+            "cannon_hold"
+          ]
+        },
+        {
+          "id": "red_cannon_7",
+          "kind": "cannon",
+          "cards": [
+            "cannon_pressure"
+          ]
+        },
+        {
+          "id": "red_pawn_0",
+          "kind": "pawn",
+          "cards": [
+            "pawn_advance"
+          ]
+        },
+        {
+          "id": "red_pawn_2",
+          "kind": "pawn",
+          "cards": [
+            "pawn_grit"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "full",
+      "style": "default",
+      "variant": 0,
+      "aSide": "black",
+      "points": 12,
+      "trained": 12,
+      "pieces": [
+        {
+          "id": "black_rook_0",
+          "kind": "rook",
+          "cards": [
+            "rook_hold"
+          ]
+        },
+        {
+          "id": "black_horse_1",
+          "kind": "horse",
+          "cards": [
+            "horse_join"
+          ]
+        },
+        {
+          "id": "black_elephant_2",
+          "kind": "elephant",
+          "cards": [
+            "elephant_hold"
+          ]
+        },
+        {
+          "id": "black_guard_3",
+          "kind": "guard",
+          "cards": [
+            "guard_king"
+          ]
+        },
+        {
+          "id": "black_guard_5",
+          "kind": "guard",
+          "cards": [
+            "guard_palace"
+          ]
+        },
+        {
+          "id": "black_elephant_6",
+          "kind": "elephant",
+          "cards": [
+            "elephant_store"
+          ]
+        },
+        {
+          "id": "black_horse_7",
+          "kind": "horse",
+          "cards": [
+            "horse_turn"
+          ]
+        },
+        {
+          "id": "black_rook_8",
+          "kind": "rook",
+          "cards": [
+            "rook_crush"
+          ]
+        },
+        {
+          "id": "black_cannon_1",
+          "kind": "cannon",
+          "cards": [
+            "cannon_pressure"
+          ]
+        },
+        {
+          "id": "black_cannon_7",
+          "kind": "cannon",
+          "cards": [
+            "cannon_hold"
+          ]
+        },
+        {
+          "id": "black_pawn_6",
+          "kind": "pawn",
+          "cards": [
+            "pawn_grit"
+          ]
+        },
+        {
+          "id": "black_pawn_8",
+          "kind": "pawn",
+          "cards": [
+            "pawn_advance"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "full",
+      "style": "default",
+      "variant": 1,
+      "aSide": "red",
+      "points": 12,
+      "trained": 12,
+      "pieces": [
+        {
+          "id": "red_rook_0",
+          "kind": "rook",
+          "cards": [
+            "rook_crush"
+          ]
+        },
+        {
+          "id": "red_horse_1",
+          "kind": "horse",
+          "cards": [
+            "horse_turn"
+          ]
+        },
+        {
+          "id": "red_elephant_2",
+          "kind": "elephant",
+          "cards": [
+            "elephant_store"
+          ]
+        },
+        {
+          "id": "red_guard_3",
+          "kind": "guard",
+          "cards": [
+            "guard_palace"
+          ]
+        },
+        {
+          "id": "red_guard_5",
+          "kind": "guard",
+          "cards": [
+            "guard_king"
+          ]
+        },
+        {
+          "id": "red_elephant_6",
+          "kind": "elephant",
+          "cards": [
+            "elephant_hold"
+          ]
+        },
+        {
+          "id": "red_horse_7",
+          "kind": "horse",
+          "cards": [
+            "horse_join"
+          ]
+        },
+        {
+          "id": "red_rook_8",
+          "kind": "rook",
+          "cards": [
+            "rook_hold"
+          ]
+        },
+        {
+          "id": "red_cannon_1",
+          "kind": "cannon",
+          "cards": [
+            "cannon_hold"
+          ]
+        },
+        {
+          "id": "red_cannon_7",
+          "kind": "cannon",
+          "cards": [
+            "cannon_pressure"
+          ]
+        },
+        {
+          "id": "red_pawn_0",
+          "kind": "pawn",
+          "cards": [
+            "pawn_advance"
+          ]
+        },
+        {
+          "id": "red_pawn_2",
+          "kind": "pawn",
+          "cards": [
+            "pawn_grit"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "full",
+      "style": "default",
+      "variant": 1,
+      "aSide": "black",
+      "points": 12,
+      "trained": 12,
+      "pieces": [
+        {
+          "id": "black_rook_0",
+          "kind": "rook",
+          "cards": [
+            "rook_hold"
+          ]
+        },
+        {
+          "id": "black_horse_1",
+          "kind": "horse",
+          "cards": [
+            "horse_join"
+          ]
+        },
+        {
+          "id": "black_elephant_2",
+          "kind": "elephant",
+          "cards": [
+            "elephant_hold"
+          ]
+        },
+        {
+          "id": "black_guard_3",
+          "kind": "guard",
+          "cards": [
+            "guard_king"
+          ]
+        },
+        {
+          "id": "black_guard_5",
+          "kind": "guard",
+          "cards": [
+            "guard_palace"
+          ]
+        },
+        {
+          "id": "black_elephant_6",
+          "kind": "elephant",
+          "cards": [
+            "elephant_store"
+          ]
+        },
+        {
+          "id": "black_horse_7",
+          "kind": "horse",
+          "cards": [
+            "horse_turn"
+          ]
+        },
+        {
+          "id": "black_rook_8",
+          "kind": "rook",
+          "cards": [
+            "rook_crush"
+          ]
+        },
+        {
+          "id": "black_cannon_1",
+          "kind": "cannon",
+          "cards": [
+            "cannon_pressure"
+          ]
+        },
+        {
+          "id": "black_cannon_7",
+          "kind": "cannon",
+          "cards": [
+            "cannon_hold"
+          ]
+        },
+        {
+          "id": "black_pawn_6",
+          "kind": "pawn",
+          "cards": [
+            "pawn_grit"
+          ]
+        },
+        {
+          "id": "black_pawn_8",
+          "kind": "pawn",
+          "cards": [
+            "pawn_advance"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "full",
+      "style": "default",
+      "variant": 2,
+      "aSide": "red",
+      "points": 12,
+      "trained": 12,
+      "pieces": [
+        {
+          "id": "red_rook_0",
+          "kind": "rook",
+          "cards": [
+            "rook_crush"
+          ]
+        },
+        {
+          "id": "red_horse_1",
+          "kind": "horse",
+          "cards": [
+            "horse_turn"
+          ]
+        },
+        {
+          "id": "red_elephant_2",
+          "kind": "elephant",
+          "cards": [
+            "elephant_store"
+          ]
+        },
+        {
+          "id": "red_guard_3",
+          "kind": "guard",
+          "cards": [
+            "guard_palace"
+          ]
+        },
+        {
+          "id": "red_guard_5",
+          "kind": "guard",
+          "cards": [
+            "guard_king"
+          ]
+        },
+        {
+          "id": "red_elephant_6",
+          "kind": "elephant",
+          "cards": [
+            "elephant_hold"
+          ]
+        },
+        {
+          "id": "red_horse_7",
+          "kind": "horse",
+          "cards": [
+            "horse_join"
+          ]
+        },
+        {
+          "id": "red_rook_8",
+          "kind": "rook",
+          "cards": [
+            "rook_hold"
+          ]
+        },
+        {
+          "id": "red_cannon_1",
+          "kind": "cannon",
+          "cards": [
+            "cannon_hold"
+          ]
+        },
+        {
+          "id": "red_cannon_7",
+          "kind": "cannon",
+          "cards": [
+            "cannon_pressure"
+          ]
+        },
+        {
+          "id": "red_pawn_0",
+          "kind": "pawn",
+          "cards": [
+            "pawn_advance"
+          ]
+        },
+        {
+          "id": "red_pawn_2",
+          "kind": "pawn",
+          "cards": [
+            "pawn_grit"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "full",
+      "style": "default",
+      "variant": 2,
+      "aSide": "black",
+      "points": 12,
+      "trained": 12,
+      "pieces": [
+        {
+          "id": "black_rook_0",
+          "kind": "rook",
+          "cards": [
+            "rook_hold"
+          ]
+        },
+        {
+          "id": "black_horse_1",
+          "kind": "horse",
+          "cards": [
+            "horse_join"
+          ]
+        },
+        {
+          "id": "black_elephant_2",
+          "kind": "elephant",
+          "cards": [
+            "elephant_hold"
+          ]
+        },
+        {
+          "id": "black_guard_3",
+          "kind": "guard",
+          "cards": [
+            "guard_king"
+          ]
+        },
+        {
+          "id": "black_guard_5",
+          "kind": "guard",
+          "cards": [
+            "guard_palace"
+          ]
+        },
+        {
+          "id": "black_elephant_6",
+          "kind": "elephant",
+          "cards": [
+            "elephant_store"
+          ]
+        },
+        {
+          "id": "black_horse_7",
+          "kind": "horse",
+          "cards": [
+            "horse_turn"
+          ]
+        },
+        {
+          "id": "black_rook_8",
+          "kind": "rook",
+          "cards": [
+            "rook_crush"
+          ]
+        },
+        {
+          "id": "black_cannon_1",
+          "kind": "cannon",
+          "cards": [
+            "cannon_pressure"
+          ]
+        },
+        {
+          "id": "black_cannon_7",
+          "kind": "cannon",
+          "cards": [
+            "cannon_hold"
+          ]
+        },
+        {
+          "id": "black_pawn_6",
+          "kind": "pawn",
+          "cards": [
+            "pawn_grit"
+          ]
+        },
+        {
+          "id": "black_pawn_8",
+          "kind": "pawn",
+          "cards": [
+            "pawn_advance"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "full",
+      "style": "spread",
+      "variant": 0,
+      "aSide": "red",
+      "points": 12,
+      "trained": 12,
+      "pieces": [
+        {
+          "id": "red_rook_0",
+          "kind": "rook",
+          "cards": [
+            "rook_crush"
+          ]
+        },
+        {
+          "id": "red_horse_1",
+          "kind": "horse",
+          "cards": [
+            "horse_turn"
+          ]
+        },
+        {
+          "id": "red_guard_3",
+          "kind": "guard",
+          "cards": [
+            "guard_order"
+          ]
+        },
+        {
+          "id": "red_horse_7",
+          "kind": "horse",
+          "cards": [
+            "horse_join"
+          ]
+        },
+        {
+          "id": "red_rook_8",
+          "kind": "rook",
+          "cards": [
+            "rook_hold"
+          ]
+        },
+        {
+          "id": "red_cannon_1",
+          "kind": "cannon",
+          "cards": [
+            "cannon_hold"
+          ]
+        },
+        {
+          "id": "red_cannon_7",
+          "kind": "cannon",
+          "cards": [
+            "cannon_pressure"
+          ]
+        },
+        {
+          "id": "red_pawn_0",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank"
+          ]
+        },
+        {
+          "id": "red_pawn_2",
+          "kind": "pawn",
+          "cards": [
+            "pawn_advance"
+          ]
+        },
+        {
+          "id": "red_pawn_4",
+          "kind": "pawn",
+          "cards": [
+            "pawn_grit"
+          ]
+        },
+        {
+          "id": "red_pawn_6",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank"
+          ]
+        },
+        {
+          "id": "red_pawn_8",
+          "kind": "pawn",
+          "cards": [
+            "pawn_advance"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "full",
+      "style": "spread",
+      "variant": 0,
+      "aSide": "black",
+      "points": 12,
+      "trained": 12,
+      "pieces": [
+        {
+          "id": "black_rook_0",
+          "kind": "rook",
+          "cards": [
+            "rook_hold"
+          ]
+        },
+        {
+          "id": "black_horse_1",
+          "kind": "horse",
+          "cards": [
+            "horse_join"
+          ]
+        },
+        {
+          "id": "black_guard_5",
+          "kind": "guard",
+          "cards": [
+            "guard_order"
+          ]
+        },
+        {
+          "id": "black_horse_7",
+          "kind": "horse",
+          "cards": [
+            "horse_turn"
+          ]
+        },
+        {
+          "id": "black_rook_8",
+          "kind": "rook",
+          "cards": [
+            "rook_crush"
+          ]
+        },
+        {
+          "id": "black_cannon_1",
+          "kind": "cannon",
+          "cards": [
+            "cannon_pressure"
+          ]
+        },
+        {
+          "id": "black_cannon_7",
+          "kind": "cannon",
+          "cards": [
+            "cannon_hold"
+          ]
+        },
+        {
+          "id": "black_pawn_0",
+          "kind": "pawn",
+          "cards": [
+            "pawn_advance"
+          ]
+        },
+        {
+          "id": "black_pawn_2",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank"
+          ]
+        },
+        {
+          "id": "black_pawn_4",
+          "kind": "pawn",
+          "cards": [
+            "pawn_grit"
+          ]
+        },
+        {
+          "id": "black_pawn_6",
+          "kind": "pawn",
+          "cards": [
+            "pawn_advance"
+          ]
+        },
+        {
+          "id": "black_pawn_8",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "full",
+      "style": "spread",
+      "variant": 1,
+      "aSide": "red",
+      "points": 12,
+      "trained": 12,
+      "pieces": [
+        {
+          "id": "red_rook_0",
+          "kind": "rook",
+          "cards": [
+            "rook_hold"
+          ]
+        },
+        {
+          "id": "red_horse_1",
+          "kind": "horse",
+          "cards": [
+            "horse_join"
+          ]
+        },
+        {
+          "id": "red_guard_3",
+          "kind": "guard",
+          "cards": [
+            "guard_palace"
+          ]
+        },
+        {
+          "id": "red_horse_7",
+          "kind": "horse",
+          "cards": [
+            "horse_evade"
+          ]
+        },
+        {
+          "id": "red_rook_8",
+          "kind": "rook",
+          "cards": [
+            "rook_lock"
+          ]
+        },
+        {
+          "id": "red_cannon_1",
+          "kind": "cannon",
+          "cards": [
+            "cannon_pressure"
+          ]
+        },
+        {
+          "id": "red_cannon_7",
+          "kind": "cannon",
+          "cards": [
+            "cannon_screen"
+          ]
+        },
+        {
+          "id": "red_pawn_0",
+          "kind": "pawn",
+          "cards": [
+            "pawn_advance"
+          ]
+        },
+        {
+          "id": "red_pawn_2",
+          "kind": "pawn",
+          "cards": [
+            "pawn_grit"
+          ]
+        },
+        {
+          "id": "red_pawn_4",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank"
+          ]
+        },
+        {
+          "id": "red_pawn_6",
+          "kind": "pawn",
+          "cards": [
+            "pawn_advance"
+          ]
+        },
+        {
+          "id": "red_pawn_8",
+          "kind": "pawn",
+          "cards": [
+            "pawn_grit"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "full",
+      "style": "spread",
+      "variant": 1,
+      "aSide": "black",
+      "points": 12,
+      "trained": 12,
+      "pieces": [
+        {
+          "id": "black_rook_0",
+          "kind": "rook",
+          "cards": [
+            "rook_lock"
+          ]
+        },
+        {
+          "id": "black_horse_1",
+          "kind": "horse",
+          "cards": [
+            "horse_evade"
+          ]
+        },
+        {
+          "id": "black_guard_5",
+          "kind": "guard",
+          "cards": [
+            "guard_palace"
+          ]
+        },
+        {
+          "id": "black_horse_7",
+          "kind": "horse",
+          "cards": [
+            "horse_join"
+          ]
+        },
+        {
+          "id": "black_rook_8",
+          "kind": "rook",
+          "cards": [
+            "rook_hold"
+          ]
+        },
+        {
+          "id": "black_cannon_1",
+          "kind": "cannon",
+          "cards": [
+            "cannon_screen"
+          ]
+        },
+        {
+          "id": "black_cannon_7",
+          "kind": "cannon",
+          "cards": [
+            "cannon_pressure"
+          ]
+        },
+        {
+          "id": "black_pawn_0",
+          "kind": "pawn",
+          "cards": [
+            "pawn_grit"
+          ]
+        },
+        {
+          "id": "black_pawn_2",
+          "kind": "pawn",
+          "cards": [
+            "pawn_advance"
+          ]
+        },
+        {
+          "id": "black_pawn_4",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank"
+          ]
+        },
+        {
+          "id": "black_pawn_6",
+          "kind": "pawn",
+          "cards": [
+            "pawn_grit"
+          ]
+        },
+        {
+          "id": "black_pawn_8",
+          "kind": "pawn",
+          "cards": [
+            "pawn_advance"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "full",
+      "style": "spread",
+      "variant": 2,
+      "aSide": "red",
+      "points": 12,
+      "trained": 12,
+      "pieces": [
+        {
+          "id": "red_rook_0",
+          "kind": "rook",
+          "cards": [
+            "rook_lock"
+          ]
+        },
+        {
+          "id": "red_horse_1",
+          "kind": "horse",
+          "cards": [
+            "horse_evade"
+          ]
+        },
+        {
+          "id": "red_guard_3",
+          "kind": "guard",
+          "cards": [
+            "guard_king"
+          ]
+        },
+        {
+          "id": "red_horse_7",
+          "kind": "horse",
+          "cards": [
+            "horse_turn"
+          ]
+        },
+        {
+          "id": "red_rook_8",
+          "kind": "rook",
+          "cards": [
+            "rook_crush"
+          ]
+        },
+        {
+          "id": "red_cannon_1",
+          "kind": "cannon",
+          "cards": [
+            "cannon_screen"
+          ]
+        },
+        {
+          "id": "red_cannon_7",
+          "kind": "cannon",
+          "cards": [
+            "cannon_hold"
+          ]
+        },
+        {
+          "id": "red_pawn_0",
+          "kind": "pawn",
+          "cards": [
+            "pawn_grit"
+          ]
+        },
+        {
+          "id": "red_pawn_2",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank"
+          ]
+        },
+        {
+          "id": "red_pawn_4",
+          "kind": "pawn",
+          "cards": [
+            "pawn_advance"
+          ]
+        },
+        {
+          "id": "red_pawn_6",
+          "kind": "pawn",
+          "cards": [
+            "pawn_grit"
+          ]
+        },
+        {
+          "id": "red_pawn_8",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "full",
+      "style": "spread",
+      "variant": 2,
+      "aSide": "black",
+      "points": 12,
+      "trained": 12,
+      "pieces": [
+        {
+          "id": "black_rook_0",
+          "kind": "rook",
+          "cards": [
+            "rook_crush"
+          ]
+        },
+        {
+          "id": "black_horse_1",
+          "kind": "horse",
+          "cards": [
+            "horse_turn"
+          ]
+        },
+        {
+          "id": "black_guard_5",
+          "kind": "guard",
+          "cards": [
+            "guard_king"
+          ]
+        },
+        {
+          "id": "black_horse_7",
+          "kind": "horse",
+          "cards": [
+            "horse_evade"
+          ]
+        },
+        {
+          "id": "black_rook_8",
+          "kind": "rook",
+          "cards": [
+            "rook_lock"
+          ]
+        },
+        {
+          "id": "black_cannon_1",
+          "kind": "cannon",
+          "cards": [
+            "cannon_hold"
+          ]
+        },
+        {
+          "id": "black_cannon_7",
+          "kind": "cannon",
+          "cards": [
+            "cannon_screen"
+          ]
+        },
+        {
+          "id": "black_pawn_0",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank"
+          ]
+        },
+        {
+          "id": "black_pawn_2",
+          "kind": "pawn",
+          "cards": [
+            "pawn_grit"
+          ]
+        },
+        {
+          "id": "black_pawn_4",
+          "kind": "pawn",
+          "cards": [
+            "pawn_advance"
+          ]
+        },
+        {
+          "id": "black_pawn_6",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank"
+          ]
+        },
+        {
+          "id": "black_pawn_8",
+          "kind": "pawn",
+          "cards": [
+            "pawn_grit"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "full",
+      "style": "attack",
+      "variant": 0,
+      "aSide": "red",
+      "points": 12,
+      "trained": 6,
+      "pieces": [
+        {
+          "id": "red_rook_0",
+          "kind": "rook",
+          "cards": [
+            "rook_crush",
+            "rook_hold"
+          ]
+        },
+        {
+          "id": "red_horse_1",
+          "kind": "horse",
+          "cards": [
+            "horse_join",
+            "horse_evade"
+          ]
+        },
+        {
+          "id": "red_horse_7",
+          "kind": "horse",
+          "cards": [
+            "horse_join",
+            "horse_evade"
+          ]
+        },
+        {
+          "id": "red_rook_8",
+          "kind": "rook",
+          "cards": [
+            "rook_crush",
+            "rook_hold"
+          ]
+        },
+        {
+          "id": "red_cannon_1",
+          "kind": "cannon",
+          "cards": [
+            "cannon_screen",
+            "cannon_hold"
+          ]
+        },
+        {
+          "id": "red_cannon_7",
+          "kind": "cannon",
+          "cards": [
+            "cannon_screen",
+            "cannon_hold"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "full",
+      "style": "attack",
+      "variant": 0,
+      "aSide": "black",
+      "points": 12,
+      "trained": 6,
+      "pieces": [
+        {
+          "id": "black_rook_0",
+          "kind": "rook",
+          "cards": [
+            "rook_crush",
+            "rook_hold"
+          ]
+        },
+        {
+          "id": "black_horse_1",
+          "kind": "horse",
+          "cards": [
+            "horse_join",
+            "horse_evade"
+          ]
+        },
+        {
+          "id": "black_horse_7",
+          "kind": "horse",
+          "cards": [
+            "horse_join",
+            "horse_evade"
+          ]
+        },
+        {
+          "id": "black_rook_8",
+          "kind": "rook",
+          "cards": [
+            "rook_crush",
+            "rook_hold"
+          ]
+        },
+        {
+          "id": "black_cannon_1",
+          "kind": "cannon",
+          "cards": [
+            "cannon_screen",
+            "cannon_hold"
+          ]
+        },
+        {
+          "id": "black_cannon_7",
+          "kind": "cannon",
+          "cards": [
+            "cannon_screen",
+            "cannon_hold"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "full",
+      "style": "attack",
+      "variant": 1,
+      "aSide": "red",
+      "points": 12,
+      "trained": 6,
+      "pieces": [
+        {
+          "id": "red_rook_0",
+          "kind": "rook",
+          "cards": [
+            "rook_crush",
+            "rook_lock"
+          ]
+        },
+        {
+          "id": "red_horse_1",
+          "kind": "horse",
+          "cards": [
+            "horse_join",
+            "horse_turn"
+          ]
+        },
+        {
+          "id": "red_horse_7",
+          "kind": "horse",
+          "cards": [
+            "horse_join",
+            "horse_turn"
+          ]
+        },
+        {
+          "id": "red_rook_8",
+          "kind": "rook",
+          "cards": [
+            "rook_crush",
+            "rook_lock"
+          ]
+        },
+        {
+          "id": "red_cannon_1",
+          "kind": "cannon",
+          "cards": [
+            "cannon_screen",
+            "cannon_pressure"
+          ]
+        },
+        {
+          "id": "red_cannon_7",
+          "kind": "cannon",
+          "cards": [
+            "cannon_screen",
+            "cannon_pressure"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "full",
+      "style": "attack",
+      "variant": 1,
+      "aSide": "black",
+      "points": 12,
+      "trained": 6,
+      "pieces": [
+        {
+          "id": "black_rook_0",
+          "kind": "rook",
+          "cards": [
+            "rook_crush",
+            "rook_lock"
+          ]
+        },
+        {
+          "id": "black_horse_1",
+          "kind": "horse",
+          "cards": [
+            "horse_join",
+            "horse_turn"
+          ]
+        },
+        {
+          "id": "black_horse_7",
+          "kind": "horse",
+          "cards": [
+            "horse_join",
+            "horse_turn"
+          ]
+        },
+        {
+          "id": "black_rook_8",
+          "kind": "rook",
+          "cards": [
+            "rook_crush",
+            "rook_lock"
+          ]
+        },
+        {
+          "id": "black_cannon_1",
+          "kind": "cannon",
+          "cards": [
+            "cannon_screen",
+            "cannon_pressure"
+          ]
+        },
+        {
+          "id": "black_cannon_7",
+          "kind": "cannon",
+          "cards": [
+            "cannon_screen",
+            "cannon_pressure"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "full",
+      "style": "attack",
+      "variant": 2,
+      "aSide": "red",
+      "points": 12,
+      "trained": 6,
+      "pieces": [
+        {
+          "id": "red_rook_0",
+          "kind": "rook",
+          "cards": [
+            "rook_hold",
+            "rook_lock"
+          ]
+        },
+        {
+          "id": "red_horse_1",
+          "kind": "horse",
+          "cards": [
+            "horse_evade",
+            "horse_turn"
+          ]
+        },
+        {
+          "id": "red_horse_7",
+          "kind": "horse",
+          "cards": [
+            "horse_evade",
+            "horse_turn"
+          ]
+        },
+        {
+          "id": "red_rook_8",
+          "kind": "rook",
+          "cards": [
+            "rook_hold",
+            "rook_lock"
+          ]
+        },
+        {
+          "id": "red_cannon_1",
+          "kind": "cannon",
+          "cards": [
+            "cannon_hold",
+            "cannon_pressure"
+          ]
+        },
+        {
+          "id": "red_cannon_7",
+          "kind": "cannon",
+          "cards": [
+            "cannon_hold",
+            "cannon_pressure"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "full",
+      "style": "attack",
+      "variant": 2,
+      "aSide": "black",
+      "points": 12,
+      "trained": 6,
+      "pieces": [
+        {
+          "id": "black_rook_0",
+          "kind": "rook",
+          "cards": [
+            "rook_hold",
+            "rook_lock"
+          ]
+        },
+        {
+          "id": "black_horse_1",
+          "kind": "horse",
+          "cards": [
+            "horse_evade",
+            "horse_turn"
+          ]
+        },
+        {
+          "id": "black_horse_7",
+          "kind": "horse",
+          "cards": [
+            "horse_evade",
+            "horse_turn"
+          ]
+        },
+        {
+          "id": "black_rook_8",
+          "kind": "rook",
+          "cards": [
+            "rook_hold",
+            "rook_lock"
+          ]
+        },
+        {
+          "id": "black_cannon_1",
+          "kind": "cannon",
+          "cards": [
+            "cannon_hold",
+            "cannon_pressure"
+          ]
+        },
+        {
+          "id": "black_cannon_7",
+          "kind": "cannon",
+          "cards": [
+            "cannon_hold",
+            "cannon_pressure"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "full",
+      "style": "defense",
+      "variant": 0,
+      "aSide": "red",
+      "points": 12,
+      "trained": 6,
+      "pieces": [
+        {
+          "id": "red_guard_3",
+          "kind": "guard",
+          "cards": [
+            "guard_palace",
+            "guard_king"
+          ]
+        },
+        {
+          "id": "red_pawn_0",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank",
+            "pawn_advance"
+          ]
+        },
+        {
+          "id": "red_pawn_2",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank",
+            "pawn_advance"
+          ]
+        },
+        {
+          "id": "red_pawn_4",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank",
+            "pawn_advance"
+          ]
+        },
+        {
+          "id": "red_pawn_6",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank",
+            "pawn_advance"
+          ]
+        },
+        {
+          "id": "red_pawn_8",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank",
+            "pawn_advance"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "full",
+      "style": "defense",
+      "variant": 0,
+      "aSide": "black",
+      "points": 12,
+      "trained": 6,
+      "pieces": [
+        {
+          "id": "black_guard_5",
+          "kind": "guard",
+          "cards": [
+            "guard_palace",
+            "guard_king"
+          ]
+        },
+        {
+          "id": "black_pawn_0",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank",
+            "pawn_advance"
+          ]
+        },
+        {
+          "id": "black_pawn_2",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank",
+            "pawn_advance"
+          ]
+        },
+        {
+          "id": "black_pawn_4",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank",
+            "pawn_advance"
+          ]
+        },
+        {
+          "id": "black_pawn_6",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank",
+            "pawn_advance"
+          ]
+        },
+        {
+          "id": "black_pawn_8",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank",
+            "pawn_advance"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "full",
+      "style": "defense",
+      "variant": 1,
+      "aSide": "red",
+      "points": 12,
+      "trained": 6,
+      "pieces": [
+        {
+          "id": "red_guard_3",
+          "kind": "guard",
+          "cards": [
+            "guard_palace",
+            "guard_order"
+          ]
+        },
+        {
+          "id": "red_pawn_0",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank",
+            "pawn_grit"
+          ]
+        },
+        {
+          "id": "red_pawn_2",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank",
+            "pawn_grit"
+          ]
+        },
+        {
+          "id": "red_pawn_4",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank",
+            "pawn_grit"
+          ]
+        },
+        {
+          "id": "red_pawn_6",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank",
+            "pawn_grit"
+          ]
+        },
+        {
+          "id": "red_pawn_8",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank",
+            "pawn_grit"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "full",
+      "style": "defense",
+      "variant": 1,
+      "aSide": "black",
+      "points": 12,
+      "trained": 6,
+      "pieces": [
+        {
+          "id": "black_guard_5",
+          "kind": "guard",
+          "cards": [
+            "guard_palace",
+            "guard_order"
+          ]
+        },
+        {
+          "id": "black_pawn_0",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank",
+            "pawn_grit"
+          ]
+        },
+        {
+          "id": "black_pawn_2",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank",
+            "pawn_grit"
+          ]
+        },
+        {
+          "id": "black_pawn_4",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank",
+            "pawn_grit"
+          ]
+        },
+        {
+          "id": "black_pawn_6",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank",
+            "pawn_grit"
+          ]
+        },
+        {
+          "id": "black_pawn_8",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank",
+            "pawn_grit"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "full",
+      "style": "defense",
+      "variant": 2,
+      "aSide": "red",
+      "points": 12,
+      "trained": 6,
+      "pieces": [
+        {
+          "id": "red_guard_3",
+          "kind": "guard",
+          "cards": [
+            "guard_king",
+            "guard_order"
+          ]
+        },
+        {
+          "id": "red_pawn_0",
+          "kind": "pawn",
+          "cards": [
+            "pawn_advance",
+            "pawn_grit"
+          ]
+        },
+        {
+          "id": "red_pawn_2",
+          "kind": "pawn",
+          "cards": [
+            "pawn_advance",
+            "pawn_grit"
+          ]
+        },
+        {
+          "id": "red_pawn_4",
+          "kind": "pawn",
+          "cards": [
+            "pawn_advance",
+            "pawn_grit"
+          ]
+        },
+        {
+          "id": "red_pawn_6",
+          "kind": "pawn",
+          "cards": [
+            "pawn_advance",
+            "pawn_grit"
+          ]
+        },
+        {
+          "id": "red_pawn_8",
+          "kind": "pawn",
+          "cards": [
+            "pawn_advance",
+            "pawn_grit"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "full",
+      "style": "defense",
+      "variant": 2,
+      "aSide": "black",
+      "points": 12,
+      "trained": 6,
+      "pieces": [
+        {
+          "id": "black_guard_5",
+          "kind": "guard",
+          "cards": [
+            "guard_king",
+            "guard_order"
+          ]
+        },
+        {
+          "id": "black_pawn_0",
+          "kind": "pawn",
+          "cards": [
+            "pawn_advance",
+            "pawn_grit"
+          ]
+        },
+        {
+          "id": "black_pawn_2",
+          "kind": "pawn",
+          "cards": [
+            "pawn_advance",
+            "pawn_grit"
+          ]
+        },
+        {
+          "id": "black_pawn_4",
+          "kind": "pawn",
+          "cards": [
+            "pawn_advance",
+            "pawn_grit"
+          ]
+        },
+        {
+          "id": "black_pawn_6",
+          "kind": "pawn",
+          "cards": [
+            "pawn_advance",
+            "pawn_grit"
+          ]
+        },
+        {
+          "id": "black_pawn_8",
+          "kind": "pawn",
+          "cards": [
+            "pawn_advance",
+            "pawn_grit"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "full",
+      "style": "mixed",
+      "variant": 0,
+      "aSide": "red",
+      "points": 12,
+      "trained": 6,
+      "pieces": [
+        {
+          "id": "red_rook_0",
+          "kind": "rook",
+          "cards": [
+            "rook_crush",
+            "rook_hold"
+          ]
+        },
+        {
+          "id": "red_horse_1",
+          "kind": "horse",
+          "cards": [
+            "horse_join",
+            "horse_evade"
+          ]
+        },
+        {
+          "id": "red_elephant_2",
+          "kind": "elephant",
+          "cards": [
+            "elephant_hold",
+            "elephant_step"
+          ]
+        },
+        {
+          "id": "red_guard_3",
+          "kind": "guard",
+          "cards": [
+            "guard_palace",
+            "guard_king"
+          ]
+        },
+        {
+          "id": "red_cannon_1",
+          "kind": "cannon",
+          "cards": [
+            "cannon_screen",
+            "cannon_hold"
+          ]
+        },
+        {
+          "id": "red_pawn_0",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank",
+            "pawn_advance"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "full",
+      "style": "mixed",
+      "variant": 0,
+      "aSide": "black",
+      "points": 12,
+      "trained": 6,
+      "pieces": [
+        {
+          "id": "black_guard_5",
+          "kind": "guard",
+          "cards": [
+            "guard_palace",
+            "guard_king"
+          ]
+        },
+        {
+          "id": "black_elephant_6",
+          "kind": "elephant",
+          "cards": [
+            "elephant_hold",
+            "elephant_step"
+          ]
+        },
+        {
+          "id": "black_horse_7",
+          "kind": "horse",
+          "cards": [
+            "horse_join",
+            "horse_evade"
+          ]
+        },
+        {
+          "id": "black_rook_8",
+          "kind": "rook",
+          "cards": [
+            "rook_crush",
+            "rook_hold"
+          ]
+        },
+        {
+          "id": "black_cannon_7",
+          "kind": "cannon",
+          "cards": [
+            "cannon_screen",
+            "cannon_hold"
+          ]
+        },
+        {
+          "id": "black_pawn_8",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank",
+            "pawn_advance"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "full",
+      "style": "mixed",
+      "variant": 1,
+      "aSide": "red",
+      "points": 12,
+      "trained": 6,
+      "pieces": [
+        {
+          "id": "red_rook_0",
+          "kind": "rook",
+          "cards": [
+            "rook_crush",
+            "rook_lock"
+          ]
+        },
+        {
+          "id": "red_horse_1",
+          "kind": "horse",
+          "cards": [
+            "horse_join",
+            "horse_turn"
+          ]
+        },
+        {
+          "id": "red_elephant_2",
+          "kind": "elephant",
+          "cards": [
+            "elephant_hold",
+            "elephant_store"
+          ]
+        },
+        {
+          "id": "red_guard_3",
+          "kind": "guard",
+          "cards": [
+            "guard_palace",
+            "guard_order"
+          ]
+        },
+        {
+          "id": "red_cannon_1",
+          "kind": "cannon",
+          "cards": [
+            "cannon_screen",
+            "cannon_pressure"
+          ]
+        },
+        {
+          "id": "red_pawn_0",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank",
+            "pawn_grit"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "full",
+      "style": "mixed",
+      "variant": 1,
+      "aSide": "black",
+      "points": 12,
+      "trained": 6,
+      "pieces": [
+        {
+          "id": "black_guard_5",
+          "kind": "guard",
+          "cards": [
+            "guard_palace",
+            "guard_order"
+          ]
+        },
+        {
+          "id": "black_elephant_6",
+          "kind": "elephant",
+          "cards": [
+            "elephant_hold",
+            "elephant_store"
+          ]
+        },
+        {
+          "id": "black_horse_7",
+          "kind": "horse",
+          "cards": [
+            "horse_join",
+            "horse_turn"
+          ]
+        },
+        {
+          "id": "black_rook_8",
+          "kind": "rook",
+          "cards": [
+            "rook_crush",
+            "rook_lock"
+          ]
+        },
+        {
+          "id": "black_cannon_7",
+          "kind": "cannon",
+          "cards": [
+            "cannon_screen",
+            "cannon_pressure"
+          ]
+        },
+        {
+          "id": "black_pawn_8",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank",
+            "pawn_grit"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "full",
+      "style": "mixed",
+      "variant": 2,
+      "aSide": "red",
+      "points": 12,
+      "trained": 6,
+      "pieces": [
+        {
+          "id": "red_rook_0",
+          "kind": "rook",
+          "cards": [
+            "rook_hold",
+            "rook_lock"
+          ]
+        },
+        {
+          "id": "red_horse_1",
+          "kind": "horse",
+          "cards": [
+            "horse_evade",
+            "horse_turn"
+          ]
+        },
+        {
+          "id": "red_elephant_2",
+          "kind": "elephant",
+          "cards": [
+            "elephant_step",
+            "elephant_store"
+          ]
+        },
+        {
+          "id": "red_guard_3",
+          "kind": "guard",
+          "cards": [
+            "guard_king",
+            "guard_order"
+          ]
+        },
+        {
+          "id": "red_cannon_1",
+          "kind": "cannon",
+          "cards": [
+            "cannon_hold",
+            "cannon_pressure"
+          ]
+        },
+        {
+          "id": "red_pawn_0",
+          "kind": "pawn",
+          "cards": [
+            "pawn_advance",
+            "pawn_grit"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "full",
+      "style": "mixed",
+      "variant": 2,
+      "aSide": "black",
+      "points": 12,
+      "trained": 6,
+      "pieces": [
+        {
+          "id": "black_guard_5",
+          "kind": "guard",
+          "cards": [
+            "guard_king",
+            "guard_order"
+          ]
+        },
+        {
+          "id": "black_elephant_6",
+          "kind": "elephant",
+          "cards": [
+            "elephant_step",
+            "elephant_store"
+          ]
+        },
+        {
+          "id": "black_horse_7",
+          "kind": "horse",
+          "cards": [
+            "horse_evade",
+            "horse_turn"
+          ]
+        },
+        {
+          "id": "black_rook_8",
+          "kind": "rook",
+          "cards": [
+            "rook_hold",
+            "rook_lock"
+          ]
+        },
+        {
+          "id": "black_cannon_7",
+          "kind": "cannon",
+          "cards": [
+            "cannon_hold",
+            "cannon_pressure"
+          ]
+        },
+        {
+          "id": "black_pawn_8",
+          "kind": "pawn",
+          "cards": [
+            "pawn_advance",
+            "pawn_grit"
+          ]
+        }
+      ]
+    }
+  ],
+  "runs": [
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118901,
+        "variant": 0,
+        "style": "default",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 51,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 45,
+      "rests": 0,
+      "battles": 6,
+      "rounds": 18,
+      "retreats": 2,
+      "reversals": 6,
+      "maxQuiet": 32,
+      "cards": {
+        "red": 4,
+        "black": 1
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118901,
+        "variant": 0,
+        "style": "default",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 195,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 177,
+      "rests": 4,
+      "battles": 14,
+      "rounds": 39,
+      "retreats": 3,
+      "reversals": 36,
+      "maxQuiet": 38,
+      "cards": {
+        "red": 5,
+        "black": 5
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118902,
+        "variant": 1,
+        "style": "default",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 24,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 21,
+      "rests": 0,
+      "battles": 3,
+      "rounds": 10,
+      "retreats": 1,
+      "reversals": 1,
+      "maxQuiet": 11,
+      "cards": {
+        "red": 1,
+        "black": 0
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118902,
+        "variant": 1,
+        "style": "default",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 179,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 163,
+      "rests": 3,
+      "battles": 13,
+      "rounds": 42,
+      "retreats": 3,
+      "reversals": 24,
+      "maxQuiet": 56,
+      "cards": {
+        "red": 4,
+        "black": 4
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118903,
+        "variant": 2,
+        "style": "default",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 52,
+      "winner": "draw",
+      "reason": "双方将帅同时阵亡",
+      "moves": 45,
+      "rests": 0,
+      "battles": 7,
+      "rounds": 23,
+      "retreats": 0,
+      "reversals": 4,
+      "maxQuiet": 12,
+      "cards": {
+        "red": 1,
+        "black": 1
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118903,
+        "variant": 2,
+        "style": "default",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 113,
+      "winner": "draw",
+      "reason": "连续 80 次行动未造成伤害",
+      "moves": 109,
+      "rests": 1,
+      "battles": 3,
+      "rounds": 13,
+      "retreats": 0,
+      "reversals": 16,
+      "maxQuiet": 80,
+      "cards": {
+        "red": 1,
+        "black": 2
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118904,
+        "variant": 0,
+        "style": "default",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 104,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 97,
+      "rests": 0,
+      "battles": 7,
+      "rounds": 32,
+      "retreats": 0,
+      "reversals": 9,
+      "maxQuiet": 60,
+      "cards": {
+        "red": 1,
+        "black": 3
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118904,
+        "variant": 0,
+        "style": "default",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 40,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 34,
+      "rests": 0,
+      "battles": 6,
+      "rounds": 22,
+      "retreats": 0,
+      "reversals": 1,
+      "maxQuiet": 12,
+      "cards": {
+        "red": 1,
+        "black": 1
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118905,
+        "variant": 1,
+        "style": "default",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 24,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 21,
+      "rests": 0,
+      "battles": 3,
+      "rounds": 8,
+      "retreats": 1,
+      "reversals": 1,
+      "maxQuiet": 11,
+      "cards": {
+        "red": 0,
+        "black": 0
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118905,
+        "variant": 1,
+        "style": "default",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 135,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 121,
+      "rests": 2,
+      "battles": 12,
+      "rounds": 39,
+      "retreats": 2,
+      "reversals": 24,
+      "maxQuiet": 23,
+      "cards": {
+        "red": 4,
+        "black": 4
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118906,
+        "variant": 2,
+        "style": "default",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 28,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 24,
+      "rests": 0,
+      "battles": 4,
+      "rounds": 13,
+      "retreats": 1,
+      "reversals": 1,
+      "maxQuiet": 10,
+      "cards": {
+        "red": 1,
+        "black": 1
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118906,
+        "variant": 2,
+        "style": "default",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 14,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 11,
+      "rests": 0,
+      "battles": 3,
+      "rounds": 12,
+      "retreats": 0,
+      "reversals": 0,
+      "maxQuiet": 10,
+      "cards": {
+        "red": 1,
+        "black": 1
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128901,
+        "variant": 0,
+        "style": "default",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 386,
+      "winner": "draw",
+      "reason": "连续 80 次行动未造成伤害",
+      "moves": 356,
+      "rests": 4,
+      "battles": 26,
+      "rounds": 89,
+      "retreats": 3,
+      "reversals": 68,
+      "maxQuiet": 80,
+      "cards": {
+        "red": 6,
+        "black": 6
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128901,
+        "variant": 0,
+        "style": "default",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 32,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 27,
+      "rests": 0,
+      "battles": 5,
+      "rounds": 27,
+      "retreats": 0,
+      "reversals": 1,
+      "maxQuiet": 12,
+      "cards": {
+        "red": 2,
+        "black": 1
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128902,
+        "variant": 1,
+        "style": "default",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 52,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 43,
+      "rests": 1,
+      "battles": 8,
+      "rounds": 31,
+      "retreats": 1,
+      "reversals": 2,
+      "maxQuiet": 11,
+      "cards": {
+        "red": 0,
+        "black": 1
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128902,
+        "variant": 1,
+        "style": "default",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 150,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 125,
+      "rests": 2,
+      "battles": 23,
+      "rounds": 79,
+      "retreats": 2,
+      "reversals": 16,
+      "maxQuiet": 26,
+      "cards": {
+        "red": 7,
+        "black": 2
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128903,
+        "variant": 2,
+        "style": "default",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 121,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 99,
+      "rests": 1,
+      "battles": 21,
+      "rounds": 72,
+      "retreats": 4,
+      "reversals": 13,
+      "maxQuiet": 17,
+      "cards": {
+        "red": 5,
+        "black": 2
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128903,
+        "variant": 2,
+        "style": "default",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 229,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 204,
+      "rests": 2,
+      "battles": 23,
+      "rounds": 78,
+      "retreats": 3,
+      "reversals": 44,
+      "maxQuiet": 49,
+      "cards": {
+        "red": 7,
+        "black": 4
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128904,
+        "variant": 0,
+        "style": "default",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 252,
+      "winner": "draw",
+      "reason": "连续 80 次行动未造成伤害",
+      "moves": 225,
+      "rests": 4,
+      "battles": 23,
+      "rounds": 77,
+      "retreats": 2,
+      "reversals": 57,
+      "maxQuiet": 80,
+      "cards": {
+        "red": 5,
+        "black": 7
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128904,
+        "variant": 0,
+        "style": "default",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 173,
+      "winner": "draw",
+      "reason": "双方将帅同时阵亡",
+      "moves": 141,
+      "rests": 3,
+      "battles": 29,
+      "rounds": 89,
+      "retreats": 7,
+      "reversals": 21,
+      "maxQuiet": 17,
+      "cards": {
+        "red": 3,
+        "black": 8
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128905,
+        "variant": 1,
+        "style": "default",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 174,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 143,
+      "rests": 4,
+      "battles": 27,
+      "rounds": 81,
+      "retreats": 4,
+      "reversals": 13,
+      "maxQuiet": 18,
+      "cards": {
+        "red": 7,
+        "black": 6
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128905,
+        "variant": 1,
+        "style": "default",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 41,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 35,
+      "rests": 0,
+      "battles": 6,
+      "rounds": 23,
+      "retreats": 1,
+      "reversals": 0,
+      "maxQuiet": 12,
+      "cards": {
+        "red": 2,
+        "black": 0
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128906,
+        "variant": 2,
+        "style": "default",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 90,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 75,
+      "rests": 1,
+      "battles": 14,
+      "rounds": 51,
+      "retreats": 2,
+      "reversals": 9,
+      "maxQuiet": 24,
+      "cards": {
+        "red": 5,
+        "black": 1
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128906,
+        "variant": 2,
+        "style": "default",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 325,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 291,
+      "rests": 7,
+      "battles": 27,
+      "rounds": 85,
+      "retreats": 5,
+      "reversals": 60,
+      "maxQuiet": 52,
+      "cards": {
+        "red": 5,
+        "black": 6
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118901,
+        "variant": 0,
+        "style": "spread",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 115,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 104,
+      "rests": 1,
+      "battles": 10,
+      "rounds": 28,
+      "retreats": 2,
+      "reversals": 8,
+      "maxQuiet": 32,
+      "cards": {
+        "red": 3,
+        "black": 2
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118901,
+        "variant": 0,
+        "style": "attack",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 55,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 46,
+      "rests": 0,
+      "battles": 9,
+      "rounds": 24,
+      "retreats": 2,
+      "reversals": 4,
+      "maxQuiet": 15,
+      "cards": {
+        "red": 3,
+        "black": 1
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118901,
+        "variant": 0,
+        "style": "defense",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 156,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 145,
+      "rests": 2,
+      "battles": 9,
+      "rounds": 39,
+      "retreats": 0,
+      "reversals": 29,
+      "maxQuiet": 66,
+      "cards": {
+        "red": 2,
+        "black": 4
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118901,
+        "variant": 0,
+        "style": "mixed",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 116,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 106,
+      "rests": 1,
+      "battles": 9,
+      "rounds": 32,
+      "retreats": 1,
+      "reversals": 19,
+      "maxQuiet": 43,
+      "cards": {
+        "red": 1,
+        "black": 2
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118901,
+        "variant": 0,
+        "style": "spread",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 295,
+      "winner": "draw",
+      "reason": "连续 80 次行动未造成伤害",
+      "moves": 274,
+      "rests": 6,
+      "battles": 15,
+      "rounds": 44,
+      "retreats": 4,
+      "reversals": 65,
+      "maxQuiet": 80,
+      "cards": {
+        "red": 6,
+        "black": 6
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118901,
+        "variant": 0,
+        "style": "attack",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 78,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 73,
+      "rests": 0,
+      "battles": 5,
+      "rounds": 21,
+      "retreats": 0,
+      "reversals": 8,
+      "maxQuiet": 27,
+      "cards": {
+        "red": 3,
+        "black": 4
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118901,
+        "variant": 0,
+        "style": "defense",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 155,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 146,
+      "rests": 1,
+      "battles": 8,
+      "rounds": 29,
+      "retreats": 0,
+      "reversals": 25,
+      "maxQuiet": 66,
+      "cards": {
+        "red": 2,
+        "black": 1
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118901,
+        "variant": 0,
+        "style": "mixed",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 53,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 47,
+      "rests": 0,
+      "battles": 6,
+      "rounds": 22,
+      "retreats": 1,
+      "reversals": 3,
+      "maxQuiet": 24,
+      "cards": {
+        "red": 2,
+        "black": 1
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118902,
+        "variant": 1,
+        "style": "spread",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 71,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 61,
+      "rests": 1,
+      "battles": 9,
+      "rounds": 33,
+      "retreats": 1,
+      "reversals": 6,
+      "maxQuiet": 17,
+      "cards": {
+        "red": 4,
+        "black": 1
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118902,
+        "variant": 1,
+        "style": "attack",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 24,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 21,
+      "rests": 0,
+      "battles": 3,
+      "rounds": 10,
+      "retreats": 0,
+      "reversals": 0,
+      "maxQuiet": 11,
+      "cards": {
+        "red": 2,
+        "black": 0
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118902,
+        "variant": 1,
+        "style": "defense",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 147,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 138,
+      "rests": 0,
+      "battles": 9,
+      "rounds": 29,
+      "retreats": 1,
+      "reversals": 16,
+      "maxQuiet": 50,
+      "cards": {
+        "red": 2,
+        "black": 0
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118902,
+        "variant": 1,
+        "style": "mixed",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 112,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 104,
+      "rests": 0,
+      "battles": 8,
+      "rounds": 31,
+      "retreats": 0,
+      "reversals": 15,
+      "maxQuiet": 34,
+      "cards": {
+        "red": 0,
+        "black": 0
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118902,
+        "variant": 1,
+        "style": "spread",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 26,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 24,
+      "rests": 0,
+      "battles": 2,
+      "rounds": 10,
+      "retreats": 1,
+      "reversals": 1,
+      "maxQuiet": 12,
+      "cards": {
+        "red": 1,
+        "black": 1
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118902,
+        "variant": 1,
+        "style": "attack",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 91,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 81,
+      "rests": 2,
+      "battles": 8,
+      "rounds": 26,
+      "retreats": 3,
+      "reversals": 16,
+      "maxQuiet": 45,
+      "cards": {
+        "red": 2,
+        "black": 4
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118902,
+        "variant": 1,
+        "style": "defense",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 26,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 24,
+      "rests": 0,
+      "battles": 2,
+      "rounds": 11,
+      "retreats": 1,
+      "reversals": 1,
+      "maxQuiet": 12,
+      "cards": {
+        "red": 1,
+        "black": 0
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118902,
+        "variant": 1,
+        "style": "mixed",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 123,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 114,
+      "rests": 1,
+      "battles": 8,
+      "rounds": 31,
+      "retreats": 2,
+      "reversals": 4,
+      "maxQuiet": 39,
+      "cards": {
+        "red": 3,
+        "black": 3
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118903,
+        "variant": 2,
+        "style": "spread",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 52,
+      "winner": "draw",
+      "reason": "双方将帅同时阵亡",
+      "moves": 45,
+      "rests": 0,
+      "battles": 7,
+      "rounds": 23,
+      "retreats": 0,
+      "reversals": 4,
+      "maxQuiet": 12,
+      "cards": {
+        "red": 0,
+        "black": 1
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118903,
+        "variant": 2,
+        "style": "attack",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 41,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 35,
+      "rests": 1,
+      "battles": 5,
+      "rounds": 19,
+      "retreats": 1,
+      "reversals": 5,
+      "maxQuiet": 15,
+      "cards": {
+        "red": 2,
+        "black": 2
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118903,
+        "variant": 2,
+        "style": "defense",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 125,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 117,
+      "rests": 1,
+      "battles": 7,
+      "rounds": 27,
+      "retreats": 0,
+      "reversals": 17,
+      "maxQuiet": 45,
+      "cards": {
+        "red": 1,
+        "black": 3
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118903,
+        "variant": 2,
+        "style": "mixed",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 156,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 144,
+      "rests": 1,
+      "battles": 11,
+      "rounds": 41,
+      "retreats": 0,
+      "reversals": 19,
+      "maxQuiet": 44,
+      "cards": {
+        "red": 1,
+        "black": 4
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118903,
+        "variant": 2,
+        "style": "spread",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 45,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 38,
+      "rests": 0,
+      "battles": 7,
+      "rounds": 29,
+      "retreats": 0,
+      "reversals": 3,
+      "maxQuiet": 12,
+      "cards": {
+        "red": 3,
+        "black": 2
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118903,
+        "variant": 2,
+        "style": "attack",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 26,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 24,
+      "rests": 0,
+      "battles": 2,
+      "rounds": 11,
+      "retreats": 0,
+      "reversals": 1,
+      "maxQuiet": 12,
+      "cards": {
+        "red": 1,
+        "black": 2
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118903,
+        "variant": 2,
+        "style": "defense",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 42,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 37,
+      "rests": 0,
+      "battles": 5,
+      "rounds": 19,
+      "retreats": 0,
+      "reversals": 5,
+      "maxQuiet": 12,
+      "cards": {
+        "red": 1,
+        "black": 0
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118903,
+        "variant": 2,
+        "style": "mixed",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 42,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 37,
+      "rests": 0,
+      "battles": 5,
+      "rounds": 19,
+      "retreats": 0,
+      "reversals": 5,
+      "maxQuiet": 12,
+      "cards": {
+        "red": 1,
+        "black": 0
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118904,
+        "variant": 0,
+        "style": "spread",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 104,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 97,
+      "rests": 0,
+      "battles": 7,
+      "rounds": 32,
+      "retreats": 0,
+      "reversals": 9,
+      "maxQuiet": 60,
+      "cards": {
+        "red": 1,
+        "black": 3
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118904,
+        "variant": 0,
+        "style": "attack",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 56,
+      "winner": "draw",
+      "reason": "双方将帅同时阵亡",
+      "moves": 48,
+      "rests": 1,
+      "battles": 7,
+      "rounds": 30,
+      "retreats": 2,
+      "reversals": 3,
+      "maxQuiet": 11,
+      "cards": {
+        "red": 3,
+        "black": 2
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118904,
+        "variant": 0,
+        "style": "defense",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 35,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 32,
+      "rests": 0,
+      "battles": 3,
+      "rounds": 17,
+      "retreats": 0,
+      "reversals": 1,
+      "maxQuiet": 16,
+      "cards": {
+        "red": 0,
+        "black": 1
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118904,
+        "variant": 0,
+        "style": "mixed",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 35,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 32,
+      "rests": 0,
+      "battles": 3,
+      "rounds": 17,
+      "retreats": 0,
+      "reversals": 1,
+      "maxQuiet": 16,
+      "cards": {
+        "red": 0,
+        "black": 1
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118904,
+        "variant": 0,
+        "style": "spread",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 40,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 34,
+      "rests": 0,
+      "battles": 6,
+      "rounds": 22,
+      "retreats": 0,
+      "reversals": 1,
+      "maxQuiet": 12,
+      "cards": {
+        "red": 1,
+        "black": 1
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118904,
+        "variant": 0,
+        "style": "attack",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 14,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 11,
+      "rests": 0,
+      "battles": 3,
+      "rounds": 11,
+      "retreats": 0,
+      "reversals": 0,
+      "maxQuiet": 10,
+      "cards": {
+        "red": 1,
+        "black": 3
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118904,
+        "variant": 0,
+        "style": "defense",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 66,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 57,
+      "rests": 0,
+      "battles": 9,
+      "rounds": 29,
+      "retreats": 0,
+      "reversals": 4,
+      "maxQuiet": 25,
+      "cards": {
+        "red": 2,
+        "black": 2
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118904,
+        "variant": 0,
+        "style": "mixed",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 66,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 57,
+      "rests": 0,
+      "battles": 9,
+      "rounds": 29,
+      "retreats": 0,
+      "reversals": 4,
+      "maxQuiet": 25,
+      "cards": {
+        "red": 2,
+        "black": 2
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118905,
+        "variant": 1,
+        "style": "spread",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 70,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 63,
+      "rests": 0,
+      "battles": 7,
+      "rounds": 27,
+      "retreats": 1,
+      "reversals": 5,
+      "maxQuiet": 32,
+      "cards": {
+        "red": 3,
+        "black": 1
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118905,
+        "variant": 1,
+        "style": "attack",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 24,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 21,
+      "rests": 0,
+      "battles": 3,
+      "rounds": 8,
+      "retreats": 1,
+      "reversals": 1,
+      "maxQuiet": 11,
+      "cards": {
+        "red": 1,
+        "black": 0
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118905,
+        "variant": 1,
+        "style": "defense",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 32,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 28,
+      "rests": 0,
+      "battles": 4,
+      "rounds": 14,
+      "retreats": 2,
+      "reversals": 0,
+      "maxQuiet": 18,
+      "cards": {
+        "red": 1,
+        "black": 1
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118905,
+        "variant": 1,
+        "style": "mixed",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 32,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 28,
+      "rests": 0,
+      "battles": 4,
+      "rounds": 14,
+      "retreats": 2,
+      "reversals": 0,
+      "maxQuiet": 18,
+      "cards": {
+        "red": 1,
+        "black": 1
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118905,
+        "variant": 1,
+        "style": "spread",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 48,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 43,
+      "rests": 0,
+      "battles": 5,
+      "rounds": 18,
+      "retreats": 1,
+      "reversals": 4,
+      "maxQuiet": 12,
+      "cards": {
+        "red": 2,
+        "black": 2
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118905,
+        "variant": 1,
+        "style": "attack",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 50,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 43,
+      "rests": 0,
+      "battles": 7,
+      "rounds": 22,
+      "retreats": 2,
+      "reversals": 4,
+      "maxQuiet": 12,
+      "cards": {
+        "red": 2,
+        "black": 4
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118905,
+        "variant": 1,
+        "style": "defense",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 16,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 12,
+      "rests": 0,
+      "battles": 4,
+      "rounds": 18,
+      "retreats": 0,
+      "reversals": 0,
+      "maxQuiet": 10,
+      "cards": {
+        "red": 1,
+        "black": 0
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118905,
+        "variant": 1,
+        "style": "mixed",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 16,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 12,
+      "rests": 0,
+      "battles": 4,
+      "rounds": 18,
+      "retreats": 0,
+      "reversals": 0,
+      "maxQuiet": 10,
+      "cards": {
+        "red": 1,
+        "black": 1
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118906,
+        "variant": 2,
+        "style": "spread",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 30,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 25,
+      "rests": 0,
+      "battles": 5,
+      "rounds": 18,
+      "retreats": 1,
+      "reversals": 1,
+      "maxQuiet": 10,
+      "cards": {
+        "red": 1,
+        "black": 1
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118906,
+        "variant": 2,
+        "style": "attack",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 12,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 10,
+      "rests": 0,
+      "battles": 2,
+      "rounds": 12,
+      "retreats": 0,
+      "reversals": 0,
+      "maxQuiet": 10,
+      "cards": {
+        "red": 1,
+        "black": 1
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118906,
+        "variant": 2,
+        "style": "defense",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 30,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 25,
+      "rests": 0,
+      "battles": 5,
+      "rounds": 18,
+      "retreats": 1,
+      "reversals": 1,
+      "maxQuiet": 10,
+      "cards": {
+        "red": 0,
+        "black": 1
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118906,
+        "variant": 2,
+        "style": "mixed",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 30,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 25,
+      "rests": 0,
+      "battles": 5,
+      "rounds": 18,
+      "retreats": 1,
+      "reversals": 1,
+      "maxQuiet": 10,
+      "cards": {
+        "red": 1,
+        "black": 1
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118906,
+        "variant": 2,
+        "style": "spread",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 15,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 12,
+      "rests": 0,
+      "battles": 3,
+      "rounds": 17,
+      "retreats": 0,
+      "reversals": 0,
+      "maxQuiet": 10,
+      "cards": {
+        "red": 1,
+        "black": 1
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118906,
+        "variant": 2,
+        "style": "attack",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 48,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 43,
+      "rests": 0,
+      "battles": 5,
+      "rounds": 14,
+      "retreats": 2,
+      "reversals": 4,
+      "maxQuiet": 12,
+      "cards": {
+        "red": 1,
+        "black": 2
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118906,
+        "variant": 2,
+        "style": "defense",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 15,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 12,
+      "rests": 0,
+      "battles": 3,
+      "rounds": 17,
+      "retreats": 0,
+      "reversals": 0,
+      "maxQuiet": 10,
+      "cards": {
+        "red": 1,
+        "black": 0
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "quick",
+        "seed": 2118906,
+        "variant": 2,
+        "style": "mixed",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 15,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 12,
+      "rests": 0,
+      "battles": 3,
+      "rounds": 17,
+      "retreats": 0,
+      "reversals": 0,
+      "maxQuiet": 10,
+      "cards": {
+        "red": 1,
+        "black": 0
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128901,
+        "variant": 0,
+        "style": "spread",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 110,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 92,
+      "rests": 1,
+      "battles": 17,
+      "rounds": 63,
+      "retreats": 1,
+      "reversals": 13,
+      "maxQuiet": 25,
+      "cards": {
+        "red": 3,
+        "black": 5
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128901,
+        "variant": 0,
+        "style": "attack",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 63,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 51,
+      "rests": 1,
+      "battles": 11,
+      "rounds": 38,
+      "retreats": 0,
+      "reversals": 4,
+      "maxQuiet": 11,
+      "cards": {
+        "red": 4,
+        "black": 1
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128901,
+        "variant": 0,
+        "style": "defense",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 185,
+      "winner": "draw",
+      "reason": "连续 80 次行动未造成伤害",
+      "moves": 164,
+      "rests": 1,
+      "battles": 20,
+      "rounds": 67,
+      "retreats": 3,
+      "reversals": 37,
+      "maxQuiet": 80,
+      "cards": {
+        "red": 2,
+        "black": 3
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128901,
+        "variant": 0,
+        "style": "mixed",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 96,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 79,
+      "rests": 0,
+      "battles": 17,
+      "rounds": 53,
+      "retreats": 3,
+      "reversals": 15,
+      "maxQuiet": 16,
+      "cards": {
+        "red": 2,
+        "black": 1
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128901,
+        "variant": 0,
+        "style": "spread",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 118,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 101,
+      "rests": 2,
+      "battles": 15,
+      "rounds": 57,
+      "retreats": 1,
+      "reversals": 14,
+      "maxQuiet": 26,
+      "cards": {
+        "red": 7,
+        "black": 3
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128901,
+        "variant": 0,
+        "style": "attack",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 186,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 166,
+      "rests": 0,
+      "battles": 20,
+      "rounds": 68,
+      "retreats": 1,
+      "reversals": 28,
+      "maxQuiet": 37,
+      "cards": {
+        "red": 4,
+        "black": 3
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128901,
+        "variant": 0,
+        "style": "defense",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 235,
+      "winner": "draw",
+      "reason": "双方将帅同时阵亡",
+      "moves": 205,
+      "rests": 2,
+      "battles": 28,
+      "rounds": 95,
+      "retreats": 1,
+      "reversals": 35,
+      "maxQuiet": 30,
+      "cards": {
+        "red": 7,
+        "black": 2
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128901,
+        "variant": 0,
+        "style": "mixed",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 53,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 47,
+      "rests": 0,
+      "battles": 6,
+      "rounds": 31,
+      "retreats": 0,
+      "reversals": 4,
+      "maxQuiet": 20,
+      "cards": {
+        "red": 2,
+        "black": 0
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128902,
+        "variant": 1,
+        "style": "spread",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 56,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 42,
+      "rests": 1,
+      "battles": 13,
+      "rounds": 39,
+      "retreats": 2,
+      "reversals": 1,
+      "maxQuiet": 11,
+      "cards": {
+        "red": 2,
+        "black": 1
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128902,
+        "variant": 1,
+        "style": "attack",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 86,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 70,
+      "rests": 2,
+      "battles": 14,
+      "rounds": 47,
+      "retreats": 2,
+      "reversals": 4,
+      "maxQuiet": 16,
+      "cards": {
+        "red": 2,
+        "black": 6
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128902,
+        "variant": 1,
+        "style": "defense",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 158,
+      "winner": "draw",
+      "reason": "双方将帅同时阵亡",
+      "moves": 133,
+      "rests": 1,
+      "battles": 24,
+      "rounds": 67,
+      "retreats": 5,
+      "reversals": 17,
+      "maxQuiet": 23,
+      "cards": {
+        "red": 3,
+        "black": 3
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128902,
+        "variant": 1,
+        "style": "mixed",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 353,
+      "winner": "draw",
+      "reason": "连续 80 次行动未造成伤害",
+      "moves": 324,
+      "rests": 2,
+      "battles": 27,
+      "rounds": 80,
+      "retreats": 6,
+      "reversals": 60,
+      "maxQuiet": 80,
+      "cards": {
+        "red": 5,
+        "black": 3
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128902,
+        "variant": 1,
+        "style": "spread",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 127,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 101,
+      "rests": 1,
+      "battles": 25,
+      "rounds": 77,
+      "retreats": 2,
+      "reversals": 11,
+      "maxQuiet": 18,
+      "cards": {
+        "red": 3,
+        "black": 7
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128902,
+        "variant": 1,
+        "style": "attack",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 159,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 125,
+      "rests": 2,
+      "battles": 32,
+      "rounds": 100,
+      "retreats": 5,
+      "reversals": 19,
+      "maxQuiet": 43,
+      "cards": {
+        "red": 8,
+        "black": 6
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128902,
+        "variant": 1,
+        "style": "defense",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 59,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 44,
+      "rests": 0,
+      "battles": 15,
+      "rounds": 56,
+      "retreats": 1,
+      "reversals": 2,
+      "maxQuiet": 12,
+      "cards": {
+        "red": 3,
+        "black": 4
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128902,
+        "variant": 1,
+        "style": "mixed",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 168,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 148,
+      "rests": 1,
+      "battles": 19,
+      "rounds": 60,
+      "retreats": 4,
+      "reversals": 19,
+      "maxQuiet": 37,
+      "cards": {
+        "red": 3,
+        "black": 2
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128903,
+        "variant": 2,
+        "style": "spread",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 109,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 90,
+      "rests": 0,
+      "battles": 19,
+      "rounds": 59,
+      "retreats": 4,
+      "reversals": 13,
+      "maxQuiet": 24,
+      "cards": {
+        "red": 4,
+        "black": 3
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128903,
+        "variant": 2,
+        "style": "attack",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 299,
+      "winner": "draw",
+      "reason": "双方将帅同时阵亡",
+      "moves": 267,
+      "rests": 3,
+      "battles": 29,
+      "rounds": 87,
+      "retreats": 5,
+      "reversals": 70,
+      "maxQuiet": 60,
+      "cards": {
+        "red": 8,
+        "black": 5
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128903,
+        "variant": 2,
+        "style": "defense",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 213,
+      "winner": "draw",
+      "reason": "连续 80 次行动未造成伤害",
+      "moves": 190,
+      "rests": 0,
+      "battles": 23,
+      "rounds": 83,
+      "retreats": 3,
+      "reversals": 41,
+      "maxQuiet": 80,
+      "cards": {
+        "red": 5,
+        "black": 5
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128903,
+        "variant": 2,
+        "style": "mixed",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 225,
+      "winner": "draw",
+      "reason": "连续 80 次行动未造成伤害",
+      "moves": 203,
+      "rests": 1,
+      "battles": 21,
+      "rounds": 67,
+      "retreats": 1,
+      "reversals": 42,
+      "maxQuiet": 80,
+      "cards": {
+        "red": 5,
+        "black": 5
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128903,
+        "variant": 2,
+        "style": "spread",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 60,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 45,
+      "rests": 3,
+      "battles": 12,
+      "rounds": 44,
+      "retreats": 1,
+      "reversals": 2,
+      "maxQuiet": 11,
+      "cards": {
+        "red": 2,
+        "black": 4
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128903,
+        "variant": 2,
+        "style": "attack",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 68,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 53,
+      "rests": 3,
+      "battles": 12,
+      "rounds": 39,
+      "retreats": 1,
+      "reversals": 4,
+      "maxQuiet": 18,
+      "cards": {
+        "red": 1,
+        "black": 6
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128903,
+        "variant": 2,
+        "style": "defense",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 85,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 65,
+      "rests": 0,
+      "battles": 20,
+      "rounds": 62,
+      "retreats": 3,
+      "reversals": 4,
+      "maxQuiet": 16,
+      "cards": {
+        "red": 2,
+        "black": 3
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128903,
+        "variant": 2,
+        "style": "mixed",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 268,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 237,
+      "rests": 3,
+      "battles": 28,
+      "rounds": 83,
+      "retreats": 6,
+      "reversals": 53,
+      "maxQuiet": 54,
+      "cards": {
+        "red": 3,
+        "black": 9
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128904,
+        "variant": 0,
+        "style": "spread",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 170,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 142,
+      "rests": 4,
+      "battles": 24,
+      "rounds": 81,
+      "retreats": 2,
+      "reversals": 30,
+      "maxQuiet": 29,
+      "cards": {
+        "red": 5,
+        "black": 7
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128904,
+        "variant": 0,
+        "style": "attack",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 35,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 27,
+      "rests": 2,
+      "battles": 6,
+      "rounds": 23,
+      "retreats": 0,
+      "reversals": 0,
+      "maxQuiet": 9,
+      "cards": {
+        "red": 0,
+        "black": 2
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128904,
+        "variant": 0,
+        "style": "defense",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 152,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 127,
+      "rests": 2,
+      "battles": 23,
+      "rounds": 79,
+      "retreats": 5,
+      "reversals": 15,
+      "maxQuiet": 32,
+      "cards": {
+        "red": 1,
+        "black": 7
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128904,
+        "variant": 0,
+        "style": "mixed",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 146,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 125,
+      "rests": 2,
+      "battles": 19,
+      "rounds": 56,
+      "retreats": 6,
+      "reversals": 17,
+      "maxQuiet": 31,
+      "cards": {
+        "red": 3,
+        "black": 3
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128904,
+        "variant": 0,
+        "style": "spread",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 54,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 46,
+      "rests": 1,
+      "battles": 7,
+      "rounds": 23,
+      "retreats": 1,
+      "reversals": 3,
+      "maxQuiet": 11,
+      "cards": {
+        "red": 0,
+        "black": 3
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128904,
+        "variant": 0,
+        "style": "attack",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 60,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 49,
+      "rests": 2,
+      "battles": 9,
+      "rounds": 36,
+      "retreats": 1,
+      "reversals": 5,
+      "maxQuiet": 26,
+      "cards": {
+        "red": 1,
+        "black": 4
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128904,
+        "variant": 0,
+        "style": "defense",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 48,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 39,
+      "rests": 0,
+      "battles": 9,
+      "rounds": 40,
+      "retreats": 1,
+      "reversals": 2,
+      "maxQuiet": 11,
+      "cards": {
+        "red": 2,
+        "black": 0
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128904,
+        "variant": 0,
+        "style": "mixed",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 60,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 50,
+      "rests": 0,
+      "battles": 10,
+      "rounds": 35,
+      "retreats": 2,
+      "reversals": 2,
+      "maxQuiet": 13,
+      "cards": {
+        "red": 3,
+        "black": 2
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128905,
+        "variant": 1,
+        "style": "spread",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 129,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 107,
+      "rests": 2,
+      "battles": 20,
+      "rounds": 72,
+      "retreats": 1,
+      "reversals": 14,
+      "maxQuiet": 23,
+      "cards": {
+        "red": 7,
+        "black": 6
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128905,
+        "variant": 1,
+        "style": "attack",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 67,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 55,
+      "rests": 0,
+      "battles": 12,
+      "rounds": 46,
+      "retreats": 2,
+      "reversals": 3,
+      "maxQuiet": 9,
+      "cards": {
+        "red": 4,
+        "black": 3
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128905,
+        "variant": 1,
+        "style": "defense",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 267,
+      "winner": "draw",
+      "reason": "连续 80 次行动未造成伤害",
+      "moves": 240,
+      "rests": 2,
+      "battles": 25,
+      "rounds": 77,
+      "retreats": 3,
+      "reversals": 31,
+      "maxQuiet": 80,
+      "cards": {
+        "red": 5,
+        "black": 6
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128905,
+        "variant": 1,
+        "style": "mixed",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 71,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 53,
+      "rests": 0,
+      "battles": 18,
+      "rounds": 50,
+      "retreats": 2,
+      "reversals": 1,
+      "maxQuiet": 19,
+      "cards": {
+        "red": 6,
+        "black": 3
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128905,
+        "variant": 1,
+        "style": "spread",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 164,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 144,
+      "rests": 1,
+      "battles": 19,
+      "rounds": 65,
+      "retreats": 1,
+      "reversals": 33,
+      "maxQuiet": 38,
+      "cards": {
+        "red": 2,
+        "black": 4
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128905,
+        "variant": 1,
+        "style": "attack",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 99,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 85,
+      "rests": 1,
+      "battles": 13,
+      "rounds": 50,
+      "retreats": 1,
+      "reversals": 10,
+      "maxQuiet": 17,
+      "cards": {
+        "red": 2,
+        "black": 4
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128905,
+        "variant": 1,
+        "style": "defense",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 169,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 143,
+      "rests": 4,
+      "battles": 22,
+      "rounds": 72,
+      "retreats": 2,
+      "reversals": 37,
+      "maxQuiet": 30,
+      "cards": {
+        "red": 5,
+        "black": 6
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128905,
+        "variant": 1,
+        "style": "mixed",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 41,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 35,
+      "rests": 0,
+      "battles": 6,
+      "rounds": 23,
+      "retreats": 1,
+      "reversals": 0,
+      "maxQuiet": 12,
+      "cards": {
+        "red": 2,
+        "black": 0
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128906,
+        "variant": 2,
+        "style": "spread",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 228,
+      "winner": "draw",
+      "reason": "同一完整局面第三次出现",
+      "moves": 203,
+      "rests": 2,
+      "battles": 23,
+      "rounds": 82,
+      "retreats": 2,
+      "reversals": 48,
+      "maxQuiet": 54,
+      "cards": {
+        "red": 7,
+        "black": 4
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128906,
+        "variant": 2,
+        "style": "attack",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 99,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 83,
+      "rests": 0,
+      "battles": 16,
+      "rounds": 50,
+      "retreats": 2,
+      "reversals": 10,
+      "maxQuiet": 24,
+      "cards": {
+        "red": 6,
+        "black": 2
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128906,
+        "variant": 2,
+        "style": "defense",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 253,
+      "winner": "draw",
+      "reason": "双方将帅同时阵亡",
+      "moves": 220,
+      "rests": 5,
+      "battles": 28,
+      "rounds": 87,
+      "retreats": 6,
+      "reversals": 51,
+      "maxQuiet": 52,
+      "cards": {
+        "red": 8,
+        "black": 5
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128906,
+        "variant": 2,
+        "style": "mixed",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 30,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 22,
+      "rests": 0,
+      "battles": 8,
+      "rounds": 27,
+      "retreats": 2,
+      "reversals": 1,
+      "maxQuiet": 10,
+      "cards": {
+        "red": 2,
+        "black": 1
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128906,
+        "variant": 2,
+        "style": "spread",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 200,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 179,
+      "rests": 4,
+      "battles": 17,
+      "rounds": 71,
+      "retreats": 2,
+      "reversals": 30,
+      "maxQuiet": 50,
+      "cards": {
+        "red": 4,
+        "black": 5
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128906,
+        "variant": 2,
+        "style": "attack",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 301,
+      "winner": "draw",
+      "reason": "连续 80 次行动未造成伤害",
+      "moves": 275,
+      "rests": 1,
+      "battles": 25,
+      "rounds": 74,
+      "retreats": 4,
+      "reversals": 51,
+      "maxQuiet": 80,
+      "cards": {
+        "red": 4,
+        "black": 5
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128906,
+        "variant": 2,
+        "style": "defense",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 55,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 46,
+      "rests": 0,
+      "battles": 9,
+      "rounds": 39,
+      "retreats": 2,
+      "reversals": 2,
+      "maxQuiet": 17,
+      "cards": {
+        "red": 2,
+        "black": 1
+      }
+    },
+    {
+      "batch": 1,
+      "input": {
+        "scenario": "full",
+        "seed": 2128906,
+        "variant": 2,
+        "style": "mixed",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 166,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 147,
+      "rests": 0,
+      "battles": 19,
+      "rounds": 69,
+      "retreats": 4,
+      "reversals": 20,
+      "maxQuiet": 36,
+      "cards": {
+        "red": 2,
+        "black": 3
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "quick",
+        "seed": 2138901,
+        "variant": 0,
+        "style": "default",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 54,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 47,
+      "rests": 0,
+      "battles": 7,
+      "rounds": 27,
+      "retreats": 1,
+      "reversals": 2,
+      "maxQuiet": 23,
+      "cards": {
+        "red": 1,
+        "black": 3
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "quick",
+        "seed": 2138901,
+        "variant": 0,
+        "style": "default",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 26,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 24,
+      "rests": 0,
+      "battles": 2,
+      "rounds": 12,
+      "retreats": 0,
+      "reversals": 0,
+      "maxQuiet": 12,
+      "cards": {
+        "red": 1,
+        "black": 1
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "quick",
+        "seed": 2138902,
+        "variant": 1,
+        "style": "default",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 26,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 24,
+      "rests": 0,
+      "battles": 2,
+      "rounds": 12,
+      "retreats": 0,
+      "reversals": 1,
+      "maxQuiet": 12,
+      "cards": {
+        "red": 1,
+        "black": 1
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "quick",
+        "seed": 2138902,
+        "variant": 1,
+        "style": "default",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 26,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 24,
+      "rests": 0,
+      "battles": 2,
+      "rounds": 10,
+      "retreats": 1,
+      "reversals": 1,
+      "maxQuiet": 12,
+      "cards": {
+        "red": 0,
+        "black": 0
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "quick",
+        "seed": 2138903,
+        "variant": 2,
+        "style": "default",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 33,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 30,
+      "rests": 0,
+      "battles": 3,
+      "rounds": 15,
+      "retreats": 0,
+      "reversals": 0,
+      "maxQuiet": 25,
+      "cards": {
+        "red": 2,
+        "black": 1
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "quick",
+        "seed": 2138903,
+        "variant": 2,
+        "style": "default",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 34,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 32,
+      "rests": 0,
+      "battles": 2,
+      "rounds": 12,
+      "retreats": 0,
+      "reversals": 3,
+      "maxQuiet": 32,
+      "cards": {
+        "red": 0,
+        "black": 0
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "quick",
+        "seed": 2138904,
+        "variant": 0,
+        "style": "default",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 46,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 37,
+      "rests": 1,
+      "battles": 8,
+      "rounds": 32,
+      "retreats": 0,
+      "reversals": 2,
+      "maxQuiet": 16,
+      "cards": {
+        "red": 2,
+        "black": 2
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "quick",
+        "seed": 2138904,
+        "variant": 0,
+        "style": "default",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 14,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 11,
+      "rests": 0,
+      "battles": 3,
+      "rounds": 12,
+      "retreats": 0,
+      "reversals": 0,
+      "maxQuiet": 10,
+      "cards": {
+        "red": 1,
+        "black": 1
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "quick",
+        "seed": 2138905,
+        "variant": 1,
+        "style": "default",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 49,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 44,
+      "rests": 0,
+      "battles": 5,
+      "rounds": 21,
+      "retreats": 0,
+      "reversals": 0,
+      "maxQuiet": 26,
+      "cards": {
+        "red": 3,
+        "black": 3
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "quick",
+        "seed": 2138905,
+        "variant": 1,
+        "style": "default",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 55,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 46,
+      "rests": 0,
+      "battles": 9,
+      "rounds": 30,
+      "retreats": 3,
+      "reversals": 8,
+      "maxQuiet": 12,
+      "cards": {
+        "red": 3,
+        "black": 2
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "quick",
+        "seed": 2138906,
+        "variant": 2,
+        "style": "default",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 104,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 93,
+      "rests": 2,
+      "battles": 9,
+      "rounds": 29,
+      "retreats": 2,
+      "reversals": 16,
+      "maxQuiet": 58,
+      "cards": {
+        "red": 3,
+        "black": 2
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "quick",
+        "seed": 2138906,
+        "variant": 2,
+        "style": "default",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 33,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 30,
+      "rests": 0,
+      "battles": 3,
+      "rounds": 14,
+      "retreats": 0,
+      "reversals": 6,
+      "maxQuiet": 16,
+      "cards": {
+        "red": 1,
+        "black": 0
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "full",
+        "seed": 2148901,
+        "variant": 0,
+        "style": "default",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 158,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 132,
+      "rests": 1,
+      "battles": 25,
+      "rounds": 77,
+      "retreats": 0,
+      "reversals": 18,
+      "maxQuiet": 35,
+      "cards": {
+        "red": 6,
+        "black": 5
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "full",
+        "seed": 2148901,
+        "variant": 0,
+        "style": "default",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 364,
+      "winner": "draw",
+      "reason": "双方将帅同时阵亡",
+      "moves": 332,
+      "rests": 7,
+      "battles": 25,
+      "rounds": 84,
+      "retreats": 5,
+      "reversals": 87,
+      "maxQuiet": 58,
+      "cards": {
+        "red": 7,
+        "black": 8
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "full",
+        "seed": 2148902,
+        "variant": 1,
+        "style": "default",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 247,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 223,
+      "rests": 1,
+      "battles": 23,
+      "rounds": 74,
+      "retreats": 3,
+      "reversals": 63,
+      "maxQuiet": 58,
+      "cards": {
+        "red": 3,
+        "black": 3
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "full",
+        "seed": 2148902,
+        "variant": 1,
+        "style": "default",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 84,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 68,
+      "rests": 0,
+      "battles": 16,
+      "rounds": 53,
+      "retreats": 2,
+      "reversals": 3,
+      "maxQuiet": 14,
+      "cards": {
+        "red": 0,
+        "black": 3
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "full",
+        "seed": 2148903,
+        "variant": 2,
+        "style": "default",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 363,
+      "winner": "draw",
+      "reason": "连续 80 次行动未造成伤害",
+      "moves": 334,
+      "rests": 1,
+      "battles": 28,
+      "rounds": 87,
+      "retreats": 6,
+      "reversals": 86,
+      "maxQuiet": 80,
+      "cards": {
+        "red": 2,
+        "black": 3
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "full",
+        "seed": 2148903,
+        "variant": 2,
+        "style": "default",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 21,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 18,
+      "rests": 0,
+      "battles": 3,
+      "rounds": 11,
+      "retreats": 0,
+      "reversals": 0,
+      "maxQuiet": 9,
+      "cards": {
+        "red": 0,
+        "black": 1
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "full",
+        "seed": 2148904,
+        "variant": 0,
+        "style": "default",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 46,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 33,
+      "rests": 0,
+      "battles": 13,
+      "rounds": 46,
+      "retreats": 0,
+      "reversals": 0,
+      "maxQuiet": 15,
+      "cards": {
+        "red": 1,
+        "black": 3
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "full",
+        "seed": 2148904,
+        "variant": 0,
+        "style": "default",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 31,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 27,
+      "rests": 0,
+      "battles": 4,
+      "rounds": 14,
+      "retreats": 1,
+      "reversals": 1,
+      "maxQuiet": 14,
+      "cards": {
+        "red": 1,
+        "black": 0
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "full",
+        "seed": 2148905,
+        "variant": 1,
+        "style": "default",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 87,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 67,
+      "rests": 3,
+      "battles": 17,
+      "rounds": 63,
+      "retreats": 1,
+      "reversals": 5,
+      "maxQuiet": 14,
+      "cards": {
+        "red": 4,
+        "black": 4
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "full",
+        "seed": 2148905,
+        "variant": 1,
+        "style": "default",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 185,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 160,
+      "rests": 1,
+      "battles": 24,
+      "rounds": 75,
+      "retreats": 5,
+      "reversals": 28,
+      "maxQuiet": 33,
+      "cards": {
+        "red": 3,
+        "black": 6
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "full",
+        "seed": 2148906,
+        "variant": 2,
+        "style": "default",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 284,
+      "winner": "draw",
+      "reason": "双方将帅同时阵亡",
+      "moves": 254,
+      "rests": 4,
+      "battles": 26,
+      "rounds": 89,
+      "retreats": 4,
+      "reversals": 66,
+      "maxQuiet": 51,
+      "cards": {
+        "red": 6,
+        "black": 3
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "full",
+        "seed": 2148906,
+        "variant": 2,
+        "style": "default",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 276,
+      "winner": "draw",
+      "reason": "连续 80 次行动未造成伤害",
+      "moves": 247,
+      "rests": 3,
+      "battles": 26,
+      "rounds": 92,
+      "retreats": 2,
+      "reversals": 60,
+      "maxQuiet": 80,
+      "cards": {
+        "red": 3,
+        "black": 7
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "quick",
+        "seed": 2138901,
+        "variant": 0,
+        "style": "spread",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 54,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 47,
+      "rests": 0,
+      "battles": 7,
+      "rounds": 27,
+      "retreats": 1,
+      "reversals": 2,
+      "maxQuiet": 23,
+      "cards": {
+        "red": 1,
+        "black": 3
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "quick",
+        "seed": 2138901,
+        "variant": 0,
+        "style": "attack",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 116,
+      "winner": "draw",
+      "reason": "连续 80 次行动未造成伤害",
+      "moves": 109,
+      "rests": 0,
+      "battles": 7,
+      "rounds": 28,
+      "retreats": 1,
+      "reversals": 12,
+      "maxQuiet": 80,
+      "cards": {
+        "red": 5,
+        "black": 2
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "quick",
+        "seed": 2138901,
+        "variant": 0,
+        "style": "spread",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 26,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 24,
+      "rests": 0,
+      "battles": 2,
+      "rounds": 12,
+      "retreats": 0,
+      "reversals": 0,
+      "maxQuiet": 12,
+      "cards": {
+        "red": 1,
+        "black": 1
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "quick",
+        "seed": 2138901,
+        "variant": 0,
+        "style": "attack",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 26,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 24,
+      "rests": 0,
+      "battles": 2,
+      "rounds": 12,
+      "retreats": 0,
+      "reversals": 0,
+      "maxQuiet": 12,
+      "cards": {
+        "red": 1,
+        "black": 1
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "quick",
+        "seed": 2138902,
+        "variant": 1,
+        "style": "spread",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 26,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 24,
+      "rests": 0,
+      "battles": 2,
+      "rounds": 10,
+      "retreats": 0,
+      "reversals": 0,
+      "maxQuiet": 12,
+      "cards": {
+        "red": 1,
+        "black": 1
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "quick",
+        "seed": 2138902,
+        "variant": 1,
+        "style": "attack",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 26,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 24,
+      "rests": 0,
+      "battles": 2,
+      "rounds": 10,
+      "retreats": 0,
+      "reversals": 0,
+      "maxQuiet": 12,
+      "cards": {
+        "red": 1,
+        "black": 1
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "quick",
+        "seed": 2138902,
+        "variant": 1,
+        "style": "spread",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 26,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 24,
+      "rests": 0,
+      "battles": 2,
+      "rounds": 10,
+      "retreats": 1,
+      "reversals": 1,
+      "maxQuiet": 12,
+      "cards": {
+        "red": 1,
+        "black": 1
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "quick",
+        "seed": 2138902,
+        "variant": 1,
+        "style": "attack",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 27,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 24,
+      "rests": 0,
+      "battles": 3,
+      "rounds": 11,
+      "retreats": 1,
+      "reversals": 0,
+      "maxQuiet": 12,
+      "cards": {
+        "red": 0,
+        "black": 1
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "quick",
+        "seed": 2138903,
+        "variant": 2,
+        "style": "spread",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 29,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 27,
+      "rests": 0,
+      "battles": 2,
+      "rounds": 9,
+      "retreats": 0,
+      "reversals": 0,
+      "maxQuiet": 25,
+      "cards": {
+        "red": 0,
+        "black": 1
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "quick",
+        "seed": 2138903,
+        "variant": 2,
+        "style": "attack",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 23,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 22,
+      "rests": 0,
+      "battles": 1,
+      "rounds": 6,
+      "retreats": 0,
+      "reversals": 0,
+      "maxQuiet": 22,
+      "cards": {
+        "red": 2,
+        "black": 0
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "quick",
+        "seed": 2138903,
+        "variant": 2,
+        "style": "spread",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 34,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 32,
+      "rests": 0,
+      "battles": 2,
+      "rounds": 12,
+      "retreats": 0,
+      "reversals": 3,
+      "maxQuiet": 32,
+      "cards": {
+        "red": 0,
+        "black": 0
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "quick",
+        "seed": 2138903,
+        "variant": 2,
+        "style": "attack",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 52,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 46,
+      "rests": 0,
+      "battles": 6,
+      "rounds": 22,
+      "retreats": 1,
+      "reversals": 5,
+      "maxQuiet": 24,
+      "cards": {
+        "red": 2,
+        "black": 1
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "quick",
+        "seed": 2138904,
+        "variant": 0,
+        "style": "spread",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 46,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 38,
+      "rests": 1,
+      "battles": 7,
+      "rounds": 27,
+      "retreats": 0,
+      "reversals": 2,
+      "maxQuiet": 16,
+      "cards": {
+        "red": 2,
+        "black": 2
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "quick",
+        "seed": 2138904,
+        "variant": 0,
+        "style": "attack",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 80,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 73,
+      "rests": 0,
+      "battles": 7,
+      "rounds": 22,
+      "retreats": 2,
+      "reversals": 6,
+      "maxQuiet": 48,
+      "cards": {
+        "red": 1,
+        "black": 1
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "quick",
+        "seed": 2138904,
+        "variant": 0,
+        "style": "spread",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 14,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 11,
+      "rests": 0,
+      "battles": 3,
+      "rounds": 12,
+      "retreats": 0,
+      "reversals": 0,
+      "maxQuiet": 10,
+      "cards": {
+        "red": 1,
+        "black": 1
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "quick",
+        "seed": 2138904,
+        "variant": 0,
+        "style": "attack",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 24,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 18,
+      "rests": 0,
+      "battles": 6,
+      "rounds": 24,
+      "retreats": 0,
+      "reversals": 0,
+      "maxQuiet": 10,
+      "cards": {
+        "red": 1,
+        "black": 3
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "quick",
+        "seed": 2138905,
+        "variant": 1,
+        "style": "spread",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 119,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 107,
+      "rests": 3,
+      "battles": 9,
+      "rounds": 30,
+      "retreats": 1,
+      "reversals": 16,
+      "maxQuiet": 45,
+      "cards": {
+        "red": 3,
+        "black": 3
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "quick",
+        "seed": 2138905,
+        "variant": 1,
+        "style": "attack",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 98,
+      "winner": "draw",
+      "reason": "双方将帅同时阵亡",
+      "moves": 88,
+      "rests": 1,
+      "battles": 9,
+      "rounds": 28,
+      "retreats": 1,
+      "reversals": 14,
+      "maxQuiet": 18,
+      "cards": {
+        "red": 2,
+        "black": 3
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "quick",
+        "seed": 2138905,
+        "variant": 1,
+        "style": "spread",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 14,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 11,
+      "rests": 0,
+      "battles": 3,
+      "rounds": 10,
+      "retreats": 1,
+      "reversals": 0,
+      "maxQuiet": 10,
+      "cards": {
+        "red": 1,
+        "black": 1
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "quick",
+        "seed": 2138905,
+        "variant": 1,
+        "style": "attack",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 22,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 17,
+      "rests": 0,
+      "battles": 5,
+      "rounds": 18,
+      "retreats": 1,
+      "reversals": 0,
+      "maxQuiet": 10,
+      "cards": {
+        "red": 2,
+        "black": 5
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "quick",
+        "seed": 2138906,
+        "variant": 2,
+        "style": "spread",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 159,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 146,
+      "rests": 2,
+      "battles": 11,
+      "rounds": 32,
+      "retreats": 2,
+      "reversals": 24,
+      "maxQuiet": 47,
+      "cards": {
+        "red": 4,
+        "black": 3
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "quick",
+        "seed": 2138906,
+        "variant": 2,
+        "style": "attack",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 105,
+      "winner": "draw",
+      "reason": "双方将帅同时阵亡",
+      "moves": 92,
+      "rests": 3,
+      "battles": 10,
+      "rounds": 34,
+      "retreats": 3,
+      "reversals": 15,
+      "maxQuiet": 43,
+      "cards": {
+        "red": 3,
+        "black": 2
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "quick",
+        "seed": 2138906,
+        "variant": 2,
+        "style": "spread",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 165,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 151,
+      "rests": 3,
+      "battles": 11,
+      "rounds": 35,
+      "retreats": 2,
+      "reversals": 34,
+      "maxQuiet": 40,
+      "cards": {
+        "red": 2,
+        "black": 4
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "quick",
+        "seed": 2138906,
+        "variant": 2,
+        "style": "attack",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 83,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 74,
+      "rests": 0,
+      "battles": 9,
+      "rounds": 30,
+      "retreats": 0,
+      "reversals": 10,
+      "maxQuiet": 26,
+      "cards": {
+        "red": 2,
+        "black": 4
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "full",
+        "seed": 2148901,
+        "variant": 0,
+        "style": "spread",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 94,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 75,
+      "rests": 1,
+      "battles": 18,
+      "rounds": 60,
+      "retreats": 0,
+      "reversals": 7,
+      "maxQuiet": 22,
+      "cards": {
+        "red": 5,
+        "black": 4
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "full",
+        "seed": 2148901,
+        "variant": 0,
+        "style": "attack",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 188,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 161,
+      "rests": 1,
+      "battles": 26,
+      "rounds": 78,
+      "retreats": 4,
+      "reversals": 32,
+      "maxQuiet": 30,
+      "cards": {
+        "red": 7,
+        "black": 4
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "full",
+        "seed": 2148901,
+        "variant": 0,
+        "style": "spread",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 116,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 96,
+      "rests": 1,
+      "battles": 19,
+      "rounds": 64,
+      "retreats": 2,
+      "reversals": 7,
+      "maxQuiet": 17,
+      "cards": {
+        "red": 6,
+        "black": 5
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "full",
+        "seed": 2148901,
+        "variant": 0,
+        "style": "attack",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 230,
+      "winner": "draw",
+      "reason": "连续 80 次行动未造成伤害",
+      "moves": 205,
+      "rests": 3,
+      "battles": 22,
+      "rounds": 70,
+      "retreats": 2,
+      "reversals": 29,
+      "maxQuiet": 80,
+      "cards": {
+        "red": 6,
+        "black": 6
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "full",
+        "seed": 2148902,
+        "variant": 1,
+        "style": "spread",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 206,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 184,
+      "rests": 1,
+      "battles": 21,
+      "rounds": 73,
+      "retreats": 2,
+      "reversals": 26,
+      "maxQuiet": 63,
+      "cards": {
+        "red": 6,
+        "black": 2
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "full",
+        "seed": 2148902,
+        "variant": 1,
+        "style": "attack",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 29,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 26,
+      "rests": 0,
+      "battles": 3,
+      "rounds": 11,
+      "retreats": 0,
+      "reversals": 2,
+      "maxQuiet": 11,
+      "cards": {
+        "red": 0,
+        "black": 0
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "full",
+        "seed": 2148902,
+        "variant": 1,
+        "style": "spread",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 23,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 19,
+      "rests": 0,
+      "battles": 4,
+      "rounds": 16,
+      "retreats": 0,
+      "reversals": 0,
+      "maxQuiet": 11,
+      "cards": {
+        "red": 0,
+        "black": 1
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "full",
+        "seed": 2148902,
+        "variant": 1,
+        "style": "attack",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 74,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 59,
+      "rests": 3,
+      "battles": 12,
+      "rounds": 48,
+      "retreats": 0,
+      "reversals": 8,
+      "maxQuiet": 15,
+      "cards": {
+        "red": 3,
+        "black": 4
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "full",
+        "seed": 2148903,
+        "variant": 2,
+        "style": "spread",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 129,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 106,
+      "rests": 2,
+      "battles": 21,
+      "rounds": 63,
+      "retreats": 3,
+      "reversals": 13,
+      "maxQuiet": 30,
+      "cards": {
+        "red": 7,
+        "black": 5
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "full",
+        "seed": 2148903,
+        "variant": 2,
+        "style": "attack",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 312,
+      "winner": "draw",
+      "reason": "同一完整局面第三次出现",
+      "moves": 284,
+      "rests": 1,
+      "battles": 27,
+      "rounds": 87,
+      "retreats": 4,
+      "reversals": 86,
+      "maxQuiet": 62,
+      "cards": {
+        "red": 6,
+        "black": 5
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "full",
+        "seed": 2148903,
+        "variant": 2,
+        "style": "spread",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 255,
+      "winner": "draw",
+      "reason": "连续 80 次行动未造成伤害",
+      "moves": 225,
+      "rests": 3,
+      "battles": 27,
+      "rounds": 84,
+      "retreats": 5,
+      "reversals": 53,
+      "maxQuiet": 80,
+      "cards": {
+        "red": 4,
+        "black": 10
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "full",
+        "seed": 2148903,
+        "variant": 2,
+        "style": "attack",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 69,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 54,
+      "rests": 3,
+      "battles": 12,
+      "rounds": 51,
+      "retreats": 1,
+      "reversals": 8,
+      "maxQuiet": 17,
+      "cards": {
+        "red": 2,
+        "black": 6
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "full",
+        "seed": 2148904,
+        "variant": 0,
+        "style": "spread",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 42,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 35,
+      "rests": 0,
+      "battles": 7,
+      "rounds": 25,
+      "retreats": 0,
+      "reversals": 0,
+      "maxQuiet": 15,
+      "cards": {
+        "red": 1,
+        "black": 1
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "full",
+        "seed": 2148904,
+        "variant": 0,
+        "style": "attack",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 210,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 181,
+      "rests": 2,
+      "battles": 27,
+      "rounds": 89,
+      "retreats": 1,
+      "reversals": 28,
+      "maxQuiet": 31,
+      "cards": {
+        "red": 6,
+        "black": 4
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "full",
+        "seed": 2148904,
+        "variant": 0,
+        "style": "spread",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 31,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 27,
+      "rests": 0,
+      "battles": 4,
+      "rounds": 14,
+      "retreats": 1,
+      "reversals": 1,
+      "maxQuiet": 14,
+      "cards": {
+        "red": 1,
+        "black": 0
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "full",
+        "seed": 2148904,
+        "variant": 0,
+        "style": "attack",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 31,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 27,
+      "rests": 0,
+      "battles": 4,
+      "rounds": 14,
+      "retreats": 1,
+      "reversals": 1,
+      "maxQuiet": 14,
+      "cards": {
+        "red": 1,
+        "black": 0
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "full",
+        "seed": 2148905,
+        "variant": 1,
+        "style": "spread",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 119,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 100,
+      "rests": 1,
+      "battles": 18,
+      "rounds": 65,
+      "retreats": 1,
+      "reversals": 12,
+      "maxQuiet": 18,
+      "cards": {
+        "red": 6,
+        "black": 6
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "full",
+        "seed": 2148905,
+        "variant": 1,
+        "style": "attack",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 232,
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "moves": 205,
+      "rests": 4,
+      "battles": 23,
+      "rounds": 81,
+      "retreats": 3,
+      "reversals": 38,
+      "maxQuiet": 50,
+      "cards": {
+        "red": 8,
+        "black": 4
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "full",
+        "seed": 2148905,
+        "variant": 1,
+        "style": "spread",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 121,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 100,
+      "rests": 1,
+      "battles": 20,
+      "rounds": 69,
+      "retreats": 2,
+      "reversals": 12,
+      "maxQuiet": 17,
+      "cards": {
+        "red": 5,
+        "black": 4
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "full",
+        "seed": 2148905,
+        "variant": 1,
+        "style": "attack",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 95,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 81,
+      "rests": 1,
+      "battles": 13,
+      "rounds": 47,
+      "retreats": 0,
+      "reversals": 9,
+      "maxQuiet": 18,
+      "cards": {
+        "red": 2,
+        "black": 3
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "full",
+        "seed": 2148906,
+        "variant": 2,
+        "style": "spread",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 282,
+      "winner": "draw",
+      "reason": "连续 80 次行动未造成伤害",
+      "moves": 255,
+      "rests": 1,
+      "battles": 26,
+      "rounds": 96,
+      "retreats": 2,
+      "reversals": 55,
+      "maxQuiet": 80,
+      "cards": {
+        "red": 6,
+        "black": 3
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "full",
+        "seed": 2148906,
+        "variant": 2,
+        "style": "attack",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 380,
+      "winner": "draw",
+      "reason": "双方将帅同时阵亡",
+      "moves": 342,
+      "rests": 5,
+      "battles": 33,
+      "rounds": 101,
+      "retreats": 6,
+      "reversals": 63,
+      "maxQuiet": 75,
+      "cards": {
+        "red": 6,
+        "black": 6
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "full",
+        "seed": 2148906,
+        "variant": 2,
+        "style": "spread",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 105,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 83,
+      "rests": 2,
+      "battles": 20,
+      "rounds": 75,
+      "retreats": 2,
+      "reversals": 9,
+      "maxQuiet": 15,
+      "cards": {
+        "red": 4,
+        "black": 5
+      }
+    },
+    {
+      "batch": 2,
+      "input": {
+        "scenario": "full",
+        "seed": 2148906,
+        "variant": 2,
+        "style": "attack",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 159,
+      "winner": "red",
+      "reason": "对方将帅阵亡",
+      "moves": 129,
+      "rests": 2,
+      "battles": 28,
+      "rounds": 83,
+      "retreats": 4,
+      "reversals": 25,
+      "maxQuiet": 23,
+      "cards": {
+        "red": 3,
+        "black": 7
+      }
+    }
+  ],
+  "longCaseAudit": [
+    {
+      "input": {
+        "scenario": "full",
+        "seed": 2128901,
+        "variant": 0,
+        "style": "default",
+        "aSide": "red",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 386,
+      "winner": "draw",
+      "reason": "连续 80 次行动未造成伤害",
+      "lateTurns": 95,
+      "noCapture": 64,
+      "noPositiveCapture": 87,
+      "safeCaptureSkipped": []
+    },
+    {
+      "input": {
+        "scenario": "quick",
+        "seed": 2118901,
+        "variant": 0,
+        "style": "spread",
+        "aSide": "black",
+        "baseline": false,
+        "comparator": "default"
+      },
+      "plies": 295,
+      "winner": "draw",
+      "reason": "连续 80 次行动未造成伤害",
+      "lateTurns": 127,
+      "noCapture": 70,
+      "noPositiveCapture": 114,
+      "safeCaptureSkipped": []
+    }
+  ]
+}
