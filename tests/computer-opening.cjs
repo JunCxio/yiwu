@@ -1,5 +1,5 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict'),path=require('node:path');
-const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8'),box={};
+const html=fs.readFileSync(process.argv[2]||path.join(__dirname,'..','index.html'),'utf8'),box={};
 vm.createContext(box);
 for(const script of [...html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].slice(0,2))vm.runInContext(script[1],box);
 const E=box.Yiwu,C=box.YiwuComputer;
@@ -48,6 +48,40 @@ test('标准电脑首轮选招落实已确认的存活击倒，练习电脑保�
     assert(safe.length);assert(C.combatPlan(s,side).every(x=>safe.includes(x.id)));
     assert(C.practicePlan(s,side).some(x=>!safe.includes(x.id)));
   }
+});
+test('基础招式已能以相同损血吃子时保留培养牌，红黑进守一致',()=>{
+  for(const rotated of [false,true])for(const defending of [false,true]){
+    const s=scene(defending?1:18,defending?18:1,'rook','rook'),a=E.get(s,'a'),d=E.get(s,'d'),mine=defending?d:a,enemy=defending?a:d;
+    const card=defending?'rook_lock':'rook_crush',base=defending?'break':'strike';mine.learned=[card];
+    if(rotated){s.turn='black';for(const p of s.pieces){p.side=E.OTHER[p.side];p.x=8-p.x;p.y=9-p.y;}}
+    E.move(s,a.id,d.x,d.y);const before=JSON.stringify(s);
+    for(const reply of C.choices(s,enemy,s.duel)){
+      const outcomes=[base,card].map(id=>{const next=plain(s);E.resolve(next,defending?reply:id,defending?id:reply);return next;});
+      assert(outcomes.every(n=>!E.get(n,enemy.id)&&E.get(n,mine.id)?.hp>0&&n.phase==='board'));
+      assert.equal(E.get(outcomes[0],mine.id).hp,E.get(outcomes[1],mine.id).hp);
+      assert.deepEqual(plain(E.get(outcomes[0],mine.id).exhausted),[]);assert.deepEqual(plain(E.get(outcomes[1],mine.id).exhausted),[card]);
+    }
+    const plan=C.combatPlan(s,mine.side);assert(!plan.some(x=>x.id===card),'不应浪费与基础招式结算相同的培养牌');
+    assert(plan.some(x=>x.id===base));assert(Math.abs(plan.reduce((n,x)=>n+x.weight,0)-1)<1e-9);
+    assert(C.practicePlan(s,mine.side).some(x=>x.id===card));assert.equal(JSON.stringify(s),before);
+  }
+});
+test('培养牌能减少损血或是唯一存活吃子选择时仍保留',()=>{
+  for(const hp of [5,18]){
+    const s=scene(hp,2,'horse'),a=E.get(s,'a'),d=E.get(s,'d');a.x=3;a.y=6;a.learned=['horse_evade'];
+    E.move(s,a.id,d.x,d.y);const plan=C.combatPlan(s,a.side);assert(plan.some(x=>x.id==='horse_evade'&&x.weight>0));
+    const good=plain(s),base=plain(s);E.resolve(good,'horse_evade','strike');E.resolve(base,'break','strike');
+    assert(E.get(good,a.id)?.hp>0);assert((E.get(good,a.id)?.hp||0)>(E.get(base,a.id)?.hp||0));
+  }
+});
+test('基础招式会触发重复判和时不为省牌丢弃不同结果',()=>{
+  const s=scene(18,1),a=E.get(s,'a'),d=E.get(s,'d');a.learned=['rook_crush'];E.move(s,a.id,d.x,d.y);
+  for(const base of ['strike','break'])for(const reply of C.choices(s,d,s.duel)){
+    const next=plain(s);E.resolve(next,base,reply);s.repetitions[E.key(next)]=E.DRAW.repetitions-1;
+  }
+  const before=JSON.stringify(s),card=plain(s),base=plain(s);E.resolve(card,'rook_crush','strike');E.resolve(base,'strike','strike');
+  assert.equal(card.phase,'board');assert.equal(base.winner,'draw');assert(C.combatPlan(s,a.side).some(x=>x.id==='rook_crush'&&x.weight>0));
+  assert.equal(JSON.stringify(s),before);
 });
 test('同时阵亡不标作存活击倒，确定结束对局仍优先',()=>{
   const s=scene(1,1),a=E.get(s,'a'),d=E.get(s,'d');assert.equal(C.battleOutlook(s,E.context(s,a,d)).finishes.length,0);
