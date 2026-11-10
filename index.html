@@ -133,7 +133,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.87 · 交战结束时保留等效培养牌</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.88 · 选招建议补齐普通对局结果说明</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -742,9 +742,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.87',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.88',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.87-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.88-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -1515,7 +1515,7 @@ globalThis.YiwuComputer = (() => {
     if(followUp.length)advice.risks.push('交战后将帅漏防风险：对手本轮用「'+followUp.join('、')+'」时，交战结束后，对手下一次行动存在可在武斗两轮内确保击倒己方将帅的进攻。');
     const card=E.BASE[id]||E.CARDS[id],rows=C.choices(s,enemy,ctx).map(other=>{
       const r=E.roundDamage(ctx,isA?id:other,isA?other:id);
-      const end=E.CHALLENGES[s.scenario]?C.combatOutcome(s,ctx,isA?id:other,isA?other:id):null;
+      const end=C.combatOutcome(s,ctx,isA?id:other,isA?other:id);
       const loss=isA?r.toA:r.toD,damage=isA?r.toD:r.toA;
       return {name:(E.BASE[other]||E.CARDS[other]).name,loss,damage,force:ctx.round===6||loss>=who.hp||damage>=enemy.hp?0:isA?r.forceAfterA:r.forceAfterD,loses:r.outcome===(isA?'d':'a'),end};
     });
@@ -1526,7 +1526,7 @@ globalThis.YiwuComputer = (() => {
     const countered=rows.filter(r=>r.loses),dead=rows.filter(r=>r.loss>=who.hp),mutual=dead.filter(r=>r.damage>=enemy.hp);
     advice.reasons.push('面对全部合法回应，本轮可造成 '+range(rows.map(r=>Math.min(enemy.hp,r.damage)))+' 点伤害，自身损失 '+range(rows.map(r=>Math.min(who.hp,r.loss)))+' 点生命。');
     if(rows.every(r=>r.damage>=enemy.hp))advice.reasons.push('对手的所有合法回应都会使其在本轮阵亡；仍需同时结算自身受伤。');
-    if(rows.every(r=>r.end?.winner===who.side))advice.reasons.push('面对对手全部合法招式，本轮结算都会'+(who.side==='red'?'完成本关目标。':'结束挑战，黑方获胜。'));
+    if(rows.every(r=>r.end?.winner===who.side))advice.reasons.push('面对对手全部合法招式，'+(E.CHALLENGES[s.scenario]?'本轮结算都会'+(who.side==='red'?'完成本关目标。':'结束挑战，黑方获胜。'):'本轮结算后'+E.SIDE[who.side]+'获胜。'));
     const losses=rows.filter(r=>r.end?.winner===E.OTHER[who.side]),draws=rows.filter(r=>r.end?.winner==='draw');
     if(losses.length)advice.risks.push('对手用「'+losses.map(r=>r.name).join('、')+'」时，本轮会直接判负。'+[...new Set(losses.map(r=>r.end.reason))].join('；'));
     if(draws.length)advice.risks.push('对手用「'+draws.map(r=>r.name).join('、')+'」时，本轮会直接判和。'+[...new Set(draws.map(r=>r.end.reason))].join('；'));

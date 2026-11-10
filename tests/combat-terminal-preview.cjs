@@ -4,7 +4,8 @@ for(const script of scripts.slice(0,2))vm.runInContext(script,box);
 const forecast=scripts[2].match(/  function combatForecastHTML\([\s\S]*?\n  }/)[0];
 const replies=scripts[2].match(/  function combatRepliesHTML\([\s\S]*?\n  }/)[0],escape=scripts[2].match(/,esc=([^\n]+);/)[1];
 const followUp=scripts[2].match(/  function combatFollowUpRisk\([\s\S]*?\n  }/)[0];
-vm.runInContext('const E=Yiwu,C=YiwuComputer,esc='+escape+';let s,lesson=null;'+forecast+'\n'+replies+'\n'+followUp,box);
+const advice=scripts[2].match(/  function combatAdvice\([\s\S]*?\n  }/)[0];
+vm.runInContext('const E=Yiwu,C=YiwuComputer,esc='+escape+';let s,lesson=null;'+forecast+'\n'+replies+'\n'+followUp+'\n'+advice,box);
 vm.runInContext('Object.defineProperty(globalThis,"fightUI",{get(){throw new Error("不得读取暗招");}});',box);
 const E=box.Yiwu,C=box.YiwuComputer,copy=s=>JSON.parse(JSON.stringify(s));let checks=0,settlements=0;
 function test(name,run){run();checks++;console.log('通过：'+name);}
@@ -32,6 +33,14 @@ function verify(state,who,id){
   assert.deepEqual(actual,expected);
   if(expected.size){assert(details.includes('本轮整局结果'));assert(details.includes('不预知暗招'));assert.equal(details.includes('未列出的回应本轮不会直接结束本局。'),winners.includes(null));assert.equal(details.includes('challenge-check risk'),winners.includes(E.OTHER[who.side]));}
   else assert.equal(details,'');
+  const recommendation=vm.runInContext('combatAdvice(E.get(s,whoId),choice)',box),risks=new Map();
+  for(const text of recommendation.risks){
+    const match=text.match(/^对手用「([^」]+)」时，本轮会直接判(负|和)。(.+)$/);
+    if(match)for(const name of match[1].split('、')){assert(!risks.has(name));risks.set(name,{title:match[2]==='和'?'本局判和':E.SIDE[E.OTHER[who.side]]+'获胜',reason:match[3]});}
+  }
+  assert.deepEqual(risks,new Map([...expected].filter(([,outcome])=>outcome.title!==E.SIDE[who.side]+'获胜')),'选招建议的即时判负、判和回应与原因必须对应真实结算');
+  assert.equal(recommendation.reasons.includes('面对对手全部合法招式，本轮结算后'+E.SIDE[who.side]+'获胜。'),winners.every(winner=>winner===who.side));
+  assert(!recommendation.reasons.join(' ').includes('完成本关目标'));assert(!recommendation.reasons.join(' ').includes('结束挑战'));
   assert.equal(JSON.stringify(state),before);return {h,details};
 }
 test('普通将帅交战在锁定前区分整局获胜、判负和同时阵亡判和',()=>{
