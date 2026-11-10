@@ -132,7 +132,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.70 · 武斗焦点衔接</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.71 · 默认配牌对称</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -367,11 +367,12 @@ globalThis.Yiwu = (() => {
     require(s.budget[p.side]>0,'该方培养点已用完');require(p.learned.length<2,'每枚棋子最多学习两张招式');
     p.learned.push(cardId);s.budget[p.side]--;
   }
-  function auto(s,side){
+  // 旧 auto 命令保持原分配顺序，新界面显式启用旋转对应的配牌。
+  function auto(s,side,mirrored=false){
     require(s.phase==='setup'&&SIDE[side],'当前不能配牌');
     const ps=s.pieces.filter(p=>p.side===side);ps.forEach(p=>{p.learned=[];p.exhausted=[];});s.budget[side]=s.points;
     const priority=['rook','horse','cannon','guard','elephant','pawn'];
-    const sorted=ps.filter(p=>p.kind!=='king').sort((a,b)=>priority.indexOf(a.kind)-priority.indexOf(b.kind));
+    const sorted=ps.filter(p=>p.kind!=='king').sort((a,b)=>priority.indexOf(a.kind)-priority.indexOf(b.kind)||(mirrored?(side==='red'?a.x-b.x:b.x-a.x):0));
     sorted.slice(0,s.points).forEach((p,i)=>{const ids=Object.keys(CARDS).filter(k=>CARDS[k].kind===p.kind);p.learned=[ids[i%ids.length]];s.budget[side]--;});
   }
   function start(s){require(s.phase==='setup','对局已开始');require(s.budget.red===0&&s.budget.black===0,'双方都需用完 '+s.points+' 点培养');s.phase='board';log(s,'对局开始：红方先行，招式和伤势跨战斗保留。');remember(s);}
@@ -674,17 +675,20 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.70',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.71',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.70-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.71-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
   }
   let commands=[],observedSave=null,lastGoodSave=null,saveBlocked='',saveError='',recoveryNote='',queuedSave=null,savePending=0,saveGeneration=0;
   for(const name of Object.keys(COMMAND_LENGTH))E[name]=(...args)=>{
-    const result=Yiwu[name](...args);
-    if(name==='create')commands=[['create',...args]];else commands.push([name,...args.slice(1)]);
+    const previous=name==='auto'?args[0].pieces.filter(p=>p.side===args[1]).flatMap(p=>p.learned.map(id=>['learn',p.id,id])):null;
+    const result=name==='auto'?Yiwu.auto(args[0],args[1],true):Yiwu[name](...args);
+    if(name==='create')commands=[['create',...args]];
+    else if(name==='auto')commands.push(...previous,...args[0].pieces.filter(p=>p.side===args[1]).flatMap(p=>p.learned.map(id=>['learn',p.id,id])));
+    else commands.push([name,...args.slice(1)]);
     return result;
   };
   function decodeSave(raw){

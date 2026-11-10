@@ -30,6 +30,8 @@ function page(saved = storage()) {
     cell: (x, y) => node('grid').handlers.click({target: {closest: () => ({dataset: {x, y}})}}),
     pick: choice => node('fight-content').handlers.click({target: {closest: () => ({dataset: {choice}, disabled: false})}}),
     fight: fight => node('fight-content').handlers.click({target: {closest: () => ({dataset: {fight}, disabled: false})}}),
+    learn: learn => document.handlers.click({target: {closest: selector => selector === '[data-learn]' ? {dataset: {learn}} : null}}),
+    setupSide: setupSide => document.handlers.click({target: {closest: selector => selector === '[data-setup-side]' ? {dataset: {setupSide}} : null}}),
     action: action => document.handlers.click({target: {closest: selector => selector === '[data-action]' ? {dataset: {action}} : null}})};
 }
 function finished(won = true) {
@@ -703,4 +705,68 @@ function retreatReady() {
   assert.equal(JSON.stringify(p.ui.state), before); assert.equal(p.ui.fight.computerChoice, locked);
   assert.deepEqual(JSON.parse(p.saved.getItem('yiwu.autosave')).commands, commands);
 }
-console.log('残局流程、走棋反馈与武斗确认：38 项检查通过；教学键盘入口与续局：2 组、武斗滚动：3 组、武斗焦点：3 组检查通过。');
+function mirroredSetup(state) {
+  for (const p of state.pieces.filter(p => p.side === 'red')) {
+    const other = state.pieces.find(q => q.side === 'black' && q.kind === p.kind && q.x === 8 - p.x && q.y === 9 - p.y);
+    assert(other, '双方站位旋转对应');
+    assert.deepEqual([...p.learned], [...other.learned], '旋转对应的棋子应获得相同默认牌：' + p.id);
+  }
+  for (const side of ['red', 'black']) {
+    assert.equal(state.budget[side], 0);
+    assert.equal(state.pieces.filter(p => p.side === side).reduce((n, p) => n + p.learned.length, 0), state.points);
+  }
+}
+{
+  for (const mode of ['full', 'quick']) {
+    const p = page(); p.ui.init(mode); mirroredSetup(p.ui.state);
+    const expected = JSON.stringify(p.ui.state), saved = JSON.parse(p.saved.getItem('yiwu.autosave'));
+    assert(saved.commands.slice(1).every(c => c[0] === 'learn'), '新配牌记录明确的棋子与牌');
+    const restored = page(p.saved); assert.equal(JSON.stringify(restored.ui.state), expected);
+    restored.node('resume').onclick(); restored.action('start');
+    assert.equal(restored.ui.state.phase, 'board');
+    const playing = JSON.stringify(restored.ui.state);
+    assert.equal(JSON.stringify(page(restored.saved).ui.state), playing, '进入对局后仍可准确续局');
+    const shuffled = p.E.create(mode); shuffled.pieces.reverse();
+    p.E.auto(shuffled, 'red', true); p.E.auto(shuffled, 'black', true); mirroredSetup(shuffled);
+    for (const piece of shuffled.pieces) assert.deepEqual([...piece.learned], [...p.E.get(p.ui.state, piece.id).learned], '配牌不依赖棋子数组顺序');
+  }
+}
+{
+  for (const side of ['red', 'black']) {
+    const p = page(); p.node('opponent').value = 'local'; p.ui.init('full'); p.setupSide(side);
+    const army = p.ui.state.pieces.filter(piece => piece.side === side), rook = army.find(piece => piece.kind === 'rook'), horse = army.find(piece => piece.kind === 'horse');
+    const other = JSON.stringify(p.ui.state.pieces.filter(piece => piece.side !== side));
+    p.cell(horse.x, horse.y); p.learn(horse.learned[0]);
+    p.cell(rook.x, rook.y); const extra = Object.keys(p.E.CARDS).find(id => p.E.CARDS[id].kind === 'rook' && !rook.learned.includes(id)); p.learn(extra);
+    assert.equal(rook.learned.length, 2); assert.equal(p.ui.state.budget[side], 0);
+    p.action('auto'); mirroredSetup(p.ui.state);
+    assert.equal(JSON.stringify(p.ui.state.pieces.filter(piece => piece.side !== side)), other, '自动重配只修改所选一方');
+    const expected = JSON.stringify(p.ui.state); assert.equal(JSON.stringify(page(p.saved).ui.state), expected);
+    p.action('auto'); assert.equal(JSON.stringify(p.ui.state), expected);
+    assert.equal(JSON.stringify(page(p.saved).ui.state), expected, '重复重配的命令仍能重放');
+  }
+}
+{
+  const p = page(), expected = p.E.create('full');
+  const original = [['rook_0', 'rook_crush'], ['rook_8', 'rook_hold'], ['horse_1', 'horse_turn'], ['horse_7', 'horse_join'],
+    ['cannon_1', 'cannon_hold'], ['cannon_7', 'cannon_pressure'], ['guard_3', 'guard_palace'], ['guard_5', 'guard_king'],
+    ['elephant_2', 'elephant_store'], ['elephant_6', 'elephant_hold'], ['pawn_0', 'pawn_advance'], ['pawn_2', 'pawn_grit']];
+  for (const side of ['red', 'black']) for (const [id, card] of original) p.E.learn(expected, side + '_' + id, card);
+  const commands = [['create', 'full'], ['auto', 'red'], ['auto', 'black']];
+  const saved = storage(), ui = {opponent: 'local', difficulty: 'standard', selected: null, preview: null, setupSide: 'red', focusIndex: 85, lesson: null, fight: null};
+  for (const command of [null, ['learn', 'black_rook_0', 'rook_crush'], ['learn', 'black_rook_8', 'rook_lock'], ['start'], ['move', 'red_pawn_0', 0, 5]]) {
+    if (command) {commands.push(command); p.E[command[0]](expected, ...command.slice(1));}
+    const raw = JSON.stringify({version: 1, commands, ui}); saved.setItem('yiwu.autosave', raw);
+    const restored = page(saved); assert.equal(JSON.stringify(restored.ui.state), JSON.stringify(expected), '旧自动配牌及后续操作原样恢复');
+    restored.node('resume').onclick(); assert.deepEqual(JSON.parse(saved.getItem('yiwu.autosave')).commands, commands);
+    if (!command) {
+      restored.setupSide('black'); restored.action('auto'); mirroredSetup(restored.ui.state);
+      assert.equal(JSON.stringify(page(saved).ui.state), JSON.stringify(restored.ui.state), '旧自动命令与新具体配牌混合后仍可续局');
+    }
+  }
+  for (const invalid of [['auto', 'other'], ['auto', 'red', true], ['auto', '__proto__']]) {
+    const corrupt = storage(), raw = JSON.stringify({version: 1, commands: [['create', 'full'], invalid], ui}); corrupt.setItem('yiwu.autosave', raw);
+    const rejected = page(corrupt); assert.equal(rejected.ui.state, undefined); assert.equal(corrupt.getItem('yiwu.autosave'), raw);
+  }
+}
+console.log('残局流程、走棋反馈与武斗确认：38 项检查通过；教学键盘入口与续局：2 组、武斗滚动：3 组、武斗焦点：3 组、默认配牌与旧续局：3 组检查通过。');
