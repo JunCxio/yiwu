@@ -769,4 +769,14 @@ function mirroredSetup(state) {
     const rejected = page(corrupt); assert.equal(rejected.ui.state, undefined); assert.equal(corrupt.getItem('yiwu.autosave'), raw);
   }
 }
-console.log('残局流程、走棋反馈与武斗确认：38 项检查通过；教学键盘入口与续局：2 组、武斗滚动：3 组、武斗焦点：3 组、默认配牌与旧续局：3 组检查通过。');
+{
+  const fixture=JSON.parse(fs.readFileSync(path.join(__dirname,'computer-two-round-fixture.json'),'utf8')),saved=storage();
+  saved.setItem('yiwu.autosave',JSON.stringify({version:1,commands:fixture.commands,ui:{opponent:'local',difficulty:'standard',selected:null,preview:null,setupSide:'red',focusIndex:5,lesson:null,fight:null}}));
+  const p=page(saved);p.node('resume').onclick();const before=JSON.stringify(p.ui.state);
+  for(let i=0;i<3;i++){
+    p.action('hint');p.cell(5,8);assert(p.node('preview-content').innerHTML.includes('两轮内胜局判断'));p.action('cancel-preview');
+    assert.deepEqual(JSON.parse(saved.getItem('yiwu.autosave')).commands,fixture.commands,'查看提示和预览不能把推演写入操作记录');
+    assert.equal(JSON.stringify(p.ui.state),before);assert.equal(JSON.stringify(page(saved).ui.state),before,'刷新不能恢复推演出的虚构交战');
+  }
+}
+console.log('残局流程、走棋反馈与武斗确认：38 项检查通过；教学键盘入口与续局：2 组、武斗滚动：3 组、武斗焦点：3 组、默认配牌与旧续局：3 组、两轮预览续局隔离：1 组检查通过。');

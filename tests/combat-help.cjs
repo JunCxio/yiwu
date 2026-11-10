@@ -421,4 +421,14 @@ for(const ending of ['healthy','win','draw']){
   assert.equal(JSON.stringify(s),before);
 }
 
-console.log('配牌条件、支援、本轮生命预估与残局回应、吃子漏防、兵卒底线、行动终局与落点首轮风险：25 组检查通过。');
+{
+  const fixture=JSON.parse(fs.readFileSync(path.join(__dirname,'computer-two-round-fixture.json'),'utf8'));let s;
+  for(const [op,...args]of fixture.commands){if(op==='create')s=E.create(...args);else E[op](s,...args);}
+  const before=JSON.stringify(s);box.state=s;
+  const preview=vm.runInContext('s=state;selected="black_king_0";preview="red_king_0";previewHTML()',box);
+  assert(preview.includes('两轮内胜局判断'));assert(preview.includes('可确保至迟下一轮获胜'));
+  assert(preview.includes('按揭示后的新状态选择下一轮必胜招式'));assert(preview.includes('上述两轮胜局判断已计入支援影响'));
+  assert(!preview.includes('换一个交战目标'));assert.equal(JSON.stringify(s),before);
+}
+
+console.log('配牌条件、支援、本轮生命预估与残局回应、吃子漏防、兵卒底线、行动终局、落点首轮风险与两轮胜局预览：26 组检查通过。');
