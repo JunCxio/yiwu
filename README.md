@@ -1,8 +1,10 @@
 # 弈武
 
-象棋走位与卡牌武斗结合的二维回合制游戏。当前版本为 **0.6.73 开发测试版**，欢迎试玩并反馈。
+象棋走位与卡牌武斗结合的二维回合制游戏。当前版本为 **0.6.74 开发测试版**，欢迎试玩并反馈。
 
 **[直接试玩](https://juncxio.github.io/yiwu/)** · **[提交试玩反馈](https://github.com/JunCxio/yiwu/issues/new?template=feedback.md)**
+
+选招说明与建议现在区分轮内气势和离场后的气势：第六轮或提前击倒任一方时，武斗结束，双方气势归零；攻击招式仍会消耗现有气势。伤害、培养牌和电脑策略没有调整。
 
 标准电脑走棋现在会优先抓住进攻将帅的两轮确定胜局，交战预览也会列出所需首招，并提醒下一轮根据揭示后的状态重新选招。只检查两轮及全部公开合法回应，不读取暗招；普通交战仍不保证获胜。
 
@@ -141,5 +143,7 @@ python -m http.server 8000
 然后访问 `http://localhost:8000/`。
 
 已安装 Node.js 时，可运行 `node tests/computer-opening.cjs` 检查首轮判断及电脑决策，运行 `node tests/computer-safety.cjs` 检查将帅安全与终局判断，运行 `node tests/computer-retreat.cjs` 检查撤回的直接胜负与判和，运行 `node tests/computer-combat.cjs` 检查普通武斗终局评分与将帅必败招式排除，运行 `node tests/computer-state.cjs` 检查终局预演的完整状态与原局隔离，运行 `node tests/computer-two-round.cjs` 检查两轮将帅取胜、培养耗牌与提示边界，运行 `node tests/combat-help.cjs` 检查配牌条件、支援、吃子漏防与兵卒底线说明，运行 `node tests/challenge-flow.cjs` 检查残局目标、行动后果、切换与续局，运行 `node tests/piece-panel.cjs` 检查棋子招式分组与配牌、整备入口，均不需要安装依赖。
+
+气势预估可运行 `node tests/combat-force-preview.cjs` 检查，覆盖末轮、提前结束、培养与削势，并逐项对照真实结算。
 
 教学选招推演可运行 `node tests/tutorial-preview.cjs` 检查，覆盖固定教学结算、查看不改状态，以及正式对局不读取已锁定暗招。
