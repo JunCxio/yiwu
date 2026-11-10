@@ -8,7 +8,7 @@ const scripts = [...html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].map(m =
 const box = vm.createContext({});
 vm.runInContext(scripts[0], box);
 vm.runInContext(scripts[1], box);
-const helpers = ['cardUnavailable', 'supportDetailsHTML', 'combatForecastHTML', 'combatRepliesHTML', 'openingAdvice', 'pawnEndRankRisk', 'firstRoundLossRisk', 'previewBoardAction', 'actionOutcomeRisk', 'boardAdvice', 'challengeCombatHTML', 'previewHTML'].map(name => {
+const helpers = ['cardUnavailable', 'supportDetailsHTML', 'combatForecastHTML', 'combatRepliesHTML', 'combatFollowUpRisk', 'openingAdvice', 'pawnEndRankRisk', 'firstRoundLossRisk', 'previewBoardAction', 'actionOutcomeRisk', 'boardAdvice', 'challengeCombatHTML', 'previewHTML'].map(name => {
   const source = scripts[2].match(new RegExp('  function ' + name + '\\([\\s\\S]*?\\n  \\}'));
   assert(source, '缺少界面函数：' + name);
   return source[0];

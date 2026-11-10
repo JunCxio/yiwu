@@ -3,7 +3,8 @@ const html=fs.readFileSync(process.argv[2]||path.join(__dirname,'..','index.html
 for(const script of scripts.slice(0,2))vm.runInContext(script,box);
 const forecast=scripts[2].match(/  function combatForecastHTML\([\s\S]*?\n  }/)[0];
 const replies=scripts[2].match(/  function combatRepliesHTML\([\s\S]*?\n  }/)[0],escape=scripts[2].match(/,esc=([^\n]+);/)[1];
-vm.runInContext('const E=Yiwu,C=YiwuComputer,esc='+escape+';let s,lesson=null;'+forecast+'\n'+replies,box);
+const followUp=scripts[2].match(/  function combatFollowUpRisk\([\s\S]*?\n  }/)[0];
+vm.runInContext('const E=Yiwu,C=YiwuComputer,esc='+escape+';let s,lesson=null;'+forecast+'\n'+replies+'\n'+followUp,box);
 vm.runInContext('Object.defineProperty(globalThis,"fightUI",{get(){throw new Error("不得读取暗招");}});',box);
 const E=box.Yiwu,C=box.YiwuComputer,copy=s=>JSON.parse(JSON.stringify(s));let checks=0,settlements=0;
 function test(name,run){run();checks++;console.log('通过：'+name);}

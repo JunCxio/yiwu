@@ -1,7 +1,7 @@
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
 const html=fs.readFileSync(process.argv[2]||path.join(__dirname,'..','index.html'),'utf8'),scripts=[...html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].map(m=>m[1]),box=vm.createContext({});
 for(const script of scripts.slice(0,2))vm.runInContext(script,box);
-const helpers=['combatAdvice','reviewHTML','combatRepliesHTML'].map(name=>scripts[2].match(new RegExp('  function '+name+'\\([\\s\\S]*?\\n  \\}'))[0]),escape=scripts[2].match(/,esc=([^\n]+);/)[1];
+const helpers=['combatAdvice','reviewHTML','combatRepliesHTML','combatFollowUpRisk'].map(name=>scripts[2].match(new RegExp('  function '+name+'\\([\\s\\S]*?\\n  \\}'))[0]),escape=scripts[2].match(/,esc=([^\n]+);/)[1];
 vm.runInContext('const E=Yiwu,C=YiwuComputer,esc='+escape+';let s,lesson=null,fightUI;'+helpers.join('\n'),box);
 const E=box.Yiwu,C=box.YiwuComputer,copy=s=>JSON.parse(JSON.stringify(s));let checks=0,fixtures=0,settlements=0;
 function test(name,run){run();checks++;console.log('通过：'+name);}

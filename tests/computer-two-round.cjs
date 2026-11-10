@@ -91,7 +91,8 @@ test('残局不使用普通胜局判断，练习电脑保留原有出招分布',
 test('选招建议准确说明两轮保证与下一轮重选，不读取暗招或改写棋局',()=>{
   const source=[...html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)][2][1];
   const advice=source.match(/  function combatAdvice\([\s\S]*?\n  }/)[0];
-  vm.runInContext('const E=Yiwu,C=YiwuComputer;let s;'+advice,box);
+  const followUp=source.match(/  function combatFollowUpRisk\([\s\S]*?\n  }/)[0];
+  vm.runInContext('const E=Yiwu,C=YiwuComputer;let s,lesson=null;'+advice+'\n'+followUp,box);
   vm.runInContext('Object.defineProperty(globalThis,"fightUI",{get(){throw new Error("不得读取暗招");}});',box);
   for(const mirrored of [false,true]){
     const s=battle('king',0,mirrored);E.get(s,s.duel.a).hp=12;E.get(s,s.duel.d).hp=3;s.duel.forceD=2;

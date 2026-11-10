@@ -1,7 +1,7 @@
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
 const html=fs.readFileSync(process.argv[2]||path.join(__dirname,'..','index.html'),'utf8'),scripts=[...html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].map(match=>match[1]);
 const box=vm.createContext({});for(const script of scripts.slice(0,2))vm.runInContext(script,box);
-const helpers=['reviewHTML','combatRepliesHTML'].map(name=>{
+const helpers=['reviewHTML','combatRepliesHTML','combatFollowUpRisk'].map(name=>{
   const source=scripts[2].match(new RegExp('  function '+name+'\\([\\s\\S]*?\\n  \\}'));assert(source);return source[0];
 });
 const escape=scripts[2].match(/,esc=([^\n]+);/);assert(escape);
