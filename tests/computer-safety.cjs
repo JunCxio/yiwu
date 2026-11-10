@@ -116,7 +116,15 @@ test('吃子后仍有阻挡或无法确认击倒将帅时，不误报确定败�
     if(safe==='blocked')s.pieces.push(E.piece('blocker',s.turn,'pawn',4,rotated?3:6));
     else E.get(s,'rk').hp=18;
     const before=JSON.stringify(s),capture=C.rankedActions(s).find(a=>a.id==='rr'&&a.x===target.x&&a.y===target.y);
-    assert(capture.score>-500);assert.equal(C.board(s,()=>0).id,'rr');assert.equal(JSON.stringify(s),before);
+    assert(capture.score>-500);
+    for(const roll of [0,.25,.5,.75,.999999]){
+      const action=C.board(s,()=>roll),result=copy(s);E.move(result,action.id,action.x,action.y);
+      if(result.phase==='board')assert(!C.kingLostNext(result,s.turn));
+      else for(const option of C.combatPlan(result,s.turn))for(const reply of C.choices(result,E.get(result,result.duel.d),result.duel)){
+        const end=copy(result);E.resolve(end,option.id,reply);assert(end.phase!=='duel');assert(!C.kingLostNext(end,s.turn));
+      }
+    }
+    assert.equal(JSON.stringify(s),before);
   }
 });
 function kingCapture(rotated=false,extraSupport=false,defending=false){
