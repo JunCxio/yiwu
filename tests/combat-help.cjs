@@ -370,4 +370,55 @@ for (const commands of outcomeRecords) {
   vm.runInContext('lesson={}', box); assert.equal(box.challengeRepliesHTML(who, 'strike'), '');
   vm.runInContext('lesson=null', box); assert.equal(box.challengeRepliesHTML(who, null), '');
 }
-console.log('配牌条件、支援、本轮生命预估与残局回应、吃子漏防、兵卒底线、行动终局与落点首轮风险：22 组检查通过。');
+function kingFollowUpScene(rotated=false,extraSupport=false){
+  const s=load('attrition');s.repetitions={};
+  s.pieces=[['rk','red','king',4,9,9],['bk','black','king',3,0,18],['target','black','pawn',4,8,1],['br','black','rook',4,5,18],...(extraSupport?[['bh','black','horse',2,7,18]]:[])].map(([id,side,kind,x,y,hp])=>Object.assign(E.piece(id,side,kind,x,y),{hp}));
+  E.get(s,'rk').learned=['king_calm'];E.get(s,'rk').exhausted=['king_calm'];E.get(s,'target').learned=extraSupport?['pawn_grit']:['pawn_advance','pawn_grit'];
+  if(rotated){s.turn='black';for(const p of s.pieces){p.side=E.OTHER[p.side];p.x=8-p.x;p.y=9-p.y;}}
+  return s;
+}
+function actualFollowUpLoss(state,side){
+  if(state.phase!=='board')return false;
+  const king=state.pieces.find(p=>p.side===side&&p.kind==='king');
+  return state.pieces.filter(p=>p.side!==side&&E.canMove(state,p,king.x,king.y)).some(p=>{
+    const next=JSON.parse(JSON.stringify(state));E.move(next,p.id,king.x,king.y);
+    return box.YiwuComputer.choices(next,E.get(next,p.id),next.duel).some(id=>box.YiwuComputer.choices(next,E.get(next,king.id),next.duel).every(reply=>{
+      const end=JSON.parse(JSON.stringify(next));E.resolve(end,id,reply);return end.phase==='ended'&&end.winner===p.side;
+    }));
+  });
+}
+for(const rotated of [false,true]){
+  const s=kingFollowUpScene(rotated),a=E.get(s,'rk'),d=E.get(s,'target'),ctx=E.context(s,a,d),before=JSON.stringify([s,ctx]),out=box.YiwuComputer.battleOutlook(s,ctx),advice=box.openingAdvice(ctx);
+  assert.deepEqual([...out.finishes],['strike','break']);
+  assert(advice.reason.includes('并保住进攻子'));assert(advice.risk.includes('吃子后漏防风险'));
+  assert(advice.risk.includes('「破势」'));assert(advice.risk.includes('「奋进」'));assert(advice.risk.includes('「斩击」在守方全部合法回应后，未发现这种下一手漏防'));
+  const danger=JSON.parse(JSON.stringify(s));E.move(danger,a.id,d.x,d.y);E.resolve(danger,'break','pawn_advance');assert.equal(E.get(danger,a.id).hp,1);assert(!E.get(danger,d.id));assert(actualFollowUpLoss(danger,a.side));
+  for(const reply of box.YiwuComputer.choices(s,d,ctx)){
+    const next=JSON.parse(JSON.stringify(s));E.move(next,a.id,d.x,d.y);E.resolve(next,'strike',reply);assert(!E.get(next,d.id));assert(E.get(next,a.id).hp>0);assert(!actualFollowUpLoss(next,a.side));
+  }
+  assert.equal(JSON.stringify([s,ctx]),before);
+}
+for(const rotated of [false,true]){
+  const s=kingFollowUpScene(rotated,true),a=E.get(s,'rk'),d=E.get(s,'target'),ctx=E.context(s,a,d),before=JSON.stringify(s),out=box.YiwuComputer.battleOutlook(s,ctx),advice=box.openingAdvice(ctx);
+  assert(advice.risk.includes('上述可吃子的招式均存在这样的回应'));assert(!advice.risk.includes('在守方全部合法回应后，未发现'));
+  for(const id of out.finishes)assert(box.YiwuComputer.choices(s,d,ctx).some(reply=>{
+    const next=JSON.parse(JSON.stringify(s));E.move(next,a.id,d.x,d.y);E.resolve(next,id,reply);return actualFollowUpLoss(next,a.side);
+  }));
+  assert.equal(JSON.stringify(s),before);
+}
+for(const ending of ['healthy','win','draw']){
+  const s=kingFollowUpScene(),a=E.get(s,'rk'),d=E.get(s,'target');
+  if(ending==='healthy')a.hp=18;
+  if(ending==='win'){s.pieces=s.pieces.filter(p=>p.id!=='bk');d.kind='king';d.learned=[];}
+  const ctx=E.context(s,a,d),out=box.YiwuComputer.battleOutlook(s,ctx);assert(out.finishes.length);
+  if(ending==='draw')for(const id of out.finishes)for(const reply of box.YiwuComputer.choices(s,d,ctx)){
+    const next=JSON.parse(JSON.stringify(s));E.move(next,a.id,d.x,d.y);E.resolve(next,id,reply);s.repetitions[E.key(next)]=E.DRAW.repetitions-1;
+  }
+  const before=JSON.stringify(s);assert(!box.openingAdvice(ctx).risk);
+  if(ending!=='healthy')for(const id of out.finishes)for(const reply of box.YiwuComputer.choices(s,d,ctx)){
+    const next=JSON.parse(JSON.stringify(s));E.move(next,a.id,d.x,d.y);E.resolve(next,id,reply);assert.equal(next.phase,'ended');assert.equal(next.winner,ending==='draw'?'draw':a.side);
+  }
+  assert.equal(JSON.stringify(s),before);
+}
+
+console.log('配牌条件、支援、本轮生命预估与残局回应、吃子漏防、兵卒底线、行动终局与落点首轮风险：25 组检查通过。');
