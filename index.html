@@ -133,7 +133,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.90 · 优化长局中的电脑选招响应</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.91 · 改善配牌与走棋提示的键盘衔接</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -743,9 +743,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.90',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.91',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.90-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.91-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -1777,7 +1777,8 @@ globalThis.YiwuComputer = (() => {
         const panel=$('detail').querySelector('.advice');panel?.scrollIntoView({block:'start'});panel?.focus({preventScroll:true});return;
       }
       act(()=>{switch(action.dataset.action){case'scout':scoutMode=!scoutMode;movePreview=null;hint=null;cardGuide=null;break;case'confirm-move':if(movePreview){const m=movePreview;chooseCell(m.x,m.y,true);}break;case'cancel-move':movePreview=null;break;case'clear-card-guide':cardGuide=null;break;case'start':E.start(s);selected=null;break;case'auto':E.auto(s,opponent==='computer'?'red':setupSide);break;case'attack':if(!computerTurn())openFight();break;case'cancel-preview':preview=null;break;case'hint':boardHint();break;case'pass':if(!lesson&&!computerTurn()){E.pass(s);hint=null;}break;case'retry':computerError='';break;case'rules':rules.showModal();break;case'new':requestNewGame(s.scenario);break;case'home':showScreen('home');break;case'quick-start':if(lesson?.stage==='complete'){showScreen('home');$('scenario').value='quick';renderHome();$('load').focus();}break;case'lesson-finish':if(lesson?.stage==='support-preview'&&preview==='target'){const ctx=E.context(s,E.get(s,'hero'),E.get(s,'target'));if(E.power(ctx,true)!==4||E.power(ctx,false)!==4)throw new Error('请先完成支援站位');lesson.stage='complete';preview=null;}break;}});
-      if(action.dataset.action==='scout')$('start-wrap').querySelector('[data-action="scout"]')?.focus({preventScroll:true});
+      if(['scout','auto'].includes(action.dataset.action))$('start-wrap').querySelector('[data-action="'+action.dataset.action+'"]')?.focus({preventScroll:true});
+      if(action.dataset.action==='hint')$('notice').querySelector('[data-action="hint-details"]')?.focus();
       if(['cancel-move','confirm-move'].includes(action.dataset.action)){const cell=$('grid').children[focusIndex];(cell&&!cell.disabled?cell:$('back-home')).focus();}
       if(action.dataset.action==='start'&&s.phase==='board')$('grid').children[focusIndex]?.focus();
     }

@@ -816,4 +816,54 @@ function mirroredSetup(state) {
   restored.node('resume').onclick(); assert.equal(restored.active(), restored.node('back-home'));
   assert.equal(JSON.parse(p.saved.getItem('yiwu.autosave')).ui.lesson, 'attack'); assert.equal(restored.timerCount(), 0);
 }
-console.log('残局流程、走棋反馈与武斗确认：38 项检查通过；教学键盘入口与续局：2 组、教学完成衔接：2 组、武斗滚动：3 组、武斗焦点：3 组、默认配牌与旧续局：3 组、两轮预览续局隔离：1 组检查通过。');
+{
+  for (const mode of ['quick', 'full']) for (const team of ['computer', 'red', 'black']) {
+    const p = page(); p.node('opponent').value = team === 'computer' ? 'computer' : 'local'; p.ui.init(mode);
+    if (team === 'black') p.setupSide('black');
+    const side = team === 'black' ? 'black' : 'red', piece = p.ui.state.pieces.find(q => q.side === side && q.learned.length);
+    p.cell(piece.x, piece.y); p.learn(piece.learned[0]);
+    assert.equal(p.ui.state.budget[side], 1);
+    const other = JSON.stringify(p.ui.state.pieces.filter(q => q.side !== side)), count = JSON.parse(p.saved.getItem('yiwu.autosave')).commands.length;
+    const cardChanges = p.ui.state.pieces.filter(q => q.side === side).reduce((n, q) => n + q.learned.length, 0) + p.ui.state.points;
+    const button = p.node('replacement-auto');
+    p.node('start-wrap').querySelector = selector => selector === '[data-action="auto"]' ? button : null;
+    p.action('auto');
+    assert.equal(p.active(), button, '分散配牌后聚焦重绘后的原按钮');
+    assert.equal(p.ui.state.budget[side], 0); assert.equal(p.ui.state.phase, 'setup'); assert.equal(p.ui.state.ply, 0);
+    assert.equal(JSON.stringify(p.ui.state.pieces.filter(q => q.side !== side)), other);
+    assert.equal(JSON.parse(p.saved.getItem('yiwu.autosave')).commands.length, count + cardChanges);
+    assert.equal(JSON.stringify(page(p.saved).ui.state), JSON.stringify(p.ui.state));
+    assert.equal(p.timerCount(), 0);
+  }
+}
+{
+  for (const setting of ['computer', 'red', 'black', 'challenge']) {
+    const p = page(); p.node('opponent').value = setting === 'computer' || setting === 'challenge' ? 'computer' : 'local';
+    p.ui.init(setting === 'challenge' ? 'challenge-support' : 'quick');
+    if (setting !== 'challenge') p.action('start');
+    if (setting === 'black') {p.cell(4, 6); p.cell(4, 5); assert.equal(p.ui.state.turn, 'black');}
+    const state = JSON.stringify(p.ui.state), commands = JSON.stringify(JSON.parse(p.saved.getItem('yiwu.autosave')).commands);
+    const button = p.node('hint-details-entry'), panel = p.node('hint-details-panel'); let scrolled = 0;
+    panel.scrollIntoView = options => {assert.equal(options.block, 'start'); scrolled++;};
+    p.node('notice').querySelector = selector => selector === '[data-action="hint-details"]' ? button : null;
+    p.node('detail').querySelector = selector => selector === '.advice' ? panel : null;
+    for (let i = 0; i < 2; i++) {
+      p.action('hint'); assert.equal(p.active(), button, '提示后聚焦查看理由与风险入口');
+      assert(p.node('notice').innerHTML.includes('data-action="hint-details"'));
+      p.action('hint-details'); assert.equal(p.active(), panel); assert.equal(scrolled, i + 1);
+      assert.equal(JSON.stringify(p.ui.state), state); assert.equal(JSON.stringify(JSON.parse(p.saved.getItem('yiwu.autosave')).commands), commands);
+      const restored = page(p.saved); restored.node('resume').onclick();
+      assert.equal(JSON.stringify(restored.ui.state), state); assert(!restored.node('notice').innerHTML.includes('data-action="hint-details"'));
+    }
+    assert.equal(p.timerCount(), 0);
+  }
+}
+{
+  const p = page(); p.ui.init('quick'); p.action('start');
+  const button = p.node('replacement-scout');
+  p.node('start-wrap').querySelector = selector => selector === '[data-action="scout"]' ? button : null;
+  const before = JSON.stringify(p.ui.state), commands = JSON.stringify(JSON.parse(p.saved.getItem('yiwu.autosave')).commands);
+  p.action('scout'); assert.equal(p.active(), button); p.action('scout'); assert.equal(p.active(), button);
+  assert.equal(JSON.stringify(p.ui.state), before); assert.equal(JSON.stringify(JSON.parse(p.saved.getItem('yiwu.autosave')).commands), commands);
+}
+console.log('残局流程、走棋反馈与武斗确认：38 项检查通过；教学键盘入口与续局：2 组、教学完成衔接：2 组、武斗滚动：3 组、武斗焦点：3 组、默认配牌与旧续局：3 组、两轮预览续局隔离：1 组、棋盘操作焦点：3 组检查通过。');
