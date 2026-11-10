@@ -133,7 +133,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.88 · 选招建议补齐普通对局结果说明</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.89 · 教学完成后可查看总结并开始快速局</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -742,9 +742,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.88',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.89',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.88-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.89-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -910,8 +910,8 @@ globalThis.YiwuComputer = (() => {
     if(s){
       const name=Array.from($('scenario').options).find(option=>option.value===(lesson?'tutorial':s.scenario)).textContent;
       const setting=lesson?'固定教学':opponent==='local'?'同机双人':difficulty==='practice'?'练习电脑':'标准电脑';
-      $('resume-info').textContent='已保留：'+name+' · '+setting+' · '+(s.phase==='setup'?'配牌中':s.phase==='ended'?'已结束':s.phase==='duel'?'武斗中':'对局中')+'。';
-      $('resume').textContent=s.phase==='ended'?'查看终局':'继续本局';
+      $('resume-info').textContent='已保留：'+name+' · '+setting+' · '+(lesson?(lesson.stage==='complete'?'教学已完成':'学习中'):s.phase==='setup'?'配牌中':s.phase==='ended'?'已结束':s.phase==='duel'?'武斗中':'对局中')+'。';
+      $('resume').textContent=lesson?(lesson.stage==='complete'?'查看教学总结':'继续教学'):s.phase==='ended'?'查看终局':'继续本局';
     }
   }
   function showScreen(next){
@@ -927,7 +927,7 @@ globalThis.YiwuComputer = (() => {
     }
     render();
     if(fightUI){renderFight();fight.showModal();}
-    else if(!previewDialog.open)$(s.phase==='ended'?'endgame-title':'back-home').focus();
+    else if(!previewDialog.open)$(lesson?.stage==='complete'?'lesson-quick-start':s.phase==='ended'?'endgame-title':'back-home').focus();
   }
   function computerTurn(){return screen==='game'&&!lesson&&opponent==='computer'&&s.phase==='board'&&s.turn==='black'&&!fightUI;}
   function scheduleComputer(){
@@ -984,7 +984,7 @@ globalThis.YiwuComputer = (() => {
       retreat:fightUI?.retreatConfirm?'核对伤势、耗尽牌和气势，再点击底部「红方主动撤回」确认；也可返回选招。':'点击底部高亮的「红方主动撤回」，先查看撤回后果。',
       withdrawn:'撤回成功：伤势、耗尽牌保留，气势归零。点击「继续学习支援」。'
     };
-    return `<div class="lesson-copy"><div class="lesson-heading"><span>教学指引 · 第 ${n} / 4 课</span><strong>${title}</strong></div>${compact?'':'<ol class="lesson-progress" aria-label="课程进度">'+['克制','气势','撤回','支援'].map((name,i)=>'<li class="'+(stage==='complete'||i+1<n?'done':i+1===n?'current':'')+'"'+(stage!=='complete'&&i+1===n?' aria-current="step"':'')+'>'+name+'</li>').join('')+'</ol>'}<p>${compact?tasks[stage]||text:text}</p>${compact?'':'<small>固定出招演示：按指引操作。正式对局采用暗选。</small>'}${stage==='complete'?'<button class="primary lesson-target" data-action="quick-start">返回首页，选择快速局</button>':''}</div>`;
+    return `<div class="lesson-copy"><div class="lesson-heading"><span>教学指引 · 第 ${n} / 4 课</span><strong>${title}</strong></div>${compact?'':'<ol class="lesson-progress" aria-label="课程进度">'+['克制','气势','撤回','支援'].map((name,i)=>'<li class="'+(stage==='complete'||i+1<n?'done':i+1===n?'current':'')+'"'+(stage!=='complete'&&i+1===n?' aria-current="step"':'')+'>'+name+'</li>').join('')+'</ol>'}<p>${compact?tasks[stage]||text:text}</p>${compact?'':'<small>固定出招演示：按指引操作。正式对局采用暗选。</small>'}${stage==='complete'?'<button class="primary lesson-target" id="lesson-quick-start" data-action="quick-start">返回首页，选择快速局</button>':''}</div>`;
   }
   function boardRelations(p){
     if(!p||lesson||preview||s.phase!=='board'||computerTurn())return null;
@@ -1354,7 +1354,7 @@ globalThis.YiwuComputer = (() => {
     $('last-action').innerHTML=!lesson&&s.last?`<strong class="${s.last.side}">上一行动 · ${E.SIDE[s.last.side]}${{move:'移动',rest:'整备',battle:'武斗',pass:'受阻'}[s.last.type]}</strong><p>${esc(s.log[0])}</p>`:'';
     if(preview){$('preview-content').innerHTML=previewHTML();if(!previewDialog.open)previewDialog.showModal();}
     else if(previewDialog.open)previewDialog.close();
-    if((boardFocused||previewWasOpen&&!preview)&&!fight.open&&!previewDialog.open)$('grid').children[focusIndex]?.focus();
+    if((boardFocused||previewWasOpen&&!preview)&&!fight.open&&!previewDialog.open){if(lesson?.stage==='complete')$('lesson-quick-start').focus();else $('grid').children[focusIndex]?.focus();}
     scheduleComputer();
     if(!endgameWasVisible&&!lesson&&s.phase==='ended'&&!fightUI)$('endgame-title').focus();
   }

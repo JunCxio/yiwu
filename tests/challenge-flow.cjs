@@ -25,7 +25,7 @@ function page(saved = storage()) {
   const startup = "  showScreen('home');\n})();";
   assert(scripts[2].includes(startup));
   vm.runInContext(scripts[2].replace(startup, "globalThis.ui={init,nextChallenge,beginFight,challengeCombatHTML,actionOutcomeRisk,requestRest,get state(){return s;},get fight(){return fightUI;},get screen(){return screen;},get difficulty(){return difficulty;}};\n" + startup), box);
-  return {ui: box.ui, E: box.Yiwu, node, saved, timerCount: () => timers.size,
+  return {ui: box.ui, E: box.Yiwu, node, saved, active: () => document.activeElement, timerCount: () => timers.size,
     computerMove: action => {box.YiwuComputer.board = () => action; assert(timers.size); const [id, fn] = timers.entries().next().value; timers.delete(id); fn();},
     cell: (x, y) => node('grid').handlers.click({target: {closest: () => ({dataset: {x, y}})}}),
     pick: choice => node('fight-content').handlers.click({target: {closest: () => ({dataset: {choice}, disabled: false})}}),
@@ -779,4 +779,41 @@ function mirroredSetup(state) {
     assert.equal(JSON.stringify(p.ui.state),before);assert.equal(JSON.stringify(page(saved).ui.state),before,'刷新不能恢复推演出的虚构交战');
   }
 }
-console.log('残局流程、走棋反馈与武斗确认：38 项检查通过；教学键盘入口与续局：2 组、武斗滚动：3 组、武斗焦点：3 组、默认配牌与旧续局：3 组、两轮预览续局隔离：1 组检查通过。');
+{
+  const p = page(); p.ui.init('tutorial'); p.cell(4, 4); p.action('attack');
+  p.pick('pawn_grit'); p.fight('commit'); p.fight('next');
+  p.pick('focus'); p.fight('commit'); p.fight('next');
+  p.pick('strike'); p.fight('commit'); p.fight('next');
+  p.fight('retreat'); p.fight('confirm-retreat'); p.fight('next');
+  p.cell(1, 4); p.cell(4, 4); p.action('lesson-finish');
+  const record = JSON.parse(p.saved.getItem('yiwu.autosave')), state = JSON.stringify(p.ui.state);
+  assert.equal(record.ui.lesson, 'complete'); assert(!p.node('preview').open);
+  assert.equal(p.active(), p.node('lesson-quick-start'), '完成教学后，焦点应落在前往快速局的按钮');
+  assert(p.node('lesson').innerHTML.includes('id="lesson-quick-start"'));
+  p.action('quick-start'); assert.equal(p.ui.screen, 'home'); assert.equal(p.node('scenario').value, 'quick');
+  assert(p.node('resume-info').textContent.includes('教学已完成')); assert.equal(p.node('resume').textContent, '查看教学总结');
+  assert.equal(p.active(), p.node('load'));
+  p.node('load').onclick(); assert(p.node('confirm').open);
+  const before = p.saved.getItem('yiwu.autosave'); p.node('cancel-load').onclick();
+  assert.equal(p.saved.getItem('yiwu.autosave'), before); assert.equal(JSON.stringify(p.ui.state), state);
+  p.node('resume').onclick(); assert.equal(p.active(), p.node('lesson-quick-start'));
+  assert.equal(JSON.stringify(p.ui.state), state); assert.equal(p.timerCount(), 0);
+  const restored = page(p.saved);
+  assert(restored.node('resume-info').textContent.includes('教学已完成')); assert.equal(restored.node('resume').textContent, '查看教学总结');
+  restored.node('resume').onclick(); assert.equal(restored.active(), restored.node('lesson-quick-start'));
+  assert.equal(JSON.stringify(restored.ui.state), state);
+  assert.deepEqual(JSON.parse(p.saved.getItem('yiwu.autosave')).commands, record.commands);
+  restored.action('quick-start'); restored.node('load').onclick();
+  assert.equal(JSON.parse(p.saved.getItem('yiwu.autosave')).ui.lesson, 'complete', '确认前保留已完成教学');
+  restored.node('confirm-load').onclick();
+  assert.equal(restored.ui.state.scenario, 'quick'); assert.equal(restored.ui.state.phase, 'setup');
+  assert.equal(JSON.parse(p.saved.getItem('yiwu.autosave')).ui.lesson, null); assert.equal(restored.timerCount(), 0);
+}
+{
+  const p = page(); p.ui.init('tutorial'); p.node('back-home').onclick();
+  assert(p.node('resume-info').textContent.includes('学习中')); assert.equal(p.node('resume').textContent, '继续教学');
+  const restored = page(p.saved); assert.equal(restored.node('resume').textContent, '继续教学');
+  restored.node('resume').onclick(); assert.equal(restored.active(), restored.node('back-home'));
+  assert.equal(JSON.parse(p.saved.getItem('yiwu.autosave')).ui.lesson, 'attack'); assert.equal(restored.timerCount(), 0);
+}
+console.log('残局流程、走棋反馈与武斗确认：38 项检查通过；教学键盘入口与续局：2 组、教学完成衔接：2 组、武斗滚动：3 组、武斗焦点：3 组、默认配牌与旧续局：3 组、两轮预览续局隔离：1 组检查通过。');
