@@ -626,4 +626,31 @@ function retreatReady() {
     assert.equal(restored.timerCount(), 0);
   }
 }
-console.log('残局流程、走棋反馈与武斗确认：38 项检查通过；教学键盘入口与续局：2 组检查通过。');
+{
+  const p = page(); p.ui.init('tactics'); p.ui.beginFight(p.E.get(p.ui.state, 'hero'), p.E.get(p.ui.state, 'target'));
+  const dialog = p.node('fight'), before = JSON.stringify(p.ui.state);
+  dialog.scrollTop = 380; p.pick('guard');
+  assert.equal(dialog.scrollTop, 380); assert.equal(JSON.stringify(p.ui.state), before);
+  dialog.scrollTop = 900; p.fight('commit');
+  assert.equal(p.ui.fight.step, 'result'); assert.equal(dialog.scrollTop, 0, '揭示后从结果顶部开始');
+  dialog.scrollTop = 650; p.fight('next');
+  assert.equal(p.ui.fight.step, 'pickA'); assert.equal(dialog.scrollTop, 0, '下一轮不能停在上一轮底部');
+}
+{
+  const p = page(); p.ui.init('tactics'); p.ui.beginFight(p.E.get(p.ui.state, 'hero'), p.E.get(p.ui.state, 'target'));
+  p.pick('guard'); p.fight('commit'); p.fight('next'); p.pick('guard');
+  const dialog = p.node('fight'), before = JSON.stringify(p.ui.state), commands = JSON.parse(p.saved.getItem('yiwu.autosave')).commands;
+  dialog.scrollTop = 500; p.fight('retreat');
+  assert(p.ui.fight.retreatConfirm); assert.equal(dialog.scrollTop, 0, '撤回确认从后果说明顶部开始');
+  assert.equal(JSON.stringify(p.ui.state), before); assert.deepEqual(JSON.parse(p.saved.getItem('yiwu.autosave')).commands, commands);
+  p.fight('cancel-retreat'); assert(!p.ui.fight.retreatConfirm); assert.equal(p.ui.fight.pending, 'guard');
+  assert.equal(JSON.stringify(p.ui.state), before);
+}
+{
+  const p = page(); p.ui.init('tactics'); p.ui.beginFight(p.E.get(p.ui.state, 'hero'), p.E.get(p.ui.state, 'target'));
+  p.pick('guard'); p.fight('commit'); const before = JSON.stringify(p.ui.state), saved = p.saved.getItem('yiwu.autosave');
+  p.node('fight').scrollTop = 650; p.fight('replay');
+  assert.equal(p.node('fight').scrollTop, 0, '重看出招回到演出顶部');
+  assert.equal(JSON.stringify(p.ui.state), before); assert.equal(p.saved.getItem('yiwu.autosave'), saved);
+}
+console.log('残局流程、走棋反馈与武斗确认：38 项检查通过；教学键盘入口与续局：2 组、武斗滚动：3 组检查通过。');

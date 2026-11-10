@@ -106,6 +106,12 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 @media(min-width:1000px) and (min-height:700px){
   .pick-options{position:sticky;top:3px}
 }
+@media(max-height:500px),(max-width:760px) and (max-height:700px){
+  #fight{overflow-y:auto;overscroll-behavior:contain}
+  #fight>.modal{max-height:none;overflow:visible}
+  .fight-body{flex:none;overflow:visible}
+}
+
 </style>
 </head>
 <body>
@@ -126,7 +132,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.68 · 普通对局结果预估</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.69 · 矮屏武斗显示</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -668,9 +674,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.68',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.69',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.68-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.69-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -1538,7 +1544,7 @@ globalThis.YiwuComputer = (() => {
     }).join('')}</div><div class="damage-history-pair">${order.map(p=>damageBreakdownHTML(p,p===a,r)).join('')}</div></li>`).join('')}</ol></details>`;
   }
   function renderFight(){
-    const active=document.activeElement,focusedChoice=active?.dataset.choice,focusedAction=active?.dataset.fight,previousStep=fight.dataset.step,challengeOpen=$('fight-content').querySelector('details.challenge-check')?.open,bodyScroll=$('fight-content').querySelector('.fight-body')?.scrollTop||0;
+    const active=document.activeElement,focusedChoice=active?.dataset.choice,focusedAction=active?.dataset.fight,previousStep=fight.dataset.step,challengeOpen=$('fight-content').querySelector('details.challenge-check')?.open,bodyScroll=$('fight-content').querySelector('.fight-body')?.scrollTop||0,dialogScroll=fight.scrollTop;
     const ui=fightUI,{a,d,ctx}=ui,round=ui.result?.round||(ui.step==='retreated'?ctx.history.length:ctx.round);
     const selecting=ui.step==='pickA'||ui.step==='handoffA'?a:ui.step==='pickD'||ui.step==='handoffD'?d:null;
     const computerLocked=p=>opponent==='computer'&&p.side==='black'&&['pickA','pickD'].includes(ui.step);
@@ -1589,7 +1595,7 @@ globalThis.YiwuComputer = (() => {
       const sameStep=previousStep===ui.step,selector=sameStep&&focusedChoice?'[data-choice="'+focusedChoice+'"]':sameStep&&focusedAction?'[data-fight="'+(focusedAction==='cancel-retreat'?'retreat':focusedAction)+'"]':null;
       const chosen=$('fight-content').querySelector('.pick-options .chosen:not(:disabled)');
       const btn=(ui.retreatConfirm&&$('fight-content').querySelector('[data-fight="cancel-retreat"]'))||(selector&&$('fight-content').querySelector(selector))||$('fight-content').querySelector('[data-fight="next"]')||chosen||$('fight-content').querySelector('button:not(:disabled):not(.fight-home)');
-      if(btn)btn.focus({preventScroll:true});$('fight-content').querySelector('.fight-body')?.scrollTo(0,sameStep&&!ui.retreatConfirm?bodyScroll:0);
+      if(btn)btn.focus({preventScroll:true});$('fight-content').querySelector('.fight-body')?.scrollTo(0,sameStep&&!ui.retreatConfirm?bodyScroll:0);fight.scrollTop=sameStep&&!ui.retreatConfirm?dialogScroll:0;
       if(!selector&&chosen&&btn===chosen)chosen.scrollIntoView({block:'nearest'});
       if(lesson&&!sameStep)$('fight-content').querySelector('.fight-body .lesson-target')?.scrollIntoView({block:'nearest'});
     });
@@ -1658,7 +1664,7 @@ globalThis.YiwuComputer = (() => {
       if(button.dataset.fight==='replay'){
         if(!['result','retreated'].includes(fightUI.step))return;
         $('combat-scene').outerHTML=combatSceneHTML(true);
-        $('fight-content').querySelector('.fight-body')?.scrollTo(0,0);return;
+        $('fight-content').querySelector('.fight-body')?.scrollTo(0,0);fight.scrollTop=0;return;
       }
       if(['review','public-cards','choices'].includes(button.dataset.fight)){
         if(!['pickA','pickD'].includes(fightUI.step))return;
