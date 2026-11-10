@@ -4,7 +4,7 @@ const scripts = [...html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].map(m =
 const options = [...html.match(/<select id="scenario"[^>]*>([\s\S]*?)<\/select>/)[1].matchAll(/<option value="([^"]+)"[^>]*>([^<]+)<\/option>/g)].map(m => ({value: m[1], textContent: m[2]}));
 function storage() {
   const data = new Map();
-  return {getItem: key => data.get(key) ?? null, setItem: (key, value) => data.set(key, String(value))};
+  return {getItem: key => data.get(key) ?? null, setItem: (key, value) => data.set(key, String(value)), removeItem: key => data.delete(key)};
 }
 function page(saved = storage()) {
   const nodes = new Map();
@@ -19,7 +19,7 @@ function page(saved = storage()) {
   };
   const document = {getElementById: node, querySelector: node, activeElement: null, handlers: {}, addEventListener(type, fn) {this.handlers[type] = fn;}};
   const timers = new Map(); let timerId = 0;
-  const box = vm.createContext({document, localStorage: saved, navigator: {locks: {request(name, fn) {fn(); return Promise.resolve();}}},
+  const box = vm.createContext({document, localStorage: saved, sessionStorage: storage(), navigator: {locks: {request(name, fn) {fn(); return Promise.resolve();}}},
     scrollTo() {}, requestAnimationFrame: fn => fn(), setTimeout(fn) {timers.set(++timerId, fn); return timerId;}, clearTimeout(id) {timers.delete(id);}});
   vm.runInContext(scripts[0], box); vm.runInContext(scripts[1], box);
   const startup = "  showScreen('home');\n})();";

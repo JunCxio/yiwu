@@ -132,7 +132,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.78 · 交战后风险提示</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.79 · 刷新续局保护</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -685,15 +685,15 @@ globalThis.YiwuComputer = (() => {
   };
   const CHALLENGE_MODES=Object.keys(E.CHALLENGES);
   // 规则数值或命令格式变化时，同步提升续局版本。
-  const SAVE_VERSION=1,SAVE_KEY='yiwu.autosave',BACKUP_KEY=SAVE_KEY+'.backup';
+  const SAVE_VERSION=1,SAVE_KEY='yiwu.autosave',BACKUP_KEY=SAVE_KEY+'.backup',PENDING_KEY=SAVE_KEY+'.pending';
   const COMMAND_LENGTH={create:2,learn:3,auto:2,start:1,move:4,rest:3,pass:1,resolve:3,retreat:1};
   function exportRecord(button){
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.78',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.79',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.78-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.79-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -761,12 +761,19 @@ globalThis.YiwuComputer = (() => {
     $('save-status').className=saveBlocked||saveError?'save-warning':'';
     $('home-save-note').className='thin home-save-note'+(saveBlocked||saveError?' save-warning':'');
   }
+  function keepPendingSave(){
+    try{
+      // 写锁尚未执行时也能刷新；其他页面更新过主记录时不得恢复本页旧进度。
+      if(queuedSave&&queuedSave!==observedSave&&!saveBlocked)sessionStorage.setItem(PENDING_KEY,JSON.stringify({previous:observedSave,raw:queuedSave}));
+      else sessionStorage.removeItem(PENDING_KEY);
+    }catch(error){if(queuedSave!==observedSave)saveError=error.message;}
+  }
   function saveProgress(){
     if(commands.length>12000){saveError='本局操作数量超过续局容量';paintSaveStatus();return;}
     if(s&&!saveBlocked){
       const step=fightUI?.step,raw=JSON.stringify({version:SAVE_VERSION,commands,ui:{opponent,difficulty,selected,preview,setupSide,focusIndex,lesson:lesson?.stage||null,fight:fightUI?{step,first:['handoffD','pickD'].includes(step)?fightUI.first:null,pending:['pickA','pickD'].includes(step)?fightUI.pending:null,computerChoice:fightUI.computerChoice}:null}});
-      if(raw!==queuedSave){
-        queuedSave=raw;savePending++;const generation=saveGeneration;
+      if(raw!==queuedSave||saveError&&!savePending){
+        queuedSave=raw;keepPendingSave();savePending++;const generation=saveGeneration;
         try{
           // 同源页面串行写入，检查与写入期间不允许另一页插入保存。
           navigator.locks.request(SAVE_KEY,()=>{
@@ -777,11 +784,12 @@ globalThis.YiwuComputer = (() => {
               else if(raw!==lastGoodSave||current!==raw){
                 if(lastGoodSave)localStorage.setItem(BACKUP_KEY,lastGoodSave);
                 localStorage.setItem(SAVE_KEY,raw);observedSave=raw;lastGoodSave=raw;saveError='';
-              }
-            }catch(error){saveError=error.message;queuedSave=null;}
+              }else saveError='';
+              keepPendingSave();
+            }catch(error){saveError=error.message;}
             finally{savePending--;paintSaveStatus();}
-          }).catch(error=>{savePending--;saveError=error.message;queuedSave=null;paintSaveStatus();});
-        }catch(error){savePending--;saveError=error.message;queuedSave=null;}
+          }).catch(error=>{savePending--;if(generation===saveGeneration)saveError=error.message;paintSaveStatus();});
+        }catch(error){savePending--;saveError=error.message;}
       }
     }
     paintSaveStatus();
@@ -790,17 +798,28 @@ globalThis.YiwuComputer = (() => {
     try{
       observedSave=localStorage.getItem(SAVE_KEY);
       if(observedSave){try{if(JSON.parse(observedSave)?.version!==SAVE_VERSION){saveBlocked='unreadable';return;}}catch{}}
-      const backup=localStorage.getItem(BACKUP_KEY);
-      for(const raw of [observedSave,backup]){
+      const backup=localStorage.getItem(BACKUP_KEY);let pending=null,pendingRecord=null;
+      try{
+        pendingRecord=sessionStorage.getItem(PENDING_KEY);
+        if(pendingRecord){
+          const cached=JSON.parse(pendingRecord);
+          if(cached&&typeof cached.raw==='string'&&(cached.previous===null||typeof cached.previous==='string')){
+            if(cached.raw!==observedSave&&cached.previous===observedSave)pending=cached.raw;
+            else if(cached.raw!==observedSave)recoveryNote='其他页面已更新续局，已载入该页面的最新记录。';
+          }
+        }
+      }catch{}
+      for(const raw of [pending,observedSave,backup]){
         if(!raw)continue;
         try{
           const restored=decodeSave(raw),ui=restored.data.ui;
           s=restored.state;commands=restored.data.commands;fightUI=restored.fight;opponent=ui.opponent;difficulty=ui.difficulty;selected=ui.selected;preview=ui.preview;setupSide=ui.setupSide;focusIndex=ui.focusIndex;lesson=ui.lesson?{stage:ui.lesson}:null;lastGoodSave=raw;
-          if(raw!==observedSave)recoveryNote='已从上一次完整记录恢复续局，最近一次操作可能需要重做。';
+          if(raw===pending)recoveryNote='已恢复本页刷新前的最新进度。';
+          else if(raw!==observedSave)recoveryNote='已从上一次完整记录恢复续局，最近一次操作可能需要重做。';
           return;
         }catch{}
       }
-      if(observedSave||backup)saveBlocked='unreadable';
+      if(observedSave||backup||pendingRecord)saveBlocked='unreadable';
     }catch(error){saveError=error.message;}
   }
   let cardGuide=null,scoutMode=false,movePreview=null;
@@ -809,7 +828,7 @@ globalThis.YiwuComputer = (() => {
   const fight=$('fight'),rules=$('rules'),confirmDialog=$('confirm'),previewDialog=$('preview'),restDialog=$('rest-confirm');
   function init(mode){
     pendingRest=null;if(restDialog.open)restDialog.close();
-    saveGeneration++;queuedSave=null;
+    saveGeneration++;queuedSave=null;keepPendingSave();
     pendingNewGame=null;cardGuide=null;movePreview=null;scoutMode=false;clearTimeout(computerTimer);computerTimer=null;computerError='';hint=null;opponent=$('opponent').value;difficulty=$('difficulty').value;
     lesson=mode==='tutorial'?{stage:'attack'}:null;
     if(lesson||E.CHALLENGES[mode]){opponent='computer';$('opponent').value=opponent;}
