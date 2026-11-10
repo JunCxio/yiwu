@@ -258,7 +258,7 @@ for (const rotated of [false, true]) {
   E.move(next, action.id, action.x, action.y);
   const hero = E.get(next, 'hero'), enemy = E.get(next, 'enemy'), ctx = E.context(next, enemy, hero), finishes = box.YiwuComputer.battleOutlook(next, ctx).finishes;
   assert(finishes.length); assert(advice.risks.some(text => text.includes('首轮吃子风险') && text.includes('不代表对手已决定')));
-  assert(advice.note.includes('未推演后续走棋'));
+  assert(advice.note.includes('将帅两轮漏防'));assert(advice.note.includes('不预测暗招或更长序列'));
   for (const attack of finishes) for (const defense of box.YiwuComputer.choices(next, hero, ctx)) {
     const result = JSON.parse(JSON.stringify(next)); E.move(result, enemy.id, hero.x, hero.y); E.resolve(result, attack, defense);
     assert(!E.get(result, hero.id)); assert(E.get(result, enemy.id)?.hp > 0);
@@ -377,25 +377,33 @@ function kingFollowUpScene(rotated=false,extraSupport=false){
   if(rotated){s.turn='black';for(const p of s.pieces){p.side=E.OTHER[p.side];p.x=8-p.x;p.y=9-p.y;}}
   return s;
 }
-function actualFollowUpLoss(state,side){
+function actualFollowUpLoss(state,side,rounds=1){
   if(state.phase!=='board')return false;
   const king=state.pieces.find(p=>p.side===side&&p.kind==='king');
   return state.pieces.filter(p=>p.side!==side&&E.canMove(state,p,king.x,king.y)).some(p=>{
     const next=JSON.parse(JSON.stringify(state));E.move(next,p.id,king.x,king.y);
-    return box.YiwuComputer.choices(next,E.get(next,p.id),next.duel).some(id=>box.YiwuComputer.choices(next,E.get(next,king.id),next.duel).every(reply=>{
-      const end=JSON.parse(JSON.stringify(next));E.resolve(end,id,reply);return end.phase==='ended'&&end.winner===p.side;
+    const win=(battle,left)=>box.YiwuComputer.choices(battle,E.get(battle,p.id),battle.duel).some(id=>box.YiwuComputer.choices(battle,E.get(battle,king.id),battle.duel).every(reply=>{
+      const end=JSON.parse(JSON.stringify(battle));E.resolve(end,id,reply);
+      return end.phase==='ended'?end.winner===p.side:left>1&&end.phase==='duel'&&win(end,left-1);
     }));
+    return win(next,rounds);
   });
 }
-for(const rotated of [false,true]){
-  const s=kingFollowUpScene(rotated),a=E.get(s,'rk'),d=E.get(s,'target'),ctx=E.context(s,a,d),before=JSON.stringify([s,ctx]),out=box.YiwuComputer.battleOutlook(s,ctx),advice=box.openingAdvice(ctx);
+for(const rotated of [false,true])for(const kingHp of [9,10]){
+  const s=kingFollowUpScene(rotated),a=E.get(s,'rk'),d=E.get(s,'target');a.hp=kingHp;
+  const ctx=E.context(s,a,d),before=JSON.stringify([s,ctx]),out=box.YiwuComputer.battleOutlook(s,ctx),advice=box.openingAdvice(ctx);
   assert.deepEqual([...out.finishes],['strike','break']);
   assert(advice.reason.includes('并保住进攻子'));assert(advice.risk.includes('吃子后漏防风险'));
-  assert(advice.risk.includes('「破势」'));assert(advice.risk.includes('「奋进」'));assert(advice.risk.includes('「斩击」在守方全部合法回应后，未发现这种下一手漏防'));
-  const danger=JSON.parse(JSON.stringify(s));E.move(danger,a.id,d.x,d.y);E.resolve(danger,'break','pawn_advance');assert.equal(E.get(danger,a.id).hp,1);assert(!E.get(danger,d.id));assert(actualFollowUpLoss(danger,a.side));
+  assert(advice.risk.includes('「破势」'));assert(advice.risk.includes('两轮内'));
+  if(kingHp===10){assert(advice.risk.includes('「奋进」'));assert(advice.risk.includes('「斩击」在守方全部合法回应后，未发现这种下一手漏防'));}
+  else{assert(advice.risk.includes('上述可吃子的招式均存在这样的回应'));assert(!advice.risk.includes('未发现这种下一手漏防'));}
+  const danger=JSON.parse(JSON.stringify(s));E.move(danger,a.id,d.x,d.y);E.resolve(danger,'break','pawn_advance');assert.equal(E.get(danger,a.id).hp,kingHp-8);assert(!E.get(danger,d.id));assert(actualFollowUpLoss(danger,a.side));
+  let twoRoundDanger=false;
   for(const reply of box.YiwuComputer.choices(s,d,ctx)){
     const next=JSON.parse(JSON.stringify(s));E.move(next,a.id,d.x,d.y);E.resolve(next,'strike',reply);assert(!E.get(next,d.id));assert(E.get(next,a.id).hp>0);assert(!actualFollowUpLoss(next,a.side));
+    if(actualFollowUpLoss(next,a.side,2))twoRoundDanger=true;
   }
+  assert.equal(twoRoundDanger,kingHp===9);
   assert.equal(JSON.stringify([s,ctx]),before);
 }
 for(const rotated of [false,true]){
@@ -431,4 +439,13 @@ for(const ending of ['healthy','win','draw']){
   assert(!preview.includes('换一个交战目标'));assert.equal(JSON.stringify(s),before);
 }
 
-console.log('配牌条件、支援、本轮生命预估与残局回应、吃子漏防、兵卒底线、行动终局、落点首轮风险与两轮胜局预览：26 组检查通过。');
+{
+  const fixture=require('./computer-two-round-safety-fixture.json');let s;
+  for(const [op,...args]of fixture.commands){if(op==='create')s=E.create(...args);else E[op](s,...args);}
+  box.state=s;vm.runInContext('s=state',box);const before=JSON.stringify(s);
+  const action=command=>({type:command[0],id:command[1],x:command[2],y:command[3]});
+  const bad=box.boardAdvice(action(fixture.beforeAction),true),good=box.boardAdvice(action(fixture.afterAction),true);
+  assert(bad.risks.some(t=>t.includes('将帅漏防风险')&&t.includes('两轮内')));assert(bad.note.includes('不预测暗招'));
+  assert(!good.risks.some(t=>t.includes('将帅漏防风险')));assert.equal(JSON.stringify(s),before);
+}
+console.log('配牌条件、支援、本轮生命预估与残局回应、吃子漏防、兵卒底线、行动终局、落点首轮风险与两轮胜局预览：27 组检查通过。');

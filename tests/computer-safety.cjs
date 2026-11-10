@@ -191,4 +191,65 @@ test('将帅吃子已实际获胜或判和时，不虚构结束后的敌方进�
     }
   }
 });
+function twoRoundDanger(rotated=false){
+  const s=scene({pieces:[['rk','red','king',3,9,3],['bk','black','king',5,0,18],['br','black','rook',3,5,18],['rr','red','rook',0,5,18],['target','black','pawn',0,4,1]]},rotated);
+  return s;
+}
+function actualTwoRoundWin(s,attackerId,side){
+  const start=copy(s),a=E.get(start,attackerId),d=start.pieces.find(p=>p.side===side&&p.kind==='king');start.turn=a.side;E.move(start,a.id,d.x,d.y);
+  const wins=state=>C.choices(state,E.get(state,attackerId),state.duel).filter(id=>C.choices(state,E.get(state,d.id),state.duel).every(reply=>{
+    const end=copy(state);E.resolve(end,id,reply);return end.phase==='ended'&&end.winner===a.side;
+  }));
+  return C.choices(start,a,start.duel).filter(id=>C.choices(start,d,start.duel).every(reply=>{
+    const next=copy(start);E.resolve(next,id,reply);
+    return next.phase==='ended'?next.winner===a.side:next.phase==='duel'&&wins(next).length>0;
+  }));
+}
+test('将帅三血时也识别对手两轮确定获胜，红黑与真实逐分支结算一致',()=>{
+  for(const rotated of [false,true]){
+    const s=twoRoundDanger(rotated),king=E.get(s,'rk'),before=JSON.stringify(s);
+    assert(!winsAgainstKing({...copy(s),turn:E.OTHER[king.side]},'br'),'样本不能是既有首轮败局');
+    assert(actualTwoRoundWin(s,'br',king.side).length>0);
+    assert(C.kingLostNext(s,king.side),'遗漏了对手两轮确定胜局');
+    const escaped=copy(s);escaped.turn=king.side;E.move(escaped,king.id,4,rotated?0:9);
+    assert(!C.kingLostNext(escaped,king.side));assert.equal(JSON.stringify(s),before);
+  }
+});
+test('两轮确定败局不能被其他棋子调动、整备或首轮安全吃子掩盖',()=>{
+  for(const rotated of [false,true]){
+    const s=twoRoundDanger(rotated),king=E.get(s,'rk'),rook=E.get(s,'rr'),target=E.get(s,'target');s.turn=king.side;
+    rook.learned=['rook_hold'];rook.exhausted=['rook_hold'];const before=JSON.stringify(s),ranked=C.rankedActions(s);
+    assert(ranked.find(a=>a.type==='rest').score<-500);
+    assert(ranked.find(a=>a.id===rook.id&&a.x===target.x&&a.y===target.y).score<-500);
+    const exposed=ranked.find(a=>a.id===rook.id&&a.x===(rotated?8:0)&&a.y===(rotated?0:9));assert(exposed.score<-500);
+    const selected=C.board(s,()=>0),next=copy(s);E.move(next,selected.id,selected.x,selected.y);assert(!C.kingLostNext(next,king.side));
+    assert.equal(JSON.stringify(s),before);
+  }
+});
+test('不能强行击败厚血将帅或确保存活的进攻者时，不虚构两轮败局',()=>{
+  for(const rotated of [false,true])for(const [kingHp,attackerHp]of [[4,18],[3,1]]){
+    const s=twoRoundDanger(rotated);E.get(s,'rk').hp=kingHp;E.get(s,'br').hp=attackerHp;
+    const side=E.get(s,'rk').side,before=JSON.stringify(s);assert.equal(actualTwoRoundWin(s,'br',side).length,0);
+    assert(!C.kingLostNext(s,side));assert.equal(JSON.stringify(s),before);
+  }
+});
+test('行动已经判和或结束时，不在终局之后虚构两轮进攻',()=>{
+  const s=twoRoundDanger();s.turn='red';s.quiet=E.DRAW.quiet-1;
+  const next=copy(s);E.move(next,'rr',0,6);assert.equal(next.winner,'draw');assert(!C.kingLostNext(next,'red'));
+  const before=JSON.stringify(s),action=C.rankedActions(s).find(a=>a.id==='rr'&&a.x===0&&a.y===6);
+  assert(action.score>-500);assert.equal(JSON.stringify(s),before);
+});
+test('自然标准局不再把三血黑将移入红方两轮确定胜局',()=>{
+  const fixture=require('./computer-two-round-safety-fixture.json');let s;
+  for(const [op,...args]of fixture.commands){if(op==='create')s=E.create(...args);else E[op](s,...args);}
+  assert.equal(s.ply,51);assert.equal(E.get(s,fixture.kingId).hp,3);const before=JSON.stringify(s),side=s.turn;
+  const bad=copy(s),[op,...args]=fixture.beforeAction;E[op](bad,...args);
+  assert(!C.kingLostNext(bad,side,false));assert(C.kingLostNext(bad,side));
+  assert(bad.pieces.filter(p=>p.side!==side&&E.canMove(bad,p,E.get(bad,fixture.kingId).x,E.get(bad,fixture.kingId).y)).some(p=>actualTwoRoundWin(bad,p.id,side).length));
+  for(const roll of [0,.5,.999999]){
+    const action=C.board(s,()=>roll);assert(!same(action,{id:args[0],x:args[1],y:args[2]}));
+    const next=copy(s);E.move(next,action.id,action.x,action.y);assert(!C.kingLostNext(next,side));
+  }
+  assert.equal(JSON.stringify(s),before);
+});
 console.log('将帅安全：'+checks+' 项检查通过。');

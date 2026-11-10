@@ -65,6 +65,15 @@ test('第五轮可兑现第六轮胜局，第六轮不能虚构第七轮',()=>{
   assert.deepEqual(Array.from(oneRound(s)),[]);assert(verifyPlan(s).includes('strike'));
   s.duel.round=6;assert.deepEqual(Array.from(C.twoRoundWinningChoices(s,'red')),[]);
 });
+
+test('基础反制限制两轮可确保的伤害上限，裁剪结果仍与完整结算一致',()=>{
+  for(const kind of ['king','rook','horse','pawn','cannon'])for(const loadout of [0,1,2,3])for(const round of [1,2,5])for(const mirrored of [false,true])for(const hp of [round===1?4:3,18]){
+    const s=battle(kind,loadout,mirrored);s.duel.round=round;s.duel.forceA=2;s.duel.forceD=loadout%3;E.get(s,s.duel.d).hp=hp;
+    const side=E.get(s,s.duel.a).side,before=JSON.stringify(s),expected=twoRounds(s);
+    assert.equal(expected.length,0);assert.deepEqual(Array.from(C.twoRoundWinningChoices(s,side)),Array.from(expected));
+    assert.equal(JSON.stringify(s),before);fixtures++;
+  }
+});
 test('双方将帅同时阵亡不算取胜，守方及普通目标不套用两轮保证',()=>{
   const s=battle();for(const p of s.pieces)p.hp=1;
   assert.deepEqual(Array.from(C.twoRoundWinningChoices(s,'red')),[]);
