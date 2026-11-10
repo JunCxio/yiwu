@@ -126,7 +126,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.65 · 教学固定出招预估</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.66 · 教学键盘操作修正</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -655,9 +655,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.65',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.66',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.65-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.66-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -1198,6 +1198,8 @@ globalThis.YiwuComputer = (() => {
     if(lesson||s.phase!=='board'||computerTurn()){scoutMode=false;movePreview=null;}
     if(movePreview&&(selected!==movePreview.id||!scoutMode||!E.get(s,selected)||E.get(s,selected).side!==s.turn||E.at(s,movePreview.x,movePreview.y)||!E.canMove(s,E.get(s,selected),movePreview.x,movePreview.y)))movePreview=null;
     if(cardGuide&&(lesson||preview||s.phase!=='board'||computerTurn()||!E.get(s,selected)?.learned.includes(cardGuide)))cardGuide=null;
+    const focusPiece=lesson&&E.get(s,selected);
+    if(focusPiece&&lessonCellAllowed(focusPiece.x,focusPiece.y)&&!lessonCellAllowed(focusIndex%9,Math.floor(focusIndex/9)))focusIndex=focusPiece.y*9+focusPiece.x;
     saveProgress();
     if(screen==='home'){renderHome();return;}
     document.title='弈武 · '+(lesson?'分步教学':opponent==='computer'?'电脑对战':'同机双人');

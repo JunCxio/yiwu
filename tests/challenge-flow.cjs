@@ -603,4 +603,27 @@ function retreatReady() {
     assert.deepEqual(JSON.parse(saved.getItem('yiwu.autosave')).commands, commands); assert.equal(restored.timerCount(), 0);
   }
 }
-console.log('残局流程、走棋反馈与武斗确认：38 项检查通过。');
+{
+  const saved = storage();
+  saved.setItem('yiwu.autosave', JSON.stringify({version: 1, commands: [['create', 'tutorial-support']],
+    ui: {opponent: 'computer', difficulty: 'practice', selected: 'helper', preview: null, setupSide: 'red', focusIndex: 46, lesson: 'support-move', fight: null}}));
+  const p = page(saved); p.node('resume').onclick();
+  const entry = p => [...p.node('grid').innerHTML.matchAll(/<button[^>]*tabindex="0"[^>]*>/g)].map(match => match[0]);
+  assert.equal(entry(p).length, 1); assert(entry(p)[0].includes('data-x="1" data-y="5"')); assert(!entry(p)[0].includes('disabled'));
+  p.cell(1, 4);
+  assert.equal(p.ui.state.ply, 2); assert.equal(entry(p).length, 1);
+  assert(entry(p)[0].includes('data-x="4" data-y="5"')); assert(!entry(p)[0].includes('disabled'), '切换教学步骤后棋盘仍须可通过 Tab 进入');
+  const record = JSON.parse(saved.getItem('yiwu.autosave')), state = JSON.stringify(p.ui.state);
+  assert.equal(record.ui.focusIndex, 49); assert.equal(record.ui.selected, 'hero');
+  assert.deepEqual(record.commands, [['create', 'tutorial-support'], ['move', 'helper', 1, 4], ['move', 'black_king', 5, 1]]);
+  for (const [oldIndex, expectedIndex] of [[37, 49], [40, 40]]) {
+    const previous = storage(); record.ui.focusIndex = oldIndex; previous.setItem('yiwu.autosave', JSON.stringify(record));
+    const restored = page(previous); restored.node('resume').onclick();
+    assert.equal(entry(restored).length, 1); assert(!entry(restored)[0].includes('disabled'));
+    const current = JSON.parse(previous.getItem('yiwu.autosave'));
+    assert.equal(current.ui.focusIndex, expectedIndex, '修正禁用入口，同时保留已合法移至目标的焦点');
+    assert.deepEqual(current.commands, record.commands); assert.equal(JSON.stringify(restored.ui.state), state);
+    assert.equal(restored.timerCount(), 0);
+  }
+}
+console.log('残局流程、走棋反馈与武斗确认：38 项检查通过；教学键盘入口与续局：2 组检查通过。');
