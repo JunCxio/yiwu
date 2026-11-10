@@ -1,6 +1,9 @@
 const fs=require('node:fs'),vm=require('node:vm'),path=require('node:path'),assert=require('node:assert/strict');
 const html=fs.readFileSync(process.argv[2]||path.join(__dirname,'..','index.html'),'utf8'),box=vm.createContext({});
-for(const script of [...html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].slice(0,2))vm.runInContext(script[1],box);
+const scripts=[...html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].slice(0,2).map(m=>m[1]);
+vm.runInContext(scripts[0],box);
+const original='return {actions,choices';assert(scripts[1].includes(original));
+vm.runInContext(scripts[1].replace(original,'return {retreatOutcome,actions,choices'),box);
 const E=box.Yiwu,C=box.YiwuComputer,copy=s=>JSON.parse(JSON.stringify(s));
 let checks=0,previews=0;
 function test(name,fn){fn();checks++;console.log('通过：'+name);}
@@ -65,4 +68,56 @@ test('残局成功、时限失败与未结束的武斗均按真实规则返回�
   for(let i=0;i<5;i++)E.resolve(lost,'guard','guard');
   assert.equal(verify(lost,lost.duel,'guard','guard').winner,'black');
 });
-console.log('终局状态隔离：'+checks+' 组通过，逐项核对 '+previews+' 个预演输入。');
+let retreatPreviews=0;
+function verifyRetreat(s){
+  const before=JSON.stringify(s),expected=copy(s);E.retreat(expected);
+  const nativeJSON=vm.runInContext('JSON',box);let fullCopies=0,result;
+  box.JSON={parse:JSON.parse,stringify(value,...args){if(value?.repetitions===s.repetitions)fullCopies++;return JSON.stringify(value,...args);}};
+  try{result=C.retreatOutcome(s);}finally{box.JSON=nativeJSON;}
+  retreatPreviews++;assert.equal(fullCopies,0,'撤回预演不应再次序列化完整历史局面');
+  assert.deepEqual(copy(result),expected.phase==='ended'?copy(expected):null);assert.equal(JSON.stringify(s),before);
+  if(result){
+    assert.notEqual(result.repetitions,s.repetitions);assert(Object.values(result.repetitions).every(Number.isInteger));
+    result.repetitions[Object.keys(result.repetitions)[0]]++;
+    result.repetitions[E.key(result)]=100;result.log.push('独立撤回预演');result.pieces[0].hp=0;result.pieces[0].learned.push('测试');
+    result.lastCombat.origin.x=-1;result.lastCombat.supportA.push('测试');result.lastCombat.history[0].breakdownA.base=-1;
+    assert.equal(JSON.stringify(s),before);assert.deepEqual(copy(C.retreatOutcome(s)),copy(expected));
+  }
+  return expected;
+}
+function retreatScene(rotated=false){
+  const s=E.create('attrition');
+  if(rotated){s.turn='black';for(const p of s.pieces){p.side=E.OTHER[p.side];p.x=8-p.x;p.y=9-p.y;}s.repetitions={};s.repetitions[E.key(s)]=1;}
+  const a=E.get(s,'hero'),d=E.get(s,'target');E.move(s,a.id,d.x,d.y);E.resolve(s,'focus','focus');return s;
+}
+test('棋盘和首轮不预演撤回，也不修改输入',()=>{
+  const s=E.create('attrition'),before=JSON.stringify(s);assert.equal(C.retreatOutcome(s),null);assert.equal(JSON.stringify(s),before);
+  E.move(s,'hero',4,4);const first=JSON.stringify(s);assert.equal(C.retreatOutcome(s),null);assert.equal(JSON.stringify(s),first);
+});
+test('普通撤回及已有伤害的撤回保持真实状态，红黑一致',()=>{
+  for(const rotated of [false,true]){
+    const s=retreatScene(rotated);assert.equal(verifyRetreat(s).phase,'board');
+    E.resolve(s,'strike','focus');assert(s.duel.totalDamage>0);s.quiet=E.DRAW.quiet-1;
+    const next=verifyRetreat(s);assert.equal(next.phase,'board');assert.equal(next.quiet,0);
+  }
+});
+test('撤回的无伤与第三次重复判和完整保留历史，并隔离所有可变状态',()=>{
+  for(const rotated of [false,true])for(const kind of ['quiet','repetition']){
+    const s=retreatScene(rotated);
+    if(kind==='quiet')s.quiet=E.DRAW.quiet-1;
+    else{const next=copy(s);E.retreat(next);s.repetitions[E.key(next)]=E.DRAW.repetitions-1;}
+    assert.equal(verifyRetreat(s).winner,'draw');
+  }
+});
+test('残局最后行动撤回后的完整失败状态与实际规则一致',()=>{
+  const s=E.create('challenge-tempo');E.rest(s,'hero','rook_crush');E.move(s,'black_king',5,1);E.move(s,'red_king',3,8);
+  E.move(s,'target',4,5);E.resolve(s,'focus','focus');assert.equal(verifyRetreat(s).winner,'black');
+});
+test('完整合法历史中的撤回不重复编码局面计数，输入和决策保持不变',()=>{
+  const fixture=require('./computer-ending-cards-fixture.json');let s;
+  for(const [name,...args]of fixture.commands){if(name==='create')s=E.create(...args);else E[name](s,...args);}
+  assert(Object.keys(s.repetitions).length>30);assert.equal(s.duel.round,2);verifyRetreat(s);
+  const before=JSON.stringify(s),plans=['red','black'].map(side=>copy(C.combatPlan(s,side)));
+  verifyRetreat(s);assert.deepEqual(['red','black'].map(side=>copy(C.combatPlan(s,side))),plans);assert.equal(JSON.stringify(s),before);
+});
+console.log('终局状态隔离：'+checks+' 组通过，逐项核对 '+previews+' 个交战与 '+retreatPreviews+' 个撤回预演输入。');
