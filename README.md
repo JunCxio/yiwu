@@ -1,8 +1,10 @@
 # 弈武
 
-象棋走位与卡牌武斗结合的二维回合制游戏。当前版本为 **0.6.64 开发测试版**，欢迎试玩并反馈。
+象棋走位与卡牌武斗结合的二维回合制游戏。当前版本为 **0.6.65 开发测试版**，欢迎试玩并反馈。
 
 **[直接试玩](https://juncxio.github.io/yiwu/)** · **[提交试玩反馈](https://github.com/JunCxio/yiwu/issues/new?template=feedback.md)**
+
+分步教学的选招推演按本课公开的固定招式展示伤害与本轮后的生命，便于对照揭示结果；正式对局仍显示全部合法回应的范围，不公开暗招。
 
 ## 开始游玩
 
@@ -121,3 +123,5 @@ python -m http.server 8000
 然后访问 `http://localhost:8000/`。
 
 已安装 Node.js 时，可运行 `node tests/computer-opening.cjs` 检查首轮判断及电脑决策，运行 `node tests/computer-safety.cjs` 检查将帅安全与终局判断，运行 `node tests/computer-retreat.cjs` 检查撤回的直接胜负与判和，运行 `node tests/computer-combat.cjs` 检查普通武斗终局评分与将帅必败招式排除，运行 `node tests/computer-state.cjs` 检查终局预演的完整状态与原局隔离，运行 `node tests/combat-help.cjs` 检查配牌条件、支援、吃子漏防与兵卒底线说明，运行 `node tests/challenge-flow.cjs` 检查残局目标、行动后果、切换与续局，运行 `node tests/piece-panel.cjs` 检查棋子招式分组与配牌、整备入口，均不需要安装依赖。
+
+教学选招推演可运行 `node tests/tutorial-preview.cjs` 检查，覆盖固定教学结算、查看不改状态，以及正式对局不读取已锁定暗招。

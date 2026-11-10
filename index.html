@@ -126,7 +126,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.64 · 走棋评分计算优化</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.65 · 教学固定出招预估</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -655,9 +655,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.64',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.65',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.64-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.65-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -1482,12 +1482,17 @@ globalThis.YiwuComputer = (() => {
     const publicJump=lesson?'':'<button class="quiet public-jump" data-fight="public-cards" aria-controls="public-cards">对手配牌</button>';
     let html='<aside class="pick-review '+who.side+'" tabindex="-1" aria-label="'+E.SIDE[who.side]+'出招推演">'+(ui.hint?adviceHTML(ui.hint):'');
     if(c){
-      const rows=E.preview(s,who.side,id),lethal=rows.some(row=>row.lossMax>=who.hp);
+      const isA=who.id===ui.ctx.a,enemy=isA?ui.d:ui.a;
+      const demo=lesson?E.roundDamage(ui.ctx,isA?id:ui.computerChoice,isA?ui.computerChoice:id):null;
+      const rows=demo?[{type:isA?demo.dType:demo.aType,names:[isA?demo.dName:demo.aName],damageMin:Math.min(enemy.hp,isA?demo.toD:demo.toA),damageMax:Math.min(enemy.hp,isA?demo.toD:demo.toA),lossMin:Math.min(who.hp,isA?demo.toA:demo.toD),lossMax:Math.min(who.hp,isA?demo.toA:demo.toD)}]:E.preview(s,who.side,id);
+      const lethal=rows.some(row=>row.lossMax>=who.hp);
+      const forecastNote=demo?'本轮后：'+E.SIDE[who.side]+'生命 '+(who.hp-rows[0].lossMin)+' · '+E.SIDE[enemy.side]+'生命 '+(enemy.hp-rows[0].damageMin)+'。教学按公开的固定出招计算，双方伤害同时结算；正式对局仍按全部合法回应显示范围。':'范围包含对方所有可用招式，已计入支援、气势和减伤，上限为剩余生命。不能据此知道对手本轮已选哪招。';
       const force=who===ui.a?ui.ctx.forceA:ui.ctx.forceD,attacking=c.type==='strike'||c.type==='break';
       const relation={strike:'克制破势 · 受架势克制 · 可压制蓄势',break:'克制架势 · 受斩击克制 · 可压制蓄势',guard:'克制斩击 · 受破势克制 · 不攻击蓄势',focus:'本轮不攻击 · 会被斩击、破势压制'}[c.type];
       const forceText=attacking?(force?'消耗全部 '+force+' 点气势；被克制也会消耗。':'当前气势为 0，没有气势增伤。'):c.type==='focus'?'若存活，蓄势 +'+(1+(c.gain||0))+'，上限 2；可能被削势。':'现有气势保留；仍可能被对手削势。';
-      html+=`<div class="review-head"><h3>${E.SIDE[who.side]}已选「${c.name}」<span class="card-type">${E.TYPE[c.type]}</span></h3>${publicJump}</div><p class="tip">${c.text}</p>${challengeRepliesHTML(who,id)}<div class="decision-facts"><span>${relation}</span><span>${forceText}</span><span>${E.CARDS[id]?'培养牌 · 使用后耗尽，需在棋盘整备。':'基础招式 · 不耗牌，可重复使用。'}</span></div><table class="preview-table"><thead><tr><th>对手可能出招</th><th>我造成伤害</th><th>我损失生命</th></tr></thead><tbody>${rows.map(row=>`<tr><td>${E.TYPE[row.type]}<small>${row.names.join('、')}</small></td><td>${range(row.damageMin,row.damageMax)}</td><td class="loss">${range(row.lossMin,row.lossMax)}</td></tr>`).join('')}</tbody></table><p class="tip">范围包含对方所有可用招式，已计入支援、气势和减伤，上限为剩余生命。不能据此知道对手本轮已选哪招。</p>${lethal?'<p class="preview-risk">对手的部分选择可能击倒本枚棋子。双方伤害仍同时结算。</p>':''}`;
-    }else html+='<div class="review-head"><h3>先选招，再锁定</h3>'+publicJump+'</div><div class="review-empty"><p>点选招式，查看面对不同招式时会造成多少伤害、损失多少生命。</p><p>选错可以更换，锁定前不会耗牌。也可先点「选招建议」。</p></div>';
+      html+=`<div class="review-head"><h3>${E.SIDE[who.side]}已选「${c.name}」<span class="card-type">${E.TYPE[c.type]}</span></h3>${publicJump}</div><p class="tip">${c.text}</p>${challengeRepliesHTML(who,id)}<div class="decision-facts"><span>${relation}</span><span>${forceText}</span><span>${E.CARDS[id]?'培养牌 · 使用后耗尽，需在棋盘整备。':'基础招式 · 不耗牌，可重复使用。'}</span></div><table class="preview-table"><thead><tr><th>${lesson?'对手固定出招':'对手可能出招'}</th><th>我造成伤害</th><th>我损失生命</th></tr></thead><tbody>${rows.map(row=>`<tr><td>${E.TYPE[row.type]}<small>${row.names.join('、')}</small></td><td>${range(row.damageMin,row.damageMax)}</td><td class="loss">${range(row.lossMin,row.lossMax)}</td></tr>`).join('')}</tbody></table><p class="tip">${forecastNote}</p>${lethal?'<p class="preview-risk">'+(lesson?'本课固定出招会击倒本枚棋子。':'对手的部分选择可能击倒本枚棋子。')+'双方伤害仍同时结算。</p>':''}`;
+    }else if(lesson?.stage==='retreat')html+='<div class="review-head"><h3>先查看撤回后果</h3></div><div class="review-empty"><p>点击底部高亮的「红方主动撤回」，查看并确认。本课不需要选择招式。</p></div>';
+    else html+='<div class="review-head"><h3>先选招，再锁定</h3>'+publicJump+'</div><div class="review-empty">'+(lesson?'<p>点击本课高亮的招式，查看对手固定出招对应的伤害和生命变化。</p><p>查看不会耗牌；锁定并揭示后才结算本轮。</p>':'<p>点选招式，查看面对不同招式时会造成多少伤害、损失多少生命。</p><p>选错可以更换，锁定前不会耗牌。也可先点「选招建议」。</p>')+'</div>';
     return html+(lesson?'':'<button class="quiet choice-return" data-fight="choices">返回选择招式</button>')+'</aside>';
   }
   function combatForecastHTML(who,id){
