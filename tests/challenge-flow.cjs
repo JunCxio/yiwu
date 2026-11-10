@@ -406,7 +406,7 @@ function retreatReady() {
     const p = page(); p.ui.init('tactics'); p.ui.beginFight(p.E.get(p.ui.state, 'hero'), p.E.get(p.ui.state, 'target')); p.pick('guard');
     const active = p.node('focused-control'); active.dataset = dataset; active.focus(); const focused = [];
     const selector = dataset.choice ? '[data-choice="guard"]' : '[data-fight="hint"]';
-    p.node('fight-content').querySelector = query => query === selector ? {focus() {focused.push('original');}}
+    p.node('fight-content').querySelector = query => query === selector ? {focus() {focused.push('original');}, scrollIntoView(options) {assert.equal(options.block, 'nearest');}}
       : query === '.pick-options .chosen:not(:disabled)' ? {focus() {focused.push('chosen');}, scrollIntoView() {assert.fail('同一步骤不应跳到另一个选牌');}} : null;
     const before = JSON.stringify(p.ui.state); p.pick('guard');
     assert.deepEqual(focused, ['original']); assert.equal(JSON.stringify(p.ui.state), before);
@@ -414,7 +414,7 @@ function retreatReady() {
 }
 {
   const p = page(), focused = []; p.ui.init('tactics');
-  p.node('fight-content').querySelector = selector => selector === 'button:not(:disabled):not(.fight-home)' ? {focus() {focused.push('first');}} : null;
+  p.node('fight-content').querySelector = selector => selector === 'button:not(:disabled):not(.fight-home)' ? {focus() {focused.push('first');}, scrollIntoView(options) {assert.equal(options.block, 'nearest');}} : null;
   p.ui.beginFight(p.E.get(p.ui.state, 'hero'), p.E.get(p.ui.state, 'target'));
   assert.equal(p.ui.fight.pending, null); assert.deepEqual(focused, ['first']);
 }
@@ -653,4 +653,54 @@ function retreatReady() {
   assert.equal(p.node('fight').scrollTop, 0, '重看出招回到演出顶部');
   assert.equal(JSON.stringify(p.ui.state), before); assert.equal(p.saved.getItem('yiwu.autosave'), saved);
 }
-console.log('残局流程、走棋反馈与武斗确认：38 项检查通过；教学键盘入口与续局：2 组、武斗滚动：3 组检查通过。');
+{
+  const p = page(), events = []; p.ui.init('tactics');
+  p.ui.beginFight(p.E.get(p.ui.state, 'hero'), p.E.get(p.ui.state, 'target')); p.pick('guard');
+  p.node('fight-title').focus = options => {assert(options.preventScroll); events.push('title');};
+  const first = {focus() {events.push('first');}, scrollIntoView(options) {assert.equal(options.block, 'nearest'); events.push('visible');}};
+  const next = {focus() {events.push('next');}};
+  p.node('fight-content').querySelector = selector => selector === '[data-fight="next"]' && p.ui.fight.step === 'result' ? next
+    : selector === 'button:not(:disabled):not(.fight-home)' ? first : null;
+  p.node('fight').scrollTop = 900; p.fight('commit');
+  assert.deepEqual(events, ['title'], '揭示先聚焦顶部标题，不能将焦点留在底部按钮');
+  assert(p.node('fight-content').innerHTML.includes('<h2 id="fight-title" tabindex="-1">'));
+  const before = JSON.stringify(p.ui.state), saved = p.saved.getItem('yiwu.autosave');
+  p.node('fight').scrollTop = 650; p.fight('replay');
+  assert.equal(p.node('fight').scrollTop, 0); assert.deepEqual(events, ['title', 'title']);
+  assert.equal(JSON.stringify(p.ui.state), before); assert.equal(p.saved.getItem('yiwu.autosave'), saved);
+  p.action('home'); p.node('fight').scrollTop = 650; p.node('resume').onclick();
+  assert.equal(p.node('fight').scrollTop, 0, '从首页重开结果也应先显示顶部标题');
+  assert.deepEqual(events, ['title', 'title', 'title']);
+  p.fight('next'); assert.deepEqual(events, ['title', 'title', 'title', 'first', 'visible']);
+}
+{
+  const p = page(), events = []; p.ui.init('tactics');
+  p.ui.beginFight(p.E.get(p.ui.state, 'hero'), p.E.get(p.ui.state, 'target'));
+  p.pick('guard'); p.fight('commit'); p.fight('next'); p.pick('guard');
+  const before = JSON.stringify(p.ui.state), commands = JSON.parse(p.saved.getItem('yiwu.autosave')).commands;
+  p.node('fight-title').focus = options => {assert(options.preventScroll); events.push('title');};
+  const target = name => ({focus() {events.push(name);}, scrollIntoView(options) {assert.equal(options.block, 'nearest'); events.push('visible:' + name);}});
+  const retreat = target('retreat'), chosen = target('chosen'), cancel = target('cancel');
+  p.node('fight-content').querySelector = selector => ({'[data-fight="retreat"]': retreat,
+    '[data-fight="cancel-retreat"]': cancel, '.pick-options .chosen:not(:disabled)': chosen})[selector] || null;
+  p.fight('retreat'); assert.deepEqual(events, ['title']);
+  assert(p.node('fight-content').innerHTML.includes('tabindex="-1">确认主动撤回</h2>'));
+  const active = p.node('cancel-control'); active.dataset.fight = 'cancel-retreat'; active.focus(); p.fight('cancel-retreat');
+  assert.deepEqual(events, ['title', 'retreat', 'visible:retreat']);
+  assert.equal(JSON.stringify(p.ui.state), before); assert.equal(p.ui.fight.pending, 'guard');
+  assert.deepEqual(JSON.parse(p.saved.getItem('yiwu.autosave')).commands, commands);
+  p.fight('retreat'); p.fight('confirm-retreat');
+  assert.equal(p.ui.fight.step, 'retreated'); assert.deepEqual(events.slice(-2), ['title', 'title']);
+}
+{
+  const p = page(), events = []; p.ui.init('tactics');
+  p.ui.beginFight(p.E.get(p.ui.state, 'hero'), p.E.get(p.ui.state, 'target'));
+  const before = JSON.stringify(p.ui.state), commands = JSON.parse(p.saved.getItem('yiwu.autosave')).commands, locked = p.ui.fight.computerChoice;
+  const review = {scrollIntoView(options) {assert.equal(options.block, 'start'); events.push('scroll');},
+    focus(options) {assert(options.preventScroll); events.push('focus');}};
+  p.node('fight-content').querySelector = selector => selector === '.pick-review' ? review : null;
+  p.fight('hint'); assert.deepEqual(events, ['scroll', 'focus'], '建议跳转后同步焦点到当前推演');
+  assert.equal(JSON.stringify(p.ui.state), before); assert.equal(p.ui.fight.computerChoice, locked);
+  assert.deepEqual(JSON.parse(p.saved.getItem('yiwu.autosave')).commands, commands);
+}
+console.log('残局流程、走棋反馈与武斗确认：38 项检查通过；教学键盘入口与续局：2 组、武斗滚动：3 组、武斗焦点：3 组检查通过。');
