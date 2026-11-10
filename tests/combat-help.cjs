@@ -8,7 +8,7 @@ const scripts = [...html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].map(m =
 const box = vm.createContext({});
 vm.runInContext(scripts[0], box);
 vm.runInContext(scripts[1], box);
-const helpers = ['cardUnavailable', 'supportDetailsHTML', 'combatForecastHTML', 'challengeRepliesHTML', 'openingAdvice', 'pawnEndRankRisk', 'firstRoundLossRisk', 'previewBoardAction', 'actionOutcomeRisk', 'boardAdvice', 'challengeCombatHTML', 'previewHTML'].map(name => {
+const helpers = ['cardUnavailable', 'supportDetailsHTML', 'combatForecastHTML', 'combatRepliesHTML', 'openingAdvice', 'pawnEndRankRisk', 'firstRoundLossRisk', 'previewBoardAction', 'actionOutcomeRisk', 'boardAdvice', 'challengeCombatHTML', 'previewHTML'].map(name => {
   const source = scripts[2].match(new RegExp('  function ' + name + '\\([\\s\\S]*?\\n  \\}'));
   assert(source, '缺少界面函数：' + name);
   return source[0];
@@ -350,7 +350,7 @@ for (const commands of outcomeRecords) {
         if (next.phase !== 'ended') {ongoing = true; continue;}
         expected.set((E.BASE[reply] || E.CARDS[reply]).name, {title: {red: '完成挑战', black: '挑战失败', draw: '本局判和'}[next.winner], reason: next.reason});
       }
-      const html = box.challengeRepliesHTML(who, id), actual = new Map();
+      const html = box.combatRepliesHTML(who, id), actual = new Map();
       for (const [, names, title, reason] of html.matchAll(/<p>对手用「([^」]+)」时，([^<]+)。<\/p><small>([^<]+)<\/small>/g)) {
         for (const name of names.split('、')) {assert(!actual.has(name)); actual.set(name, {title, reason});}
       }
@@ -365,10 +365,10 @@ for (const commands of outcomeRecords) {
   }
 }
 {
-  const {a} = combat(); assert.equal(box.challengeRepliesHTML(a, 'strike'), '');
+  const {a} = combat(); assert.equal(box.combatRepliesHTML(a, 'strike'), '');
   const s = replayOutcome(outcomeRecords[0]), who = E.get(s, s.duel.a);
-  vm.runInContext('lesson={}', box); assert.equal(box.challengeRepliesHTML(who, 'strike'), '');
-  vm.runInContext('lesson=null', box); assert.equal(box.challengeRepliesHTML(who, null), '');
+  vm.runInContext('lesson={}', box); assert.equal(box.combatRepliesHTML(who, 'strike'), '');
+  vm.runInContext('lesson=null', box); assert.equal(box.combatRepliesHTML(who, null), '');
 }
 function kingFollowUpScene(rotated=false,extraSupport=false){
   const s=load('attrition');s.repetitions={};
