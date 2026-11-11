@@ -31,17 +31,28 @@ function quietReplies(s){
 let branches=0,blocked=0;
 for(const row of fixture.cases)for(const rotated of [false,true]){
   const s=state(row,rotated),raw=JSON.stringify(s),side=s.turn,bad=rotate(row.danger,rotated),good=rotate(row.safe,rotated),advance=rotate(row.advance,rotated);
-  const ranked=copy(C.rankedActions(s));assert(ranked.find(a=>same(a,bad)).score<ranked.find(a=>same(a,good)).score-.06,'应优先选择保留将帅防线的调动');
-  for(const [action,trapped]of [[bad,true],[good,false]]){
+  // 第一份旧记录的 safe 落点仍会被调马建炮架，不能继续当作安全对照。
+  const indirect=row===fixture.cases[0],ranked=copy(C.rankedActions(s));
+  if(!indirect)assert(ranked.find(a=>same(a,bad)).score<ranked.find(a=>same(a,good)).score-.06,'应优先选择保留将帅防线的调动');
+  for(const [action,trapped]of [[bad,true],[good,indirect]]){
     const next=copy(s);E.move(next,action.id,action.x,action.y);assert(!threatened(next,side));
     const king=next.pieces.find(p=>p.kind==='king'&&p.side===side),before=JSON.stringify(next);
     assert.equal(C.advanceTrapsKing(next,king),trapped);assert.equal(JSON.stringify(next),before);
+    if(indirect&&same(action,good)){
+      const helper=E.get(next,'red_horse_4'),x=rotated?3:5,y=rotated?5:4;E.move(next,helper.id,x,y);
+      assert(threatened(next,side));assert(quietReplies(next).length>0,'逼帅风险不等于其他棋子无法解围');branches++;continue;
+    }
     if(!E.canMove(next,E.get(next,advance.id),advance.x,advance.y)){assert.equal(trapped,false);blocked++;continue;}
     E.move(next,advance.id,advance.x,advance.y);assert.equal(next.phase,'board');
     const safe=quietReplies(next);assert.equal(safe.length===0,trapped);
     if(trapped)assert(threatened(next,side));branches++;
   }
-  for(const difficulty of ['standard','practice'])for(const roll of [0,.25,.5,.75,.999999])assert(same(C.board(s,()=>roll,difficulty),good));
+  if(!indirect)for(const difficulty of ['standard','practice'])for(const roll of [0,.25,.5,.75,.999999])assert(same(C.board(s,()=>roll,difficulty),good));
+  if(indirect){
+    const counter=copy(s);for(const p of counter.pieces)if(p.side!==side&&p.kind==='cannon')p.hp=1;
+    const ranks=C.rankedActions(counter);assert(ranks.find(a=>same(a,good)).score>ranks.find(a=>same(a,bad)).score+.06);
+    for(const [action,trapped]of [[bad,true],[good,false]]){const next=copy(counter);E.move(next,action.id,action.x,action.y);assert.equal(C.advanceTrapsKing(next,next.pieces.find(p=>p.side===side&&p.kind==='king')),trapped);}
+  }
   assert.equal(JSON.stringify(s),raw);assert.deepEqual(copy(C.rankedActions(s)),ranked);
   const other=state(row,!rotated),mirrored=C.rankedActions(other);assert.equal(mirrored.length,ranked.length);
   for(const action of ranked){const match=mirrored.find(b=>same(b,rotate(action,true)));assert(match);assert(Math.abs(match.score-action.score)<1e-8);}
@@ -53,4 +64,4 @@ for(const row of fixture.cases)for(const rotated of [false,true]){
   }
   assert.equal(C.advanceTrapsKing(repeatedDraw,repeatedDraw.pieces.find(p=>p.kind==='king'&&p.side===side)),false,'重复调动直接判和时，不虚构后续封锁');
 }
-console.log('将帅单出口防线：两份完整合法历史、红黑旋转、'+branches+' 条实际后续分支、'+blocked+' 条蹩马腿阻止的进攻、全部行动评分、两种难度选步、真实无伤及重复判和与输入不变检查通过。');
+console.log('将帅单出口防线：两份完整历史、红黑旋转、'+branches+' 条实际后续分支、'+blocked+' 条蹩马腿阻止的进攻、旧安全落点的炮架风险及残血炮反杀对照、全部行动评分、两种难度、真实判和与输入不变检查通过。');

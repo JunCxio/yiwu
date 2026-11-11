@@ -37,14 +37,17 @@ for(const rotated of [false,true]){
       const pressure=[];
       for(const p of next.pieces.filter(p=>p.side!==side))for(const m of E.moves(next,p).filter(m=>!E.at(next,m.x,m.y))){
         const projected=copy(next);E.move(projected,p.id,m.x,m.y);if(projected.phase!=='board')continue;
-        const defender=E.get(projected,king.id),attacker=E.get(projected,p.id);
-        if(E.canMove(projected,attacker,defender.x,defender.y)&&threatened(projected,defender)&&!C.battleOutlook(projected,E.context(projected,attacker,defender)).counters.length&&!safeExits(projected,defender).length)pressure.push({type:'move',id:p.id,x:m.x,y:m.y});
+        const defender=E.get(projected,king.id);
+        if(threatened(projected,defender)&&!safeExits(projected,defender).length)pressure.push({type:'move',id:p.id,x:m.x,y:m.y});
       }
-      assert.deepEqual(pressure,same(action,bad)?row.pressures.map(rotate):[]);branches+=pressure.length;
+      const expected=same(action,bad)?row.pressures:[{type:'move',id:'black_horse_4',x:3,y:6}];
+      assert.deepEqual(pressure,expected.map(rotate));branches+=pressure.length;
       assert.equal(C.advanceTrapsKing(next,king),pressure.length>0);after.push(next);
     }
-    assert(ranked.find(a=>same(a,good)).score>ranked.find(a=>same(a,bad)).score+.06,'应区分零退路时下一手会被逼帅的同分落点');
-    for(const difficulty of ['standard','practice'])for(const roll of [0,.25,.5,.75,.999999])assert(!same(C.board(s,()=>roll,difficulty),bad));
+    assert(Math.abs(ranked.find(a=>same(a,good)).score-ranked.find(a=>same(a,bad)).score)<1e-8,'两个落点都有实际逼帅分支，不能把旧 safe 字段当作无风险');
+    const counter=copy(s);for(const p of counter.pieces)if(p.side!==side&&p.kind==='cannon')p.hp=1;
+    const counterRanked=C.rankedActions(counter);assert(counterRanked.find(a=>same(a,good)).score>counterRanked.find(a=>same(a,bad)).score+.06);
+    for(const difficulty of ['standard','practice'])for(const roll of [0,.25,.5,.75,.999999])assert(!same(C.board(counter,()=>roll,difficulty),bad));
     assert.equal(JSON.stringify(s),before);assert.deepEqual(copy(C.rankedActions(s)),ranked);
     const mirror=C.rankedActions(replay(!rotated));for(const a of ranked){const m=mirror.find(b=>same(b,{...a,x:8-a.x,y:9-a.y}));assert(m);assert(Math.abs(m.score-a.score)<1e-8);}
     for(const kind of ['own-turn','quiet-draw','repetition-draw']){
@@ -60,4 +63,4 @@ for(const rotated of [false,true]){
     console.log('通过：零退路风险'+(rotated?'红黑旋转':'完整历史')+'、真实压力分支、两难度、直接判和与输入不变');
   }catch(error){failures.push({rotated,message:error.message});console.error('失败：'+(rotated?'旋转':'原色')+'：'+error.message);}
 }
-assert.deepEqual(failures,[]);assert.equal(branches,4);console.log('零安全空位退路：2 组、4 条实际压力分支通过。');
+assert.deepEqual(failures,[]);assert.equal(branches,6);console.log('零安全空位退路：2 组、6 条实际压力分支、旧安全落点的炮架风险及残血炮反杀对照通过。');

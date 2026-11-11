@@ -133,7 +133,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.103 · 电脑走棋与将帅防线</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.104 · 电脑走棋与协同防守</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -673,19 +673,13 @@ globalThis.YiwuComputer = (() => {
   function advanceTrapsKing(s,king){
     return s.pieces.some(p=>{
       if(p.side===king.side)return false;
-      const sites=[],mover={...p},open={pieces:[king]};
-      // 先筛可能攻将的落点；炮只筛直线，炮架与阻挡仍由真实棋盘核对。
-      for(let y=0;y<10;y++)for(let x=0;x<9;x++){
-        mover.x=x;mover.y=y;
-        if(E.geometry(open,mover,king.x,king.y,p.kind!=='cannon')&&!E.at(s,x,y)&&E.canMove(s,p,x,y))sites.push({x,y});
-      }
-      return sites.some(m=>{
-        if(E.at(s,m.x,m.y))return false;
+      return E.moves(s,p).filter(m=>!E.at(s,m.x,m.y)).some(m=>{
         const projected={...s,pieces:s.pieces.map(q=>q.id===p.id?{...q,x:m.x,y:m.y}:q)};
-        if(!E.canMove(projected,E.get(projected,p.id),king.x,king.y))return false;
+        // 调动可能给另一枚棋子建立炮架或解除挡线，攻击者不一定是移动者。
+        if(!projected.pieces.some(q=>q.side!==king.side&&E.canMove(projected,q,king.x,king.y)))return false;
         const next={...s,pieces:s.pieces.map(q=>({...q})),repetitions:{...s.repetitions},log:[...s.log]};
         E.move(next,p.id,m.x,m.y);
-        if(next.phase!=='board'||battleOutlook(next,E.context(next,E.get(next,p.id),E.get(next,king.id))).counters.length)return false;
+        if(next.phase!=='board'||!threatCost(next,E.get(next,king.id)))return false;
         const defender=E.get(next,king.id);
         return E.moves(next,defender).filter(exit=>!E.at(next,exit.x,exit.y)).every(exit=>{
           const escaped={...next,pieces:next.pieces.map(q=>({...q})),repetitions:{...next.repetitions},log:[...next.log]};
@@ -832,9 +826,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.103',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.104',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.103-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.104-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -1534,7 +1528,7 @@ globalThis.YiwuComputer = (() => {
     return `<section class="advice" tabindex="-1" aria-label="${forMove?'落点变化与风险':'推荐理由与风险'}" role="status"><h3>${forMove?'落点预览 · ':''}${esc(advice.title)}</h3><h4>${forMove?'站位变化':'推荐依据'}</h4><ul>${advice.reasons.map(t=>'<li>'+esc(t)+'</li>').join('')}</ul><h4>风险与代价</h4><ul class="advice-risks">${advice.risks.map(t=>'<li>'+esc(t)+'</li>').join('')}</ul><p class="advice-note">${esc(advice.note)}</p></section>`;
   }
   function boardAdvice(action,forMove=false){
-    const advice={title:'走棋建议',reasons:[],risks:[],note:forMove?'按移动后的公开站位检查支援、对手首轮吃子机会与将帅两轮漏防；不预测暗招或更长序列。当前尚未移动，不消耗行动。':'依据当前站位、生命、可用牌和重复阵形推荐，并说明移动或整备后的首轮吃子风险；评分还会核对移动、整备及可确保存活的首轮吃子后的将帅漏防（对手下一次行动的武斗前两轮）。对手有安全空位退路时，降低追将收益；还会检查己方至多一条安全空位退路时的下一手逼帅风险，这不代表后续胜负。一般评分不保证武斗获胜；进攻将帅时另核对两轮确定胜局，不预知暗招或更长序列。'};
+    const advice={title:'走棋建议',reasons:[],risks:[],note:forMove?'按移动后的公开站位检查支援、对手首轮吃子机会与将帅两轮漏防；不预测暗招或更长序列。当前尚未移动，不消耗行动。':'依据当前站位、生命、可用牌和重复阵形推荐，并说明移动或整备后的首轮吃子风险；评分还会核对移动、整备及可确保存活的首轮吃子后的将帅漏防（对手下一次行动的武斗前两轮）。对手有安全空位退路时，降低追将收益；还会检查己方至多一条安全空位退路时的下一手逼帅风险，包含调动另一枚棋子建立炮架或解除挡线；这不代表后续胜负。一般评分不保证武斗获胜；进攻将帅时另核对两轮确定胜局，不预知暗招或更长序列。'};
     const next=previewBoardAction(action),risk=actionOutcomeRisk(action,next);if(risk)advice.risks.push(risk);
     if(action.type==='pass')advice.reasons.push('当前没有合法移动或可整备招式，只能跳过受阻回合。');
     if(next?.phase==='ended'){
