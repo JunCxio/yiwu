@@ -1,0 +1,448 @@
+{
+  "source": "docs/data/balance-0.6.97.json",
+  "sourceSHA256": "65781dfbffe27b1bdb1ca3b76c21e4c9d17e4c820a132143c78b99a648d561fc",
+  "cases": [
+    {
+      "input": {
+        "scenario": "quick",
+        "style": "default",
+        "comparator": "attack",
+        "aVariant": 0,
+        "bVariant": 0,
+        "replicate": 0,
+        "aSide": "black",
+        "seedA": 1823371547,
+        "seedB": 3113439083
+      },
+      "ply": 16,
+      "commands": [
+        [
+          "create",
+          "quick"
+        ],
+        [
+          "learn",
+          "red_rook_3",
+          "rook_crush"
+        ],
+        [
+          "learn",
+          "red_rook_3",
+          "rook_hold"
+        ],
+        [
+          "learn",
+          "red_horse_4",
+          "horse_join"
+        ],
+        [
+          "learn",
+          "red_horse_4",
+          "horse_evade"
+        ],
+        [
+          "learn",
+          "red_cannon_5",
+          "cannon_screen"
+        ],
+        [
+          "learn",
+          "red_cannon_5",
+          "cannon_hold"
+        ],
+        [
+          "learn",
+          "black_guard_1",
+          "guard_palace"
+        ],
+        [
+          "learn",
+          "black_elephant_2",
+          "elephant_step"
+        ],
+        [
+          "learn",
+          "black_rook_3",
+          "rook_crush"
+        ],
+        [
+          "learn",
+          "black_horse_4",
+          "horse_evade"
+        ],
+        [
+          "learn",
+          "black_cannon_5",
+          "cannon_pressure"
+        ],
+        [
+          "learn",
+          "black_pawn_6",
+          "pawn_grit"
+        ],
+        [
+          "start"
+        ],
+        [
+          "move",
+          "red_cannon_5",
+          4,
+          7
+        ],
+        [
+          "move",
+          "black_cannon_5",
+          4,
+          2
+        ],
+        [
+          "move",
+          "red_horse_4",
+          2,
+          7
+        ],
+        [
+          "move",
+          "black_horse_4",
+          6,
+          2
+        ],
+        [
+          "move",
+          "red_rook_3",
+          0,
+          7
+        ],
+        [
+          "move",
+          "black_rook_3",
+          8,
+          2
+        ],
+        [
+          "move",
+          "red_rook_3",
+          1,
+          7
+        ],
+        [
+          "move",
+          "black_rook_3",
+          7,
+          2
+        ],
+        [
+          "move",
+          "red_rook_3",
+          1,
+          0
+        ],
+        [
+          "move",
+          "black_rook_3",
+          7,
+          9
+        ],
+        [
+          "move",
+          "red_pawn_6",
+          0,
+          5
+        ],
+        [
+          "move",
+          "black_cannon_5",
+          2,
+          2
+        ],
+        [
+          "move",
+          "red_rook_3",
+          2,
+          0
+        ],
+        [
+          "move",
+          "black_horse_4",
+          4,
+          1
+        ],
+        [
+          "move",
+          "red_rook_3",
+          2,
+          1
+        ]
+      ],
+      "danger": {
+        "type": "move",
+        "id": "black_horse_4",
+        "x": 3,
+        "y": 3
+      },
+      "safe": {
+        "type": "move",
+        "id": "black_cannon_5",
+        "x": 4,
+        "y": 2
+      }
+    },
+    {
+      "input": {
+        "scenario": "quick",
+        "style": "attack",
+        "comparator": "defense",
+        "aVariant": 0,
+        "bVariant": 0,
+        "replicate": 0,
+        "aSide": "red",
+        "seedA": 673506861,
+        "seedB": 87179560
+      },
+      "ply": 28,
+      "commands": [
+        [
+          "create",
+          "quick"
+        ],
+        [
+          "learn",
+          "red_rook_3",
+          "rook_crush"
+        ],
+        [
+          "learn",
+          "red_rook_3",
+          "rook_hold"
+        ],
+        [
+          "learn",
+          "red_horse_4",
+          "horse_join"
+        ],
+        [
+          "learn",
+          "red_horse_4",
+          "horse_evade"
+        ],
+        [
+          "learn",
+          "red_cannon_5",
+          "cannon_screen"
+        ],
+        [
+          "learn",
+          "red_cannon_5",
+          "cannon_hold"
+        ],
+        [
+          "learn",
+          "black_guard_1",
+          "guard_palace"
+        ],
+        [
+          "learn",
+          "black_guard_1",
+          "guard_king"
+        ],
+        [
+          "learn",
+          "black_pawn_6",
+          "pawn_rank"
+        ],
+        [
+          "learn",
+          "black_pawn_6",
+          "pawn_advance"
+        ],
+        [
+          "learn",
+          "black_pawn_7",
+          "pawn_rank"
+        ],
+        [
+          "learn",
+          "black_pawn_7",
+          "pawn_advance"
+        ],
+        [
+          "start"
+        ],
+        [
+          "move",
+          "red_cannon_5",
+          4,
+          7
+        ],
+        [
+          "move",
+          "black_cannon_5",
+          4,
+          2
+        ],
+        [
+          "move",
+          "red_horse_4",
+          2,
+          7
+        ],
+        [
+          "move",
+          "black_horse_4",
+          6,
+          2
+        ],
+        [
+          "move",
+          "red_rook_3",
+          0,
+          7
+        ],
+        [
+          "move",
+          "black_rook_3",
+          8,
+          2
+        ],
+        [
+          "move",
+          "red_rook_3",
+          1,
+          7
+        ],
+        [
+          "move",
+          "black_pawn_6",
+          8,
+          4
+        ],
+        [
+          "move",
+          "red_rook_3",
+          1,
+          2
+        ],
+        [
+          "move",
+          "black_rook_3",
+          8,
+          3
+        ],
+        [
+          "move",
+          "red_pawn_6",
+          0,
+          5
+        ],
+        [
+          "move",
+          "black_rook_3",
+          5,
+          3
+        ],
+        [
+          "move",
+          "red_cannon_5",
+          5,
+          7
+        ],
+        [
+          "move",
+          "black_guard_1",
+          5,
+          1
+        ],
+        [
+          "move",
+          "red_rook_3",
+          1,
+          0
+        ],
+        [
+          "move",
+          "black_cannon_5",
+          4,
+          0
+        ],
+        [
+          "move",
+          "red_cannon_5",
+          4,
+          7
+        ],
+        [
+          "move",
+          "black_rook_3",
+          5,
+          9
+        ],
+        [
+          "move",
+          "red_rook_3",
+          1,
+          4
+        ],
+        [
+          "move",
+          "black_pawn_6",
+          8,
+          5
+        ],
+        [
+          "move",
+          "red_cannon_5",
+          5,
+          7
+        ],
+        [
+          "move",
+          "black_guard_1",
+          4,
+          2
+        ],
+        [
+          "move",
+          "red_rook_3",
+          5,
+          4
+        ],
+        [
+          "move",
+          "black_guard_1",
+          5,
+          1
+        ],
+        [
+          "move",
+          "red_rook_3",
+          6,
+          4
+        ],
+        [
+          "move",
+          "black_horse_4",
+          5,
+          4
+        ],
+        [
+          "move",
+          "red_cannon_5",
+          4,
+          7
+        ]
+      ],
+      "danger": {
+        "type": "move",
+        "id": "black_elephant_2",
+        "x": 8,
+        "y": 2
+      },
+      "safe": {
+        "type": "move",
+        "id": "black_cannon_5",
+        "x": 2,
+        "y": 0
+      }
+    }
+  ]
+}
