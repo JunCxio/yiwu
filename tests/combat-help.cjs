@@ -435,7 +435,7 @@ for(const ending of ['healthy','win','draw']){
   const before=JSON.stringify(s);box.state=s;
   const preview=vm.runInContext('s=state;selected="black_king_0";preview="red_king_0";previewHTML()',box);
   assert(preview.includes('两轮内胜局判断'));assert(preview.includes('可确保至迟下一轮获胜'));
-  assert(preview.includes('按揭示后的新状态选择下一轮必胜招式'));assert(preview.includes('上述两轮胜局判断已计入支援影响'));
+  assert(preview.includes('按揭示后的新状态选择下一轮必胜招式'));assert(preview.includes('上述两轮判断已计入支援影响'));
   assert(!preview.includes('换一个交战目标'));assert.equal(JSON.stringify(s),before);
 }
 

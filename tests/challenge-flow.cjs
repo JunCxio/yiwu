@@ -911,4 +911,13 @@ function mirroredSetup(state) {
   assert.equal(JSON.stringify(restored.ui.state),before);
   assert.deepEqual(JSON.parse(saved.getItem('yiwu.autosave')).commands,fixture.commands);
 }
-console.log('残局流程、走棋反馈与武斗确认：38 项检查通过；教学键盘入口与续局：2 组、教学完成衔接：2 组、武斗滚动：3 组、武斗焦点：3 组、默认配牌与旧续局：3 组、两轮预览续局隔离：1 组、棋盘操作焦点：3 组、规则窗口：2 组、吃子受攻预览续局：1 组检查通过。');
+{
+  const fixture=require('./computer-two-round-capture-fixture.json'),saved=storage();
+  saved.setItem('yiwu.autosave',JSON.stringify({version:1,commands:fixture.commands,ui:{opponent:'local',difficulty:'standard',selected:fixture.action.id,preview:'black_horse_1',setupSide:'red',focusIndex:66,lesson:null,fight:null}}));
+  const p=page(saved);p.node('resume').onclick();const before=JSON.stringify(p.ui.state),preview=p.node('preview-content').innerHTML;
+  assert(p.node('preview').open);assert(preview.includes('两轮内吃子判断'));assert(preview.includes('在两轮内击倒目标并保住进攻子'));assert(preview.includes('这不代表整局获胜'));
+  assert.deepEqual(JSON.parse(saved.getItem('yiwu.autosave')).commands,fixture.commands);
+  const restored=page(saved);restored.node('resume').onclick();assert.equal(restored.node('preview-content').innerHTML,preview);assert.equal(JSON.stringify(restored.ui.state),before);
+  restored.action('cancel-preview');assert(!restored.node('preview').open);assert.equal(JSON.stringify(restored.ui.state),before);assert.deepEqual(JSON.parse(saved.getItem('yiwu.autosave')).commands,fixture.commands);
+}
+console.log('残局流程、走棋反馈与武斗确认：38 项检查通过；教学键盘入口与续局：2 组、教学完成衔接：2 组、武斗滚动：3 组、武斗焦点：3 组、默认配牌与旧续局：3 组、两轮预览续局隔离：1 组、棋盘操作焦点：3 组、规则窗口：2 组、吃子受攻预览续局：1 组、普通两轮吃子预览续局：1 组检查通过。');

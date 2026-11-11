@@ -141,6 +141,7 @@ test('棋盘两轮检查不将同归于尽、普通目标或残局提前击将�
     const s=battle('king',0,mirrored,false),a=E.get(s,'royal'),d=E.get(s,'target');a.hp=1;d.hp=1;
     const before=JSON.stringify(s),action=C.rankedActions(s).find(x=>x.id===a.id&&x.x===d.x&&x.y===d.y);assert(action.score<1000);assert.equal(JSON.stringify(s),before);
     const ordinary=threatenedWin(mirrored);E.get(ordinary,'target').kind='rook';const target=E.get(ordinary,'target');
+    ordinary.pieces.push(E.piece('enemy_king',target.side,'king',4,mirrored?9:0));
     assert(C.rankedActions(ordinary).find(x=>x.id==='hero'&&x.x===target.x&&x.y===target.y).score<1000);
   }
   for(const scenario of Object.keys(E.CHALLENGES)){

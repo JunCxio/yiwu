@@ -133,7 +133,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.106 · 将帅退路与协同防守</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.107 · 两轮吃子与对局节奏</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -505,6 +505,34 @@ globalThis.YiwuComputer = (() => {
       return next.phase==='ended'?next.winner===side:next.phase==='duel'&&winningChoices(next,next.duel,side).length>0;
     }));
   }
+  function twoRoundCapturePlan(s){
+    if(s.phase!=='duel'||E.CHALLENGES[s.scenario])return [];
+    const ctx=s.duel,a=E.get(s,ctx.a),d=E.get(s,ctx.d);
+    // shortcut: 只搜索普通残血目标的当前及下一轮；更高生命的完整武斗仍需扩展搜索。
+    if(a.kind==='king'||d.kind==='king'||d.hp>(ctx.round===1?3:2))return [];
+    const side=a.side,king=s.pieces.find(p=>p.side===side&&p.kind==='king'),base=position(s,side);
+    function search(state,left){
+      const plans=[],context=state.duel,risk=threatCost(state,E.get(state,king.id));
+      for(const id of choices(state,E.get(state,a.id),context)){
+        const outcomes=[];
+        for(const reply of choices(state,E.get(state,d.id),context)){
+          const next=JSON.parse(JSON.stringify({...state,repetitions:null}));next.repetitions={...state.repetitions};E.resolve(next,id,reply);
+          if(E.get(next,a.id)&&!E.get(next,d.id)){
+            if(next.phase==='ended'){if(next.winner===E.OTHER[side])break;outcomes.push({score:next.winner==='draw'?-base:1000,rounds:1});}
+            else if(!kingLostNext(next,side)&&threatCost(next,E.get(next,king.id))<=risk)outcomes.push({score:position(next,side)-base+.8,rounds:1});
+            else break;
+          }else if(left>1&&next.phase==='duel'){
+            const second=search(next,left-1);if(!second.length)break;
+            outcomes.push({score:Math.max(...second.map(p=>p.score)),rounds:2});
+          }else break;
+        }
+        if(outcomes.length===choices(state,E.get(state,d.id),context).length)plans.push({id,score:Math.min(...outcomes.map(p=>p.score)),rounds:Math.max(...outcomes.map(p=>p.rounds))});
+      }
+      // 已可稳妥结束时直接吃子，保证第二轮兑现首轮找到的计划。
+      return plans.some(p=>p.rounds===1)?plans.filter(p=>p.rounds===1):plans;
+    }
+    return search(s,Math.min(2,7-ctx.round));
+  }
   function combatScore(s,ctx,aId,dId){
     const a=E.get(s,ctx.a),d=E.get(s,ctx.d);
     const end=combatOutcome(s,ctx,aId,dId);
@@ -590,7 +618,7 @@ globalThis.YiwuComputer = (() => {
     }
     const retreatScore=end?.winner==='draw'?0:end?.winner===a.side?1000:-.6;
     const matrix=rows.map(x=>cols.map(y=>x==='retreat'?retreatScore:combatScore(s,ctx,x,y))),ra=rows.map(()=>0),rd=cols.map(()=>0),sa=rows.map(()=>0),sd=cols.map(()=>0);
-    // shortcut: 仅对进攻将帅核对两轮确定胜局；需要更高难度时再扩大后续轮次搜索。
+    // shortcut: 武斗矩阵仅比较当前轮收益；完整后续策略仍需扩展搜索。
     for(let n=0;n<160;n++){
       const pa=distribution(ra),pd=distribution(rd),va=rows.map((_,i)=>cols.reduce((v,__,j)=>v+matrix[i][j]*pd[j],0));
       const vd=cols.map((_,j)=>rows.reduce((v,__,i)=>v+matrix[i][j]*pa[i],0)),v=va.reduce((v,x,i)=>v+x*pa[i],0);
@@ -626,10 +654,17 @@ globalThis.YiwuComputer = (() => {
         }
       }
     }
+    if(isA){
+      const captures=twoRoundCapturePlan(s).filter(p=>kept.some(x=>x.id===p.id));
+      if(captures.length){
+        const best=Math.max(...captures.map(p=>p.score));
+        kept=kept.filter(x=>captures.some(p=>p.id===x.id&&Math.abs(p.score-best)<1e-9));
+      }
+    }
     const replacements=endingCardReplacements(s,side,kept.map(x=>x.id));
     for(const [id,base]of replacements)kept.find(x=>x.id===base).weight+=kept.find(x=>x.id===id).weight;
     kept=kept.filter(x=>!replacements.has(x.id));
-    if(kept.length&&kept.length<plan.length){const total=kept.reduce((n,x)=>n+x.weight,0);return kept.map(x=>({id:x.id,weight:x.weight/total}));}
+    if(kept.length&&kept.length<plan.length){const total=kept.reduce((n,x)=>n+x.weight,0);return kept.map(x=>({id:x.id,weight:total?x.weight/total:1/kept.length}));}
     return plan;
   }
   function sample(list,rng){let roll=rng();for(const item of list){roll-=item.weight;if(roll<=0)return item.id;}return list[list.length-1].id;}
@@ -652,7 +687,7 @@ globalThis.YiwuComputer = (() => {
       return (end?'撤回直接结束本局：'+(end.winner==='draw'?'判和':E.SIDE[end.winner]+'获胜')+'。'+end.reason:'主动撤回以保留棋子和当前生命，不再结算本轮伤害。')+'伤势与耗尽牌保留，气势清零。';
     }
     const c=E.BASE[id]||E.CARDS[id];
-    return (difficulty==='practice'?'练习电脑在可用招式类型之间等概率选择，再从该类中选一招；不针对历史出招调整。':'标准电脑优先抓住可确认的获胜机会；普通棋子交战有替代时，优先避免战后将帅新增受攻或下一手被确定击倒，再比较本轮收益与已揭示历史。进攻将帅时另核对两轮确定胜局。')+'本轮选择「'+c.name+'」：'+c.text;
+    return (difficulty==='practice'?'练习电脑在可用招式类型之间等概率选择，再从该类中选一招；不针对历史出招调整。':'标准电脑优先抓住可确认的获胜机会；普通棋子交战有替代时，优先避免战后将帅新增受攻或下一手被确定击倒，再比较本轮收益与已揭示历史。进攻将帅时另核对两轮确定胜局，进攻普通残血目标时核对两轮存活吃子。')+'本轮选择「'+c.name+'」：'+c.text;
   }
   function bothCanEndWithoutLosing(s,ctx){
     const a=E.get(s,ctx.a),d=E.get(s,ctx.d);
@@ -776,6 +811,10 @@ globalThis.YiwuComputer = (() => {
               return result.phase==='ended'?(result.winner==='draw'?-base:result.winner===side?1000:-1000):position(result,side)-base+.8;
             }))));
           }
+          if(!outlook.finishes.length&&p.kind!=='king'&&target.kind!=='king'&&target.hp<=3&&!E.CHALLENGES[s.scenario]){
+            const duel=JSON.parse(JSON.stringify({...s,repetitions:null}));duel.repetitions={...s.repetitions};E.move(duel,p.id,target.x,target.y);
+            const captures=twoRoundCapturePlan(duel);if(captures.length)score=Math.max(...captures.map(p=>p.score));
+          }
           if(winningChoices(s,ctx,side).length)score=1000;
           else if(bothCanEndWithoutLosing(s,ctx))score=-base;
           else if(target.kind==='king'&&!E.CHALLENGES[s.scenario]){
@@ -804,7 +843,7 @@ globalThis.YiwuComputer = (() => {
     if(difficulty==='practice')near=near.slice(0,3);
     return near[Math.min(near.length-1,Math.floor(rng()*near.length))];
   }
-  return {actions,choices,twoRoundWinningChoices,battleOutlook,captureLosesKing,kingLostNext,combatOutcome,combatPlan,practicePlan,combat,explain,rankedActions,board};
+  return {actions,choices,twoRoundCapturePlan,twoRoundWinningChoices,battleOutlook,captureLosesKing,kingLostNext,combatOutcome,combatPlan,practicePlan,combat,explain,rankedActions,board};
 })();
 </script>
 <script>
@@ -828,9 +867,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.106',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.107',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.106-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.107-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -1159,14 +1198,16 @@ globalThis.YiwuComputer = (() => {
         if(followUp)break;
       }
     }
-    let twoRound=[];
+    let twoRound=[],captures=[];
     if(!out.finishes.length&&s.phase==='board'&&d.kind==='king'&&!E.CHALLENGES[s.scenario]){
       const next=JSON.parse(JSON.stringify(s));Yiwu.move(next,a.id,d.x,d.y);
       twoRound=C.twoRoundWinningChoices(next,a.side);
+    }else if(!out.finishes.length&&s.phase==='board'&&a.kind!=='king'&&d.kind!=='king'&&!E.CHALLENGES[s.scenario]){
+      const next=JSON.parse(JSON.stringify(s));Yiwu.move(next,a.id,d.x,d.y);captures=C.twoRoundCapturePlan(next).map(p=>p.id);
     }
     return {
-      reason:out.finishes.length?'首轮使用'+names(out.finishes)+'，可在守方所有合法回应下击倒目标，并保住进攻子。':twoRound.length?'首轮使用'+names(twoRound)+'，可确保至迟下一轮获胜；若本轮未结束，需按揭示后的新状态选择下一轮必胜招式。':'',
-      risk,followUp,twoRound:twoRound.length>0
+      reason:out.finishes.length?'首轮使用'+names(out.finishes)+'，可在守方所有合法回应下击倒目标，并保住进攻子。':twoRound.length?'首轮使用'+names(twoRound)+'，可确保至迟下一轮获胜；若本轮未结束，需按揭示后的新状态选择下一轮必胜招式。':captures.length?'首轮使用'+names(captures)+'，可在两轮内击倒目标并保住进攻子；若本轮未结束，需按揭示后的新状态选择下一轮吃子招式。这不代表整局获胜，后续局面仍需判断。':'',
+      risk,followUp,twoRound:twoRound.length>0,capture:captures.length>0
     };
   }
   function challengeCombatHTML(ctx,compact=false){
@@ -1202,7 +1243,7 @@ globalThis.YiwuComputer = (() => {
       const p=E.get(s,selected);
       const d=E.get(s,preview),ctx=E.context(s,p,d),opening=openingAdvice(ctx);
       const risk=actionOutcomeRisk({type:'move',id:p.id,x:d.x,y:d.y}),edgeRisk=pawnEndRankRisk(p,d.y,true);
-      return `<div class="preview-header"><h2 id="preview-title">交战预览</h2><p>${E.label(p)} 进攻 ${E.label(d)}</p></div><div class="preview-body">${challengeCombatHTML(ctx)}${risk?'<p class="draw-warning" role="status">'+esc(risk)+'</p>':''}${edgeRisk?'<p class="preview-risk">'+esc(edgeRisk)+'</p>':''}<div class="stats"><div><b>${p.hp}</b><small>进攻方生命</small></div><div><b>${d.hp}</b><small>守方生命</small></div><div><b>6</b><small>最多轮数</small></div></div><div class="card"><h3>进攻方输出 ${E.power(ctx,true)}</h3>${supportDetailsHTML(ctx,true)}</div><div class="card"><h3>守方输出 ${E.power(ctx,false)}</h3>${supportDetailsHTML(ctx,false)}</div><div class="card"><h3>${opening.twoRound?'两轮内胜局判断':'首轮判断'}</h3>${opening.reason?'<p>'+esc(opening.reason)+'</p>':''}${opening.risk?'<p class="preview-risk">'+esc(opening.risk)+'</p>':''}${opening.followUp?'<p class="preview-risk">'+esc(opening.followUp)+'</p>':''}${!opening.reason&&!opening.risk?'<p>未发现可确保首轮击倒的招式。双方仍需按克制选择。</p>':''}<p class="tip">首轮判断覆盖双方全部可用招式，进攻将帅时另核对两轮确定胜局；漏防检查只延伸到吃子后的对手下一手（武斗前两轮），不预测暗招或更长序列。</p></div>${E.power(ctx,true)<E.power(ctx,false)?'<p class="preview-risk">对方支援更多：输出 '+E.power(ctx,true)+' 对 '+E.power(ctx,false)+'。'+(opening.twoRound?'上述两轮胜局判断已计入支援影响。':'可先调动友军支援，或换一个交战目标。')+'</p>':''}<p class="tip">进攻方首轮有效伤害加 1。支援关系在开战时固定；伤势和招式消耗保留。</p></div><div class="preview-actions"><button class="quiet" data-action="cancel-preview">取消进攻</button>${lesson?.stage==='support-preview'?'<button class="primary lesson-target" data-action="lesson-finish">完成教学</button>':'<button class="primary'+(lesson?' lesson-target':'')+'" data-action="attack">发起武斗</button>'}</div>`;
+      return `<div class="preview-header"><h2 id="preview-title">交战预览</h2><p>${E.label(p)} 进攻 ${E.label(d)}</p></div><div class="preview-body">${challengeCombatHTML(ctx)}${risk?'<p class="draw-warning" role="status">'+esc(risk)+'</p>':''}${edgeRisk?'<p class="preview-risk">'+esc(edgeRisk)+'</p>':''}<div class="stats"><div><b>${p.hp}</b><small>进攻方生命</small></div><div><b>${d.hp}</b><small>守方生命</small></div><div><b>6</b><small>最多轮数</small></div></div><div class="card"><h3>进攻方输出 ${E.power(ctx,true)}</h3>${supportDetailsHTML(ctx,true)}</div><div class="card"><h3>守方输出 ${E.power(ctx,false)}</h3>${supportDetailsHTML(ctx,false)}</div><div class="card"><h3>${opening.capture?'两轮内吃子判断':opening.twoRound?'两轮内胜局判断':'首轮判断'}</h3>${opening.reason?'<p>'+esc(opening.reason)+'</p>':''}${opening.risk?'<p class="preview-risk">'+esc(opening.risk)+'</p>':''}${opening.followUp?'<p class="preview-risk">'+esc(opening.followUp)+'</p>':''}${!opening.reason&&!opening.risk?'<p>未发现可确保首轮击倒的招式。双方仍需按克制选择。</p>':''}<p class="tip">首轮判断覆盖双方全部可用招式；进攻将帅另核对两轮确定胜局，进攻普通残血目标另核对两轮存活吃子。后者不增加当前将帅受攻程度，并排除吃子后下一手的两轮确定丢将。漏防检查只延伸到吃子后的对手下一手（武斗前两轮），不预测暗招或更长序列。</p></div>${E.power(ctx,true)<E.power(ctx,false)?'<p class="preview-risk">对方支援更多：输出 '+E.power(ctx,true)+' 对 '+E.power(ctx,false)+'。'+(opening.twoRound||opening.capture?'上述两轮判断已计入支援影响。':'可先调动友军支援，或换一个交战目标。')+'</p>':''}<p class="tip">进攻方首轮有效伤害加 1。支援关系在开战时固定；伤势和招式消耗保留。</p></div><div class="preview-actions"><button class="quiet" data-action="cancel-preview">取消进攻</button>${lesson?.stage==='support-preview'?'<button class="primary lesson-target" data-action="lesson-finish">完成教学</button>':'<button class="primary'+(lesson?' lesson-target':'')+'" data-action="attack">发起武斗</button>'}</div>`;
   }
   function cardTargets(p,id){
     const targets=s.pieces.filter(q=>q.side!==p.side&&E.canMove(s,p,q.x,q.y));
@@ -1530,7 +1571,7 @@ globalThis.YiwuComputer = (() => {
     return `<section class="advice" tabindex="-1" aria-label="${forMove?'落点变化与风险':'推荐理由与风险'}" role="status"><h3>${forMove?'落点预览 · ':''}${esc(advice.title)}</h3><h4>${forMove?'站位变化':'推荐依据'}</h4><ul>${advice.reasons.map(t=>'<li>'+esc(t)+'</li>').join('')}</ul><h4>风险与代价</h4><ul class="advice-risks">${advice.risks.map(t=>'<li>'+esc(t)+'</li>').join('')}</ul><p class="advice-note">${esc(advice.note)}</p></section>`;
   }
   function boardAdvice(action,forMove=false){
-    const advice={title:'走棋建议',reasons:[],risks:[],note:forMove?'按移动后的公开站位检查支援、对手首轮吃子机会与将帅两轮漏防；不预测暗招或更长序列。当前尚未移动，不消耗行动。':'依据当前站位、生命、可用牌和重复阵形推荐，并说明移动或整备后的首轮吃子风险；评分还会核对移动、整备及可确保存活的首轮吃子后的将帅漏防（对手下一次行动的武斗前两轮）。对手有安全空位退路时，降低追将收益；还会检查对手下一手调子后，将帅受攻且全部安全空位退路被封住的风险，包含建立炮架或解除挡线；不等于判定将死，尚未推演其他棋子救援；普通交战还按平均伤害估计战后站位，检查新增逼帅风险；估计可能与实际武斗不同。这不代表后续胜负。一般评分不保证武斗获胜；进攻将帅时另核对两轮确定胜局，不预知暗招或更长序列。'};
+    const advice={title:'走棋建议',reasons:[],risks:[],note:forMove?'按移动后的公开站位检查支援、对手首轮吃子机会与将帅两轮漏防；不预测暗招或更长序列。当前尚未移动，不消耗行动。':'依据当前站位、生命、可用牌和重复阵形推荐，并说明移动或整备后的首轮吃子风险；评分还会核对移动、整备及可确保存活的首轮吃子后的将帅漏防（对手下一次行动的武斗前两轮）。对手有安全空位退路时，降低追将收益；还会检查对手下一手调子后，将帅受攻且全部安全空位退路被封住的风险，包含建立炮架或解除挡线；不等于判定将死，尚未推演其他棋子救援；未找到可靠吃子方案时，普通交战还按平均伤害估计战后站位，检查新增逼帅风险；估计可能与实际武斗不同。这不代表后续胜负。一般评分不保证武斗获胜；进攻将帅时另核对两轮确定胜局，进攻普通残血目标时另核对两轮存活吃子，不预知暗招或更长序列。'};
     const next=previewBoardAction(action),risk=actionOutcomeRisk(action,next);if(risk)advice.risks.push(risk);
     if(action.type==='pass')advice.reasons.push('当前没有合法移动或可整备招式，只能跳过受阻回合。');
     if(next?.phase==='ended'){
@@ -1624,6 +1665,7 @@ globalThis.YiwuComputer = (() => {
     if(!rows.every(r=>r.damage>=enemy.hp&&(who.kind!=='king'||r.loss<who.hp))&&C.twoRoundWinningChoices(s,who.side).includes(id)){
       advice.reasons.push('本招能确保至迟下一轮获胜；若本轮未结束，需按揭示后的新状态选择下一轮必胜招式。');
     }
+    if(isA&&!rows.every(r=>r.damage>=enemy.hp&&r.loss<who.hp)&&C.twoRoundCapturePlan(s).some(p=>p.id===id))advice.reasons.push('本招能在两轮内击倒目标并保住进攻子；若本轮未结束，需按揭示后的状态选择下一轮吃子招式。这不代表整局获胜。');
     const range=values=>{const lo=Math.min(...values),hi=Math.max(...values);return lo===hi?String(lo):lo+'–'+hi;};
     const countered=rows.filter(r=>r.loses),dead=rows.filter(r=>r.loss>=who.hp),mutual=dead.filter(r=>r.damage>=enemy.hp);
     advice.reasons.push('面对全部合法回应，本轮可造成 '+range(rows.map(r=>Math.min(enemy.hp,r.damage)))+' 点伤害，自身损失 '+range(rows.map(r=>Math.min(who.hp,r.loss)))+' 点生命。');
