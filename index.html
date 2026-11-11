@@ -133,7 +133,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.105 · 普通交战与将帅防守</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.106 · 将帅退路与协同防守</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -691,12 +691,12 @@ globalThis.YiwuComputer = (() => {
   }
   function kingMobilityCost(s,king,risk){
     if(!king||risk||E.CHALLENGES[s.scenario])return 0;
-    // shortcut: 仅检查空位退路与至多一个出口被下一手进攻封住的情况，完整救援需扩展走棋搜索。
+    // shortcut: 仅检查将帅空位退路及下一手调子后的受攻；其他棋子救援需扩展走棋搜索。
     const exits=E.moves(s,king).filter(m=>!E.at(s,m.x,m.y)).filter(m=>{
       const next={...s,pieces:s.pieces.map(p=>p.id===king.id?{...p,x:m.x,y:m.y}:p)};
       return !threatCost(next,E.get(next,king.id));
     });
-    return VALUE.king*.07*((!exits.length?1:0)+(exits.length<=1&&s.turn!==king.side&&advanceTrapsKing(s,king)?1:0));
+    return VALUE.king*.07*((!exits.length?1:0)+(s.turn!==king.side&&advanceTrapsKing(s,king)?1:0));
   }
   function position(s,side,repeated=false){
     const king=s.pieces.find(p=>p.side===side&&p.kind==='king'),kingRisk=king?threatCost(s,king):0;
@@ -828,9 +828,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.105',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.106',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.105-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.106-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -1530,7 +1530,7 @@ globalThis.YiwuComputer = (() => {
     return `<section class="advice" tabindex="-1" aria-label="${forMove?'落点变化与风险':'推荐理由与风险'}" role="status"><h3>${forMove?'落点预览 · ':''}${esc(advice.title)}</h3><h4>${forMove?'站位变化':'推荐依据'}</h4><ul>${advice.reasons.map(t=>'<li>'+esc(t)+'</li>').join('')}</ul><h4>风险与代价</h4><ul class="advice-risks">${advice.risks.map(t=>'<li>'+esc(t)+'</li>').join('')}</ul><p class="advice-note">${esc(advice.note)}</p></section>`;
   }
   function boardAdvice(action,forMove=false){
-    const advice={title:'走棋建议',reasons:[],risks:[],note:forMove?'按移动后的公开站位检查支援、对手首轮吃子机会与将帅两轮漏防；不预测暗招或更长序列。当前尚未移动，不消耗行动。':'依据当前站位、生命、可用牌和重复阵形推荐，并说明移动或整备后的首轮吃子风险；评分还会核对移动、整备及可确保存活的首轮吃子后的将帅漏防（对手下一次行动的武斗前两轮）。对手有安全空位退路时，降低追将收益；还会检查己方至多一条安全空位退路时的下一手逼帅风险，包含调动另一枚棋子建立炮架或解除挡线；普通交战还按平均伤害估计战后站位，检查新增逼帅风险；估计可能与实际武斗不同。这不代表后续胜负。一般评分不保证武斗获胜；进攻将帅时另核对两轮确定胜局，不预知暗招或更长序列。'};
+    const advice={title:'走棋建议',reasons:[],risks:[],note:forMove?'按移动后的公开站位检查支援、对手首轮吃子机会与将帅两轮漏防；不预测暗招或更长序列。当前尚未移动，不消耗行动。':'依据当前站位、生命、可用牌和重复阵形推荐，并说明移动或整备后的首轮吃子风险；评分还会核对移动、整备及可确保存活的首轮吃子后的将帅漏防（对手下一次行动的武斗前两轮）。对手有安全空位退路时，降低追将收益；还会检查对手下一手调子后，将帅受攻且全部安全空位退路被封住的风险，包含建立炮架或解除挡线；不等于判定将死，尚未推演其他棋子救援；普通交战还按平均伤害估计战后站位，检查新增逼帅风险；估计可能与实际武斗不同。这不代表后续胜负。一般评分不保证武斗获胜；进攻将帅时另核对两轮确定胜局，不预知暗招或更长序列。'};
     const next=previewBoardAction(action),risk=actionOutcomeRisk(action,next);if(risk)advice.risks.push(risk);
     if(action.type==='pass')advice.reasons.push('当前没有合法移动或可整备招式，只能跳过受阻回合。');
     if(next?.phase==='ended'){

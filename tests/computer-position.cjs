@@ -3,19 +3,19 @@ const file=process.argv[2]||path.join(__dirname,'..','index.html'),html=fs.readF
 vm.runInContext(scripts[0],box);
 // 仅在测试上下文中访问内部评分，不为游戏增加接口。
 const original='return {actions,choices',exposed='return {position,actions,choices';assert(scripts[1].includes(original));vm.runInContext(scripts[1].replace(original,exposed),box);
-const E=box.Yiwu,C=box.YiwuComputer,support=E.support;let calls=[];
-E.support=(state,p,...args)=>{calls.push(p.id);return support(state,p,...args);};
-function scene(rows){const s=E.create('attrition');s.pieces=rows.map(([id,side,kind,x,y,hp])=>Object.assign(E.piece(id,side,kind,x,y),{hp}));return s;}
+const E=box.Yiwu,C=box.YiwuComputer,support=E.support;let calls=[],projectedCalls=[],observedState;
+E.support=(state,p,...args)=>{(state===observedState?calls:projectedCalls).push(p.id);return support(state,p,...args);};
+function scene(rows){const s=E.create('attrition');s.pieces=rows.map(([id,side,kind,x,y,hp])=>Object.assign(E.piece(id,side,kind,x,y),{hp}));observedState=s;return s;}
 const kings=[['rk','red','king',3,9,18],['bk','black','king',5,0,18]];
 let passed=0;function test(name,fn){fn();passed++;console.log('通过：'+name);}
 test('没有敌方走法威胁时无需查询防守支援，镜像阵形评分相抵',()=>{
   const s=scene([...kings,['rp','red','pawn',4,6,18],['bp','black','pawn',4,3,18]]),before=JSON.stringify(s);calls=[];
   assert(Math.abs(C.position(s,'red'))<1e-8);assert(Math.abs(C.position(s,'black'))<1e-8);assert.deepEqual(calls,[]);assert.equal(JSON.stringify(s),before);
 });
-test('双方伤子受威胁时仍计算支援减免，评分与既有结果一致',()=>{
+test('当前站位的伤子支援评分不变，下一手预演另核对将帅支援',()=>{
   const s=scene([...kings,['rr','red','rook',0,5,14],['bp','black','pawn',0,4,9],['support_r','red','pawn',0,6,18],['support_b','black','rook',0,0,18]]),before=JSON.stringify(s);
   for(const side of ['red','black'])for(const repeated of [false,true]){
-    calls=[];assert(Math.abs(C.position(s,side,repeated)-(side==='red'?.635:-.635))<1e-8);assert.deepEqual(calls,['rr','bp']);
+    calls=[];projectedCalls=[];assert(Math.abs(C.position(s,side,repeated)-(side==='red'?.635:-.635))<1e-8);assert.deepEqual(calls,['rr','bp']);assert(projectedCalls.every(id=>id==='bk'));
   }
   assert.equal(JSON.stringify(s),before);
 });
