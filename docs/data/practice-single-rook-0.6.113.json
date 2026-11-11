@@ -1,0 +1,1838 @@
+{
+  "sourceSHA256": "4dbc3e436204f50883a9b9d27a1010466c2e0d62d73c624a42a3430188aedbdd",
+  "referenceInput": {
+    "difficulty": "practice",
+    "group": "batch1",
+    "scenario": "quick",
+    "replicate": 2,
+    "style": "attack",
+    "comparator": "spread",
+    "aVariant": 2,
+    "bVariant": 2,
+    "aSide": "red",
+    "seedA": 3850985446,
+    "seedB": 2678169133,
+    "models": {
+      "red": "baseline",
+      "black": "baseline"
+    }
+  },
+  "limits": {
+    "plies": 2000,
+    "steps": 14000
+  },
+  "runs": [
+    {
+      "input": {
+        "difficulty": "practice",
+        "group": "batch1",
+        "scenario": "quick",
+        "replicate": 2,
+        "style": "attack",
+        "comparator": "spread",
+        "aVariant": 2,
+        "bVariant": 2,
+        "aSide": "red",
+        "seedA": 3850985446,
+        "seedB": 2678169133,
+        "models": {
+          "red": "baseline",
+          "black": "baseline"
+        },
+        "transfer": null
+      },
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "plies": 80,
+      "moves": 76,
+      "rests": 0,
+      "passes": 0,
+      "battles": 4,
+      "rounds": 7,
+      "retreats": 3,
+      "reversals": 10,
+      "pieceActivity": {
+        "red_king_0": {
+          "side": "red",
+          "kind": "king",
+          "cards": [],
+          "moves": 7,
+          "rests": 0,
+          "attacks": 0,
+          "defenses": 4,
+          "damage": 17,
+          "captures": 0,
+          "cardUses": 0
+        },
+        "red_guard_1": {
+          "side": "red",
+          "kind": "guard",
+          "cards": [],
+          "moves": 2,
+          "rests": 0,
+          "attacks": 0,
+          "defenses": 0,
+          "damage": 0,
+          "captures": 0,
+          "cardUses": 0
+        },
+        "red_elephant_2": {
+          "side": "red",
+          "kind": "elephant",
+          "cards": [],
+          "moves": 1,
+          "rests": 0,
+          "attacks": 0,
+          "defenses": 0,
+          "damage": 0,
+          "captures": 0,
+          "cardUses": 0
+        },
+        "red_rook_3": {
+          "side": "red",
+          "kind": "rook",
+          "cards": [
+            "rook_hold",
+            "rook_lock"
+          ],
+          "moves": 12,
+          "rests": 0,
+          "attacks": 0,
+          "defenses": 0,
+          "damage": 0,
+          "captures": 0,
+          "cardUses": 0
+        },
+        "red_horse_4": {
+          "side": "red",
+          "kind": "horse",
+          "cards": [
+            "horse_evade",
+            "horse_turn"
+          ],
+          "moves": 6,
+          "rests": 0,
+          "attacks": 0,
+          "defenses": 0,
+          "damage": 0,
+          "captures": 0,
+          "cardUses": 0
+        },
+        "red_cannon_5": {
+          "side": "red",
+          "kind": "cannon",
+          "cards": [
+            "cannon_hold",
+            "cannon_pressure"
+          ],
+          "moves": 9,
+          "rests": 0,
+          "attacks": 0,
+          "defenses": 0,
+          "damage": 0,
+          "captures": 0,
+          "cardUses": 0
+        },
+        "red_pawn_6": {
+          "side": "red",
+          "kind": "pawn",
+          "cards": [],
+          "moves": 3,
+          "rests": 0,
+          "attacks": 0,
+          "defenses": 0,
+          "damage": 0,
+          "captures": 0,
+          "cardUses": 0
+        },
+        "red_pawn_7": {
+          "side": "red",
+          "kind": "pawn",
+          "cards": [],
+          "moves": 0,
+          "rests": 0,
+          "attacks": 0,
+          "defenses": 0,
+          "damage": 0,
+          "captures": 0,
+          "cardUses": 0
+        },
+        "black_king_0": {
+          "side": "black",
+          "kind": "king",
+          "cards": [],
+          "moves": 0,
+          "rests": 0,
+          "attacks": 0,
+          "defenses": 0,
+          "damage": 0,
+          "captures": 0,
+          "cardUses": 0
+        },
+        "black_guard_1": {
+          "side": "black",
+          "kind": "guard",
+          "cards": [
+            "guard_king"
+          ],
+          "moves": 0,
+          "rests": 0,
+          "attacks": 0,
+          "defenses": 0,
+          "damage": 0,
+          "captures": 0,
+          "cardUses": 0
+        },
+        "black_elephant_2": {
+          "side": "black",
+          "kind": "elephant",
+          "cards": [],
+          "moves": 1,
+          "rests": 0,
+          "attacks": 0,
+          "defenses": 0,
+          "damage": 0,
+          "captures": 0,
+          "cardUses": 0
+        },
+        "black_rook_3": {
+          "side": "black",
+          "kind": "rook",
+          "cards": [
+            "rook_lock"
+          ],
+          "moves": 12,
+          "rests": 0,
+          "attacks": 4,
+          "defenses": 0,
+          "damage": 18,
+          "captures": 1,
+          "cardUses": 1
+        },
+        "black_horse_4": {
+          "side": "black",
+          "kind": "horse",
+          "cards": [
+            "horse_join"
+          ],
+          "moves": 12,
+          "rests": 0,
+          "attacks": 0,
+          "defenses": 0,
+          "damage": 0,
+          "captures": 0,
+          "cardUses": 0
+        },
+        "black_cannon_5": {
+          "side": "black",
+          "kind": "cannon",
+          "cards": [
+            "cannon_hold"
+          ],
+          "moves": 11,
+          "rests": 0,
+          "attacks": 0,
+          "defenses": 0,
+          "damage": 0,
+          "captures": 0,
+          "cardUses": 0
+        },
+        "black_pawn_6": {
+          "side": "black",
+          "kind": "pawn",
+          "cards": [
+            "pawn_grit"
+          ],
+          "moves": 0,
+          "rests": 0,
+          "attacks": 0,
+          "defenses": 0,
+          "damage": 0,
+          "captures": 0,
+          "cardUses": 0
+        },
+        "black_pawn_7": {
+          "side": "black",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank"
+          ],
+          "moves": 0,
+          "rests": 0,
+          "attacks": 0,
+          "defenses": 0,
+          "damage": 0,
+          "captures": 0,
+          "cardUses": 0
+        }
+      },
+      "contexts": [
+        {
+          "ply": 70,
+          "attacker": "black_rook_3",
+          "defender": "red_king_0",
+          "powerA": 3,
+          "powerD": 4,
+          "supportA": [],
+          "supportD": [
+            "red_cannon_5"
+          ]
+        },
+        {
+          "ply": 76,
+          "attacker": "black_rook_3",
+          "defender": "red_king_0",
+          "powerA": 3,
+          "powerD": 5,
+          "supportA": [],
+          "supportD": [
+            "red_guard_1",
+            "red_rook_3"
+          ]
+        },
+        {
+          "ply": 78,
+          "attacker": "black_rook_3",
+          "defender": "red_king_0",
+          "powerA": 3,
+          "powerD": 5,
+          "supportA": [],
+          "supportD": [
+            "red_guard_1",
+            "red_rook_3"
+          ]
+        },
+        {
+          "ply": 80,
+          "attacker": "black_rook_3",
+          "defender": "red_king_0",
+          "powerA": 3,
+          "powerD": 5,
+          "supportA": [],
+          "supportD": [
+            "red_guard_1",
+            "red_rook_3"
+          ]
+        }
+      ],
+      "commands": [
+        [
+          "create",
+          "quick"
+        ],
+        [
+          "learn",
+          "red_rook_3",
+          "rook_hold"
+        ],
+        [
+          "learn",
+          "red_rook_3",
+          "rook_lock"
+        ],
+        [
+          "learn",
+          "red_horse_4",
+          "horse_evade"
+        ],
+        [
+          "learn",
+          "red_horse_4",
+          "horse_turn"
+        ],
+        [
+          "learn",
+          "red_cannon_5",
+          "cannon_hold"
+        ],
+        [
+          "learn",
+          "red_cannon_5",
+          "cannon_pressure"
+        ],
+        [
+          "learn",
+          "black_guard_1",
+          "guard_king"
+        ],
+        [
+          "learn",
+          "black_rook_3",
+          "rook_lock"
+        ],
+        [
+          "learn",
+          "black_horse_4",
+          "horse_join"
+        ],
+        [
+          "learn",
+          "black_cannon_5",
+          "cannon_hold"
+        ],
+        [
+          "learn",
+          "black_pawn_6",
+          "pawn_grit"
+        ],
+        [
+          "learn",
+          "black_pawn_7",
+          "pawn_rank"
+        ],
+        [
+          "start"
+        ],
+        [
+          "move",
+          "red_cannon_5",
+          5,
+          7
+        ],
+        [
+          "move",
+          "black_cannon_5",
+          4,
+          2
+        ],
+        [
+          "move",
+          "red_horse_4",
+          2,
+          7
+        ],
+        [
+          "move",
+          "black_rook_3",
+          8,
+          2
+        ],
+        [
+          "move",
+          "red_cannon_5",
+          8,
+          7
+        ],
+        [
+          "move",
+          "black_horse_4",
+          6,
+          2
+        ],
+        [
+          "move",
+          "red_cannon_5",
+          4,
+          7
+        ],
+        [
+          "move",
+          "black_cannon_5",
+          0,
+          2
+        ],
+        [
+          "move",
+          "red_rook_3",
+          1,
+          9
+        ],
+        [
+          "move",
+          "black_cannon_5",
+          2,
+          2
+        ],
+        [
+          "move",
+          "red_rook_3",
+          1,
+          0
+        ],
+        [
+          "move",
+          "black_cannon_5",
+          2,
+          1
+        ],
+        [
+          "move",
+          "red_horse_4",
+          1,
+          5
+        ],
+        [
+          "move",
+          "black_rook_3",
+          7,
+          2
+        ],
+        [
+          "move",
+          "red_horse_4",
+          0,
+          3
+        ],
+        [
+          "move",
+          "black_rook_3",
+          7,
+          9
+        ],
+        [
+          "move",
+          "red_rook_3",
+          1,
+          1
+        ],
+        [
+          "move",
+          "black_cannon_5",
+          4,
+          1
+        ],
+        [
+          "move",
+          "red_rook_3",
+          1,
+          2
+        ],
+        [
+          "move",
+          "black_elephant_2",
+          4,
+          2
+        ],
+        [
+          "move",
+          "red_pawn_6",
+          0,
+          5
+        ],
+        [
+          "move",
+          "black_cannon_5",
+          0,
+          1
+        ],
+        [
+          "move",
+          "red_horse_4",
+          1,
+          5
+        ],
+        [
+          "move",
+          "black_cannon_5",
+          2,
+          1
+        ],
+        [
+          "move",
+          "red_rook_3",
+          2,
+          2
+        ],
+        [
+          "move",
+          "black_cannon_5",
+          1,
+          1
+        ],
+        [
+          "move",
+          "red_pawn_6",
+          0,
+          4
+        ],
+        [
+          "move",
+          "black_horse_4",
+          4,
+          1
+        ],
+        [
+          "move",
+          "red_rook_3",
+          1,
+          2
+        ],
+        [
+          "move",
+          "black_horse_4",
+          2,
+          0
+        ],
+        [
+          "move",
+          "red_horse_4",
+          0,
+          3
+        ],
+        [
+          "move",
+          "black_cannon_5",
+          0,
+          1
+        ],
+        [
+          "move",
+          "red_rook_3",
+          0,
+          2
+        ],
+        [
+          "move",
+          "black_cannon_5",
+          3,
+          1
+        ],
+        [
+          "move",
+          "red_king_0",
+          3,
+          8
+        ],
+        [
+          "move",
+          "black_rook_3",
+          7,
+          8
+        ],
+        [
+          "move",
+          "red_guard_1",
+          5,
+          8
+        ],
+        [
+          "move",
+          "black_horse_4",
+          3,
+          2
+        ],
+        [
+          "move",
+          "red_cannon_5",
+          3,
+          7
+        ],
+        [
+          "move",
+          "black_horse_4",
+          2,
+          4
+        ],
+        [
+          "move",
+          "red_king_0",
+          4,
+          8
+        ],
+        [
+          "move",
+          "black_horse_4",
+          1,
+          6
+        ],
+        [
+          "move",
+          "red_cannon_5",
+          4,
+          7
+        ],
+        [
+          "move",
+          "black_rook_3",
+          7,
+          9
+        ],
+        [
+          "move",
+          "red_elephant_2",
+          0,
+          7
+        ],
+        [
+          "move",
+          "black_rook_3",
+          4,
+          9
+        ],
+        [
+          "move",
+          "red_king_0",
+          3,
+          8
+        ],
+        [
+          "move",
+          "black_horse_4",
+          3,
+          5
+        ],
+        [
+          "move",
+          "red_rook_3",
+          3,
+          2
+        ],
+        [
+          "move",
+          "black_horse_4",
+          2,
+          3
+        ],
+        [
+          "move",
+          "red_rook_3",
+          1,
+          2
+        ],
+        [
+          "move",
+          "black_rook_3",
+          3,
+          9
+        ],
+        [
+          "move",
+          "red_king_0",
+          4,
+          8
+        ],
+        [
+          "move",
+          "black_rook_3",
+          3,
+          8
+        ],
+        [
+          "move",
+          "red_king_0",
+          4,
+          9
+        ],
+        [
+          "move",
+          "black_rook_3",
+          0,
+          8
+        ],
+        [
+          "move",
+          "red_rook_3",
+          1,
+          3
+        ],
+        [
+          "move",
+          "black_cannon_5",
+          3,
+          3
+        ],
+        [
+          "move",
+          "red_pawn_6",
+          1,
+          4
+        ],
+        [
+          "move",
+          "black_rook_3",
+          0,
+          9
+        ],
+        [
+          "move",
+          "red_king_0",
+          4,
+          8
+        ],
+        [
+          "move",
+          "black_rook_3",
+          4,
+          9
+        ],
+        [
+          "move",
+          "red_king_0",
+          3,
+          8
+        ],
+        [
+          "move",
+          "black_horse_4",
+          3,
+          5
+        ],
+        [
+          "move",
+          "red_cannon_5",
+          3,
+          7
+        ],
+        [
+          "move",
+          "black_horse_4",
+          2,
+          7
+        ],
+        [
+          "move",
+          "red_cannon_5",
+          6,
+          7
+        ],
+        [
+          "move",
+          "black_rook_3",
+          3,
+          9
+        ],
+        [
+          "move",
+          "red_cannon_5",
+          6,
+          8
+        ],
+        [
+          "move",
+          "black_rook_3",
+          3,
+          8
+        ],
+        [
+          "resolve",
+          "guard",
+          "focus"
+        ],
+        [
+          "resolve",
+          "focus",
+          "break"
+        ],
+        [
+          "resolve",
+          "strike",
+          "strike"
+        ],
+        [
+          "resolve",
+          "strike",
+          "strike"
+        ],
+        [
+          "retreat"
+        ],
+        [
+          "move",
+          "red_rook_3",
+          2,
+          3
+        ],
+        [
+          "move",
+          "black_horse_4",
+          4,
+          8
+        ],
+        [
+          "move",
+          "red_guard_1",
+          4,
+          7
+        ],
+        [
+          "move",
+          "black_horse_4",
+          6,
+          9
+        ],
+        [
+          "move",
+          "red_rook_3",
+          2,
+          8
+        ],
+        [
+          "move",
+          "black_rook_3",
+          3,
+          8
+        ],
+        [
+          "resolve",
+          "strike",
+          "break"
+        ],
+        [
+          "retreat"
+        ],
+        [
+          "move",
+          "red_horse_4",
+          2,
+          2
+        ],
+        [
+          "move",
+          "black_rook_3",
+          3,
+          8
+        ],
+        [
+          "resolve",
+          "guard",
+          "guard"
+        ],
+        [
+          "retreat"
+        ],
+        [
+          "move",
+          "red_cannon_5",
+          6,
+          1
+        ],
+        [
+          "move",
+          "black_rook_3",
+          3,
+          8
+        ],
+        [
+          "resolve",
+          "rook_lock",
+          "guard"
+        ]
+      ],
+      "terminalSHA256": "74327ecf80ea62e454d28c9b0c7d5845a0b74147af6b6e3d727684c599352d91"
+    },
+    {
+      "input": {
+        "difficulty": "practice",
+        "group": "batch1",
+        "scenario": "quick",
+        "replicate": 2,
+        "style": "attack",
+        "comparator": "spread",
+        "aVariant": 2,
+        "bVariant": 2,
+        "aSide": "red",
+        "seedA": 3850985446,
+        "seedB": 2678169133,
+        "models": {
+          "red": "baseline",
+          "black": "baseline"
+        },
+        "transfer": {
+          "from": "black_rook_3",
+          "card": "rook_lock",
+          "to": "black_guard_1",
+          "received": "guard_palace"
+        }
+      },
+      "winner": "black",
+      "reason": "对方将帅阵亡",
+      "plies": 82,
+      "moves": 77,
+      "rests": 0,
+      "passes": 0,
+      "battles": 5,
+      "rounds": 8,
+      "retreats": 4,
+      "reversals": 10,
+      "pieceActivity": {
+        "red_king_0": {
+          "side": "red",
+          "kind": "king",
+          "cards": [],
+          "moves": 7,
+          "rests": 0,
+          "attacks": 0,
+          "defenses": 5,
+          "damage": 17,
+          "captures": 0,
+          "cardUses": 0
+        },
+        "red_guard_1": {
+          "side": "red",
+          "kind": "guard",
+          "cards": [],
+          "moves": 2,
+          "rests": 0,
+          "attacks": 0,
+          "defenses": 0,
+          "damage": 0,
+          "captures": 0,
+          "cardUses": 0
+        },
+        "red_elephant_2": {
+          "side": "red",
+          "kind": "elephant",
+          "cards": [],
+          "moves": 1,
+          "rests": 0,
+          "attacks": 0,
+          "defenses": 0,
+          "damage": 0,
+          "captures": 0,
+          "cardUses": 0
+        },
+        "red_rook_3": {
+          "side": "red",
+          "kind": "rook",
+          "cards": [
+            "rook_hold",
+            "rook_lock"
+          ],
+          "moves": 12,
+          "rests": 0,
+          "attacks": 0,
+          "defenses": 0,
+          "damage": 0,
+          "captures": 0,
+          "cardUses": 0
+        },
+        "red_horse_4": {
+          "side": "red",
+          "kind": "horse",
+          "cards": [
+            "horse_evade",
+            "horse_turn"
+          ],
+          "moves": 6,
+          "rests": 0,
+          "attacks": 0,
+          "defenses": 0,
+          "damage": 0,
+          "captures": 0,
+          "cardUses": 0
+        },
+        "red_cannon_5": {
+          "side": "red",
+          "kind": "cannon",
+          "cards": [
+            "cannon_hold",
+            "cannon_pressure"
+          ],
+          "moves": 10,
+          "rests": 0,
+          "attacks": 0,
+          "defenses": 0,
+          "damage": 0,
+          "captures": 0,
+          "cardUses": 0
+        },
+        "red_pawn_6": {
+          "side": "red",
+          "kind": "pawn",
+          "cards": [],
+          "moves": 3,
+          "rests": 0,
+          "attacks": 0,
+          "defenses": 0,
+          "damage": 0,
+          "captures": 0,
+          "cardUses": 0
+        },
+        "red_pawn_7": {
+          "side": "red",
+          "kind": "pawn",
+          "cards": [],
+          "moves": 0,
+          "rests": 0,
+          "attacks": 0,
+          "defenses": 0,
+          "damage": 0,
+          "captures": 0,
+          "cardUses": 0
+        },
+        "black_king_0": {
+          "side": "black",
+          "kind": "king",
+          "cards": [],
+          "moves": 0,
+          "rests": 0,
+          "attacks": 0,
+          "defenses": 0,
+          "damage": 0,
+          "captures": 0,
+          "cardUses": 0
+        },
+        "black_guard_1": {
+          "side": "black",
+          "kind": "guard",
+          "cards": [
+            "guard_king",
+            "guard_palace"
+          ],
+          "moves": 0,
+          "rests": 0,
+          "attacks": 0,
+          "defenses": 0,
+          "damage": 0,
+          "captures": 0,
+          "cardUses": 0
+        },
+        "black_elephant_2": {
+          "side": "black",
+          "kind": "elephant",
+          "cards": [],
+          "moves": 1,
+          "rests": 0,
+          "attacks": 0,
+          "defenses": 0,
+          "damage": 0,
+          "captures": 0,
+          "cardUses": 0
+        },
+        "black_rook_3": {
+          "side": "black",
+          "kind": "rook",
+          "cards": [],
+          "moves": 12,
+          "rests": 0,
+          "attacks": 5,
+          "defenses": 0,
+          "damage": 18,
+          "captures": 1,
+          "cardUses": 0
+        },
+        "black_horse_4": {
+          "side": "black",
+          "kind": "horse",
+          "cards": [
+            "horse_join"
+          ],
+          "moves": 12,
+          "rests": 0,
+          "attacks": 0,
+          "defenses": 0,
+          "damage": 0,
+          "captures": 0,
+          "cardUses": 0
+        },
+        "black_cannon_5": {
+          "side": "black",
+          "kind": "cannon",
+          "cards": [
+            "cannon_hold"
+          ],
+          "moves": 11,
+          "rests": 0,
+          "attacks": 0,
+          "defenses": 0,
+          "damage": 0,
+          "captures": 0,
+          "cardUses": 0
+        },
+        "black_pawn_6": {
+          "side": "black",
+          "kind": "pawn",
+          "cards": [
+            "pawn_grit"
+          ],
+          "moves": 0,
+          "rests": 0,
+          "attacks": 0,
+          "defenses": 0,
+          "damage": 0,
+          "captures": 0,
+          "cardUses": 0
+        },
+        "black_pawn_7": {
+          "side": "black",
+          "kind": "pawn",
+          "cards": [
+            "pawn_rank"
+          ],
+          "moves": 0,
+          "rests": 0,
+          "attacks": 0,
+          "defenses": 0,
+          "damage": 0,
+          "captures": 0,
+          "cardUses": 0
+        }
+      },
+      "contexts": [
+        {
+          "ply": 70,
+          "attacker": "black_rook_3",
+          "defender": "red_king_0",
+          "powerA": 3,
+          "powerD": 4,
+          "supportA": [],
+          "supportD": [
+            "red_cannon_5"
+          ]
+        },
+        {
+          "ply": 76,
+          "attacker": "black_rook_3",
+          "defender": "red_king_0",
+          "powerA": 3,
+          "powerD": 5,
+          "supportA": [],
+          "supportD": [
+            "red_guard_1",
+            "red_rook_3"
+          ]
+        },
+        {
+          "ply": 78,
+          "attacker": "black_rook_3",
+          "defender": "red_king_0",
+          "powerA": 3,
+          "powerD": 5,
+          "supportA": [],
+          "supportD": [
+            "red_guard_1",
+            "red_rook_3"
+          ]
+        },
+        {
+          "ply": 80,
+          "attacker": "black_rook_3",
+          "defender": "red_king_0",
+          "powerA": 3,
+          "powerD": 5,
+          "supportA": [],
+          "supportD": [
+            "red_guard_1",
+            "red_rook_3"
+          ]
+        },
+        {
+          "ply": 82,
+          "attacker": "black_rook_3",
+          "defender": "red_king_0",
+          "powerA": 3,
+          "powerD": 5,
+          "supportA": [],
+          "supportD": [
+            "red_guard_1",
+            "red_rook_3"
+          ]
+        }
+      ],
+      "commands": [
+        [
+          "create",
+          "quick"
+        ],
+        [
+          "learn",
+          "red_rook_3",
+          "rook_hold"
+        ],
+        [
+          "learn",
+          "red_rook_3",
+          "rook_lock"
+        ],
+        [
+          "learn",
+          "red_horse_4",
+          "horse_evade"
+        ],
+        [
+          "learn",
+          "red_horse_4",
+          "horse_turn"
+        ],
+        [
+          "learn",
+          "red_cannon_5",
+          "cannon_hold"
+        ],
+        [
+          "learn",
+          "red_cannon_5",
+          "cannon_pressure"
+        ],
+        [
+          "learn",
+          "black_guard_1",
+          "guard_king"
+        ],
+        [
+          "learn",
+          "black_guard_1",
+          "guard_palace"
+        ],
+        [
+          "learn",
+          "black_horse_4",
+          "horse_join"
+        ],
+        [
+          "learn",
+          "black_cannon_5",
+          "cannon_hold"
+        ],
+        [
+          "learn",
+          "black_pawn_6",
+          "pawn_grit"
+        ],
+        [
+          "learn",
+          "black_pawn_7",
+          "pawn_rank"
+        ],
+        [
+          "start"
+        ],
+        [
+          "move",
+          "red_cannon_5",
+          5,
+          7
+        ],
+        [
+          "move",
+          "black_cannon_5",
+          4,
+          2
+        ],
+        [
+          "move",
+          "red_horse_4",
+          2,
+          7
+        ],
+        [
+          "move",
+          "black_rook_3",
+          8,
+          2
+        ],
+        [
+          "move",
+          "red_cannon_5",
+          8,
+          7
+        ],
+        [
+          "move",
+          "black_horse_4",
+          6,
+          2
+        ],
+        [
+          "move",
+          "red_cannon_5",
+          4,
+          7
+        ],
+        [
+          "move",
+          "black_cannon_5",
+          0,
+          2
+        ],
+        [
+          "move",
+          "red_rook_3",
+          1,
+          9
+        ],
+        [
+          "move",
+          "black_cannon_5",
+          2,
+          2
+        ],
+        [
+          "move",
+          "red_rook_3",
+          1,
+          0
+        ],
+        [
+          "move",
+          "black_cannon_5",
+          2,
+          1
+        ],
+        [
+          "move",
+          "red_horse_4",
+          1,
+          5
+        ],
+        [
+          "move",
+          "black_rook_3",
+          7,
+          2
+        ],
+        [
+          "move",
+          "red_horse_4",
+          0,
+          3
+        ],
+        [
+          "move",
+          "black_rook_3",
+          7,
+          9
+        ],
+        [
+          "move",
+          "red_rook_3",
+          1,
+          1
+        ],
+        [
+          "move",
+          "black_cannon_5",
+          4,
+          1
+        ],
+        [
+          "move",
+          "red_rook_3",
+          1,
+          2
+        ],
+        [
+          "move",
+          "black_elephant_2",
+          4,
+          2
+        ],
+        [
+          "move",
+          "red_pawn_6",
+          0,
+          5
+        ],
+        [
+          "move",
+          "black_cannon_5",
+          0,
+          1
+        ],
+        [
+          "move",
+          "red_horse_4",
+          1,
+          5
+        ],
+        [
+          "move",
+          "black_cannon_5",
+          2,
+          1
+        ],
+        [
+          "move",
+          "red_rook_3",
+          2,
+          2
+        ],
+        [
+          "move",
+          "black_cannon_5",
+          1,
+          1
+        ],
+        [
+          "move",
+          "red_pawn_6",
+          0,
+          4
+        ],
+        [
+          "move",
+          "black_horse_4",
+          4,
+          1
+        ],
+        [
+          "move",
+          "red_rook_3",
+          1,
+          2
+        ],
+        [
+          "move",
+          "black_horse_4",
+          2,
+          0
+        ],
+        [
+          "move",
+          "red_horse_4",
+          0,
+          3
+        ],
+        [
+          "move",
+          "black_cannon_5",
+          0,
+          1
+        ],
+        [
+          "move",
+          "red_rook_3",
+          0,
+          2
+        ],
+        [
+          "move",
+          "black_cannon_5",
+          3,
+          1
+        ],
+        [
+          "move",
+          "red_king_0",
+          3,
+          8
+        ],
+        [
+          "move",
+          "black_rook_3",
+          7,
+          8
+        ],
+        [
+          "move",
+          "red_guard_1",
+          5,
+          8
+        ],
+        [
+          "move",
+          "black_horse_4",
+          3,
+          2
+        ],
+        [
+          "move",
+          "red_cannon_5",
+          3,
+          7
+        ],
+        [
+          "move",
+          "black_horse_4",
+          2,
+          4
+        ],
+        [
+          "move",
+          "red_king_0",
+          4,
+          8
+        ],
+        [
+          "move",
+          "black_horse_4",
+          1,
+          6
+        ],
+        [
+          "move",
+          "red_cannon_5",
+          4,
+          7
+        ],
+        [
+          "move",
+          "black_rook_3",
+          7,
+          9
+        ],
+        [
+          "move",
+          "red_elephant_2",
+          0,
+          7
+        ],
+        [
+          "move",
+          "black_rook_3",
+          4,
+          9
+        ],
+        [
+          "move",
+          "red_king_0",
+          3,
+          8
+        ],
+        [
+          "move",
+          "black_horse_4",
+          3,
+          5
+        ],
+        [
+          "move",
+          "red_rook_3",
+          3,
+          2
+        ],
+        [
+          "move",
+          "black_horse_4",
+          2,
+          3
+        ],
+        [
+          "move",
+          "red_rook_3",
+          1,
+          2
+        ],
+        [
+          "move",
+          "black_rook_3",
+          3,
+          9
+        ],
+        [
+          "move",
+          "red_king_0",
+          4,
+          8
+        ],
+        [
+          "move",
+          "black_rook_3",
+          3,
+          8
+        ],
+        [
+          "move",
+          "red_king_0",
+          4,
+          9
+        ],
+        [
+          "move",
+          "black_rook_3",
+          0,
+          8
+        ],
+        [
+          "move",
+          "red_rook_3",
+          1,
+          3
+        ],
+        [
+          "move",
+          "black_cannon_5",
+          3,
+          3
+        ],
+        [
+          "move",
+          "red_pawn_6",
+          1,
+          4
+        ],
+        [
+          "move",
+          "black_rook_3",
+          0,
+          9
+        ],
+        [
+          "move",
+          "red_king_0",
+          4,
+          8
+        ],
+        [
+          "move",
+          "black_rook_3",
+          4,
+          9
+        ],
+        [
+          "move",
+          "red_king_0",
+          3,
+          8
+        ],
+        [
+          "move",
+          "black_horse_4",
+          3,
+          5
+        ],
+        [
+          "move",
+          "red_cannon_5",
+          3,
+          7
+        ],
+        [
+          "move",
+          "black_horse_4",
+          2,
+          7
+        ],
+        [
+          "move",
+          "red_cannon_5",
+          6,
+          7
+        ],
+        [
+          "move",
+          "black_rook_3",
+          3,
+          9
+        ],
+        [
+          "move",
+          "red_cannon_5",
+          6,
+          8
+        ],
+        [
+          "move",
+          "black_rook_3",
+          3,
+          8
+        ],
+        [
+          "resolve",
+          "guard",
+          "focus"
+        ],
+        [
+          "resolve",
+          "focus",
+          "break"
+        ],
+        [
+          "resolve",
+          "strike",
+          "strike"
+        ],
+        [
+          "resolve",
+          "strike",
+          "strike"
+        ],
+        [
+          "retreat"
+        ],
+        [
+          "move",
+          "red_rook_3",
+          2,
+          3
+        ],
+        [
+          "move",
+          "black_horse_4",
+          4,
+          8
+        ],
+        [
+          "move",
+          "red_guard_1",
+          4,
+          7
+        ],
+        [
+          "move",
+          "black_horse_4",
+          6,
+          9
+        ],
+        [
+          "move",
+          "red_rook_3",
+          2,
+          8
+        ],
+        [
+          "move",
+          "black_rook_3",
+          3,
+          8
+        ],
+        [
+          "resolve",
+          "strike",
+          "break"
+        ],
+        [
+          "retreat"
+        ],
+        [
+          "move",
+          "red_horse_4",
+          2,
+          2
+        ],
+        [
+          "move",
+          "black_rook_3",
+          3,
+          8
+        ],
+        [
+          "resolve",
+          "guard",
+          "guard"
+        ],
+        [
+          "retreat"
+        ],
+        [
+          "move",
+          "red_cannon_5",
+          6,
+          1
+        ],
+        [
+          "move",
+          "black_rook_3",
+          3,
+          8
+        ],
+        [
+          "resolve",
+          "focus",
+          "guard"
+        ],
+        [
+          "retreat"
+        ],
+        [
+          "move",
+          "red_cannon_5",
+          4,
+          1
+        ],
+        [
+          "move",
+          "black_rook_3",
+          3,
+          8
+        ],
+        [
+          "resolve",
+          "guard",
+          "strike"
+        ]
+      ],
+      "terminalSHA256": "1e091a2b884fbc6c1af16e37150437e17bfcb7b4a81b555086e81a393d4916f9"
+    }
+  ]
+}
