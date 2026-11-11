@@ -133,7 +133,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.110 · 走法查询提速</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.111 · 持续武斗省牌</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -559,7 +559,7 @@ globalThis.YiwuComputer = (() => {
       +(E.CARDS[dId] ? .25 : 0)-(E.CARDS[aId] ? .25 : 0);
   }
   function distribution(regret){const sum=regret.reduce((n,r)=>n+Math.max(0,r),0);return regret.map(r=>sum?Math.max(0,r)/sum:1/regret.length);}
-  function endingCardReplacements(s,side,ids){
+  function cardReplacements(s,side,ids){
     const bases=ids.filter(id=>E.BASE[id]),replacements=new Map();
     if(!bases.length||!ids.some(id=>E.CARDS[id]))return replacements;
     const ctx=s.duel,a=E.get(s,ctx.a),d=E.get(s,ctx.d),isA=a.side===side,mine=isA?a:d,enemy=isA?d:a,replies=choices(s,enemy,ctx),cache=new Map();
@@ -574,9 +574,13 @@ globalThis.YiwuComputer = (() => {
       }));
       return cache.get(id);
     }
-    // 只省下所有回应下都能以相同局面结束交战、且不多损血或增加重复风险的培养牌。
+    // 省牌须逐个核对合法回应，不能只比较单个伤害分数。
     for(const id of ids.filter(id=>E.CARDS[id])){
-      const base=bases.find(base=>outcomes(base).every((next,i)=>{
+      const base=bases.find(base=>ctx.round<6&&E.BASE[base].type===E.CARDS[id].type&&replies.every(reply=>{
+        const ordinary=E.roundDamage(ctx,isA?base:reply,isA?reply:base),trained=E.roundDamage(ctx,isA?id:reply,isA?reply:id);
+        // 持续交战时，仅省去对双方生命、气势均无影响且招式类型相同的牌。
+        return ordinary.toA<a.hp&&ordinary.toD<d.hp&&['toA','toD','forceAfterA','forceAfterD'].every(key=>ordinary[key]===trained[key]);
+      })||outcomes(base).every((next,i)=>{
         const used=outcomes(id)[i];
         return next&&used&&next.hp>=used.hp&&next.key===used.key&&next.phase===used.phase&&next.winner===used.winner&&next.reason===used.reason&&next.quiet===used.quiet&&next.visits<=used.visits;
       }));
@@ -628,7 +632,7 @@ globalThis.YiwuComputer = (() => {
           if(safe.length===1)break;
         }
       }
-      const replacements=endingCardReplacements(s,side,safe);safe=safe.filter(id=>!replacements.has(id));
+      const replacements=cardReplacements(s,side,safe);safe=safe.filter(id=>!replacements.has(id));
       if(safe.length)return safe.map(id=>({id,weight:1/safe.length}));
     }
     const retreatScore=end?.winner==='draw'?0:end?.winner===a.side?1000:-.6;
@@ -676,7 +680,7 @@ globalThis.YiwuComputer = (() => {
         kept=kept.filter(x=>captures.some(p=>p.id===x.id&&Math.abs(p.score-best)<1e-9));
       }
     }
-    const replacements=endingCardReplacements(s,side,kept.map(x=>x.id));
+    const replacements=cardReplacements(s,side,kept.map(x=>x.id));
     for(const [id,base]of replacements)kept.find(x=>x.id===base).weight+=kept.find(x=>x.id===id).weight;
     kept=kept.filter(x=>!replacements.has(x.id));
     // 末轮基础蓄势不能再释放，也无对手培养牌可消耗；先完成省牌，再把这部分概率交给撤回。
@@ -887,9 +891,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.110',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.111',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.110-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.111-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}

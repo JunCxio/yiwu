@@ -1,10 +1,10 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict'),path=require('node:path');
 const html=fs.readFileSync(process.argv[2]||path.join(__dirname,'..','index.html'),'utf8'),box=vm.createContext({}),scripts=[...html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].slice(0,2).map(m=>m[1]);
-vm.runInContext(scripts[0],box);assert(scripts[1].includes('return {actions,'));vm.runInContext(scripts[1].replace('return {actions,','return {endingCardReplacements,actions,'),box);
+vm.runInContext(scripts[0],box);assert(scripts[1].includes('return {actions,'));vm.runInContext(scripts[1].replace('return {actions,','return {cardReplacements,actions,'),box);
 const E=box.Yiwu,C=box.YiwuComputer,copy=s=>JSON.parse(JSON.stringify(s));
 const unsparedBox=vm.createContext({});
-const saving=/  function endingCardReplacements\(s,side,ids\)\{[\s\S]*?\n  \}/;assert(saving.test(scripts[1]));
-vm.runInContext(scripts[0],unsparedBox);vm.runInContext(scripts[1].replace(saving,'  function endingCardReplacements(){return new Map();}'),unsparedBox);
+const saving=/  function cardReplacements\(s,side,ids\)\{[\s\S]*?\n  \}/;assert(saving.test(scripts[1]));
+vm.runInContext(scripts[0],unsparedBox);vm.runInContext(scripts[1].replace(saving,'  function cardReplacements(){return new Map();}'),unsparedBox);
 let transferCases=0;
 const fixture=require('./computer-ending-cards-fixture.json');
 function replay(){let s;for(const [name,...args]of fixture.commands){if(name==='create')s=E.create(...args);else E[name](s,...args);}return s;}
@@ -81,7 +81,7 @@ test('即时结果虽相同但基础招式的局面访问次数更多时不为�
   const {s,mine,enemy}=scene();mine.learned=['rook_crush'];
   for(const base of ['strike','break'])for(const reply of C.choices(s,enemy,s.duel)){const next=copy(s);E.resolve(next,base,reply);s.repetitions[E.key(next)]=1;}
   assert(outcomes(s,mine.side,'strike').every(x=>x&&x.phase==='board'&&x.visits===2));assert(outcomes(s,mine.side,'rook_crush').every(x=>x&&x.visits===1));
-  assert(!C.endingCardReplacements(s,mine.side,C.choices(s,mine,s.duel)).has('rook_crush'));verifyTransfers(s,mine.side,plan(s,mine.side));
+  assert(!C.cardReplacements(s,mine.side,C.choices(s,mine,s.duel)).has('rook_crush'));verifyTransfers(s,mine.side,plan(s,mine.side));
   const late=scene({round:6,enemyHp:18});late.mine.learned=['rook_lock'];
   for(const base of Object.keys(E.BASE))for(const reply of C.choices(late.s,late.enemy,late.s.duel)){const next=copy(late.s);E.resolve(next,base,reply);late.s.repetitions[E.key(next)]=1;}
   assert(outcomes(late.s,late.mine.side,'break').every(x=>x?.visits===2));assert(outcomes(late.s,late.mine.side,'rook_lock').every(x=>x?.visits===1));assert(plan(late.s,late.mine.side).some(x=>x.id==='rook_lock'&&x.weight>0));
