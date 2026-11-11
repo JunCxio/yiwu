@@ -1,0 +1,174 @@
+{
+  "sourceVersion": "0.6.98",
+  "sourceCommit": "fb36dc8f54da20414bf3d0f0f94cd733eac554a2",
+  "input": {
+    "scenario": "quick",
+    "style": "attack",
+    "comparator": "mixed",
+    "aVariant": 0,
+    "bVariant": 0,
+    "replicate": 1,
+    "aSide": "red",
+    "seedA": 395961588,
+    "seedB": 695247522
+  },
+  "commands": [
+    [
+      "create",
+      "quick"
+    ],
+    [
+      "learn",
+      "red_rook_3",
+      "rook_crush"
+    ],
+    [
+      "learn",
+      "red_rook_3",
+      "rook_hold"
+    ],
+    [
+      "learn",
+      "red_horse_4",
+      "horse_join"
+    ],
+    [
+      "learn",
+      "red_horse_4",
+      "horse_evade"
+    ],
+    [
+      "learn",
+      "red_cannon_5",
+      "cannon_screen"
+    ],
+    [
+      "learn",
+      "red_cannon_5",
+      "cannon_hold"
+    ],
+    [
+      "learn",
+      "black_guard_1",
+      "guard_palace"
+    ],
+    [
+      "learn",
+      "black_guard_1",
+      "guard_king"
+    ],
+    [
+      "learn",
+      "black_rook_3",
+      "rook_crush"
+    ],
+    [
+      "learn",
+      "black_rook_3",
+      "rook_hold"
+    ],
+    [
+      "learn",
+      "black_pawn_6",
+      "pawn_rank"
+    ],
+    [
+      "learn",
+      "black_pawn_6",
+      "pawn_advance"
+    ],
+    [
+      "start"
+    ],
+    [
+      "move",
+      "red_cannon_5",
+      4,
+      7
+    ],
+    [
+      "move",
+      "black_cannon_5",
+      4,
+      2
+    ],
+    [
+      "move",
+      "red_horse_4",
+      2,
+      7
+    ],
+    [
+      "move",
+      "black_horse_4",
+      6,
+      2
+    ],
+    [
+      "move",
+      "red_cannon_5",
+      8,
+      7
+    ],
+    [
+      "move",
+      "black_rook_3",
+      7,
+      0
+    ],
+    [
+      "move",
+      "red_horse_4",
+      3,
+      5
+    ],
+    [
+      "move",
+      "black_cannon_5",
+      3,
+      2
+    ],
+    [
+      "move",
+      "red_cannon_5",
+      3,
+      7
+    ],
+    [
+      "move",
+      "black_rook_3",
+      7,
+      5
+    ],
+    [
+      "move",
+      "red_cannon_5",
+      3,
+      2
+    ],
+    [
+      "resolve",
+      "strike",
+      "strike"
+    ],
+    [
+      "resolve",
+      "strike",
+      "break"
+    ],
+    [
+      "resolve",
+      "cannon_screen",
+      "strike"
+    ],
+    [
+      "resolve",
+      "strike",
+      "guard"
+    ]
+  ],
+  "attacker": "red_cannon_5",
+  "defender": "black_cannon_5",
+  "unsafe": "strike",
+  "safe": "cannon_hold"
+}
