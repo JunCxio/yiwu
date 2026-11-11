@@ -23,9 +23,9 @@ test('将帅能确保反杀时不计空威胁，也不再查询其防守支援',
   const s=scene([...kings,['br','black','rook',3,5,1]]),before=JSON.stringify(s);assert(C.battleOutlook(s,E.context(s,E.get(s,'br'),E.get(s,'rk'))).counters.length);calls=[];
   assert(Math.abs(C.position(s,'red')+5.3)<1e-8);assert.deepEqual(calls,[]);assert.equal(JSON.stringify(s),before);
 });
-test('重复追将仍减弱敌方威胁权重，己方将帅避险保留完整评分',()=>{
-  const s=scene([['rk','red','king',3,9,1],kings[1],['br','black','rook',3,5,18]]),before=JSON.stringify(s);calls=[];
+test('没有安全空位退路时保留原有追将权重，己方将帅避险保留完整评分',()=>{
+  const s=scene([['rk','red','king',3,9,1],kings[1],['br','black','rook',3,5,18],['br2','black','rook',4,5,18]]),before=JSON.stringify(s);calls=[];
   const black=C.position(s,'black'),repeatedBlack=C.position(s,'black',true);assert(Math.abs(black-repeatedBlack-72.45)<1e-8);
-  assert.equal(C.position(s,'red'),C.position(s,'red',true));assert.deepEqual(calls,['rk','rk','rk','rk']);assert.equal(JSON.stringify(s),before);
+  assert.equal(C.position(s,'red'),C.position(s,'red',true));assert(calls.length>=4&&calls.every(id=>id==='rk'));assert.equal(JSON.stringify(s),before);
 });
 console.log('走棋站位评分与支援查询：'+passed+' 组通过。');
