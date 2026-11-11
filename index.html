@@ -133,7 +133,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.107 · 两轮吃子与对局节奏</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.108 · 复盘后续风险</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -867,9 +867,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.107',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.108',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.107-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.108-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -1369,6 +1369,11 @@ globalThis.YiwuComputer = (() => {
     });
     for(const option of options)option.rank=(actual.loss===mine.hp&&option.loss<mine.hp?(mine.kind==='king'?200:100):0)+(actual.loss-option.loss)*3+option.damage-actual.damage+(actual.card&&!option.card ? .25 : 0);
     const alternative=options.sort((a,b)=>b.rank-a.rank||a.loss-b.loss||b.damage-a.damage||Number(a.card)-Number(b.card)||b.force-a.force)[0];
+    if(alternative&&isA&&!Yiwu.CHALLENGES[state.scenario]&&(ctx.round===6||alternative.loss===mine.hp||alternative.damage===enemy.hp)){
+      const next=JSON.parse(JSON.stringify({...state,repetitions:null}));next.repetitions={...state.repetitions};
+      Yiwu.resolve(next,alternative.id,enemyId);
+      alternative.kingRisk=next.phase==='board'&&next.turn===enemy.side&&C.kingLostNext(next,mine.side);
+    }
     return alternative?{side:mine.side,round:ctx.round,enemyId,actual,alternative}:null;
   }
   function analyzeMatch(history){
@@ -1435,12 +1440,12 @@ globalThis.YiwuComputer = (() => {
     const keyBattles=[...review.battles].sort((a,b)=>rank(b)-rank(a)||a.ply-b.ply).slice(0,3);
     const moveName=id=>(Yiwu.BASE[id]||Yiwu.CARDS[id]).name;
     const comparison=option=>`<span>${esc(moveName(option.id))}</span><b>自身损血 ${option.loss} · 造成伤害 ${option.damage}</b><small>${option.card?'培养牌用后耗尽':'基础招式不耗牌'}；释放气势 ${option.spent}，结算后 ${option.force}/2</small>`;
-    let html=`<div class="modal-head"><h2 id="review-title" tabindex="-1">对局复盘</h2><button data-action="close-review" class="quiet">返回终局</button></div><p class="review-intro">${esc(outcomeTitle())} · ${esc(review.reason.replace(/。$/,''))}。共 ${review.ply} 次棋盘行动、${review.battles.length} 场武斗。<br>按将帅阵亡、棋子阵亡及双方损血，展示最多三场关键交战。替代招式针对当轮已揭示的对手出招计算；先核对即时胜负、判和与残局条件，再比较损血、伤害与耗牌。仅作事后对照，不是当时能预知的答案，也不推断后续胜负。</p><div class="review-teams">${sides.map(side=>{const t=review.totals[side];return `<section class="review-team ${side}"><h3>${E.SIDE[side]}损失</h3><p>累计损血 <b>${t.loss}</b> · 阵亡 <b>${t.fallen}</b> 子</p><p>培养牌共使用 ${t.cards} 次（可整备后再次使用）</p></section>`;}).join('')}</div>`;
+    let html=`<div class="modal-head"><h2 id="review-title" tabindex="-1">对局复盘</h2><button data-action="close-review" class="quiet">返回终局</button></div><p class="review-intro">${esc(outcomeTitle())} · ${esc(review.reason.replace(/。$/,''))}。共 ${review.ply} 次棋盘行动、${review.battles.length} 场武斗。<br>按将帅阵亡、棋子阵亡及双方损血，展示最多三场关键交战。替代招式针对当轮已揭示的对手出招计算；先核对即时胜负、判和与残局条件，再比较损血、伤害与耗牌。仅作事后对照，不是当时能预知的答案；标出的后续风险仅检查对手下一次行动的两轮取将，不代表完整后续推演。</p><div class="review-teams">${sides.map(side=>{const t=review.totals[side];return `<section class="review-team ${side}"><h3>${E.SIDE[side]}损失</h3><p>累计损血 <b>${t.loss}</b> · 阵亡 <b>${t.fallen}</b> 子</p><p>培养牌共使用 ${t.cards} 次（可整备后再次使用）</p></section>`;}).join('')}</div>`;
     html+=challengeFeedbackHTML(review);
     if(!keyBattles.length)html+='<p class="coach">本局没有发生武斗，没有交战损失或选招可供对照。</p>';
     for(const b of keyBattles){
       html+=`<article class="review-battle"><h3>第 ${b.ply} 次行动 · ${b[b.attacker].name}进攻${b[E.OTHER[b.attacker]].name}</h3><p>${esc(b.summary)} 已交战 ${b.rounds} 轮；开战支援 ${E.SIDE[b.attacker]} ${b.supportA} 名 / ${E.SIDE[E.OTHER[b.attacker]]} ${b.supportD} 名。</p><div class="review-losses">${sides.map(side=>{const p=b[side];return `<div class="${side}"><b>${p.name}${p.end===0?' · 阵亡':''}</b><span>生命 ${p.start} → ${p.end} · 使用培养牌 ${p.cards} 次</span></div>`;}).join('')}</div>`;
-      for(const side of sides){const tip=b.tips[side];if(tip)html+=`<section class="review-tip"><h4>${E.SIDE[side]}可改进选择 · 第 ${tip.round} 轮，对手已出「${esc(moveName(tip.enemyId))}」</h4><div class="review-compare"><div><strong>实际选择</strong>${comparison(tip.actual)}</div><div><strong>可比较的替代</strong>${comparison(tip.alternative)}</div></div></section>`;}
+      for(const side of sides){const tip=b.tips[side];if(tip)html+=`<section class="review-tip"><h4>${E.SIDE[side]}${tip.alternative.kingRisk?'需权衡的替代':'可改进选择'} · 第 ${tip.round} 轮，对手已出「${esc(moveName(tip.enemyId))}」</h4><div class="review-compare"><div><strong>实际选择</strong>${comparison(tip.actual)}</div><div><strong>可比较的替代</strong>${comparison(tip.alternative)}</div></div>${tip.alternative.kingRisk?'<p class="preview-risk">后续风险：此替代会结束交战，对手下一次行动存在两轮内确定击倒'+E.SIDE[side]+'将帅的进攻。本轮换血较好，仍不能据此认定整体更优；原选择继续交战也不代表安全。</p>':''}</section>`;}
       if(!Object.keys(b.tips).length)html+='<p class="tip">未找到通过即时终局检查，且能在不增加本轮损血的前提下提高伤害，或不降低伤害而减少损血、节省培养牌的替代招式；不代表整场选择最优。</p>';
       html+='</article>';
     }

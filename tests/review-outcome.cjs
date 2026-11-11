@@ -55,6 +55,32 @@ test('红黑进守均保留可将确定和局改为立即获胜的替代',()=>{
   }
 });
 
+test('真实复盘标明替代结束交战后暴露将帅的风险，红黑对称',()=>{
+  const fixture=require('./review-followup-fixture.json');
+  for(const rotated of [false,true]){
+    const s=replay(fixture.commands.slice(0,fixture.beforeCommand));
+    if(rotated){
+      s.turn=E.OTHER[s.turn];for(const p of s.pieces){p.side=E.OTHER[p.side];p.x=8-p.x;p.y=9-p.y;}
+      for(const p of [s.duel.origin,s.duel.target]){p.x=8-p.x;p.y=9-p.y;}
+    }
+    const a=E.get(s,s.duel.a),actual=result(s,true,fixture.actual,fixture.enemy);
+    assert.equal(actual.phase,'duel');assert.equal(s.ply+1,fixture.ply);assert.equal(s.duel.round,fixture.round);
+    const tip=reviewed(s,true,fixture.actual,fixture.enemy);assert(tip);assert.equal(tip.alternative.id,fixture.alternative);
+    const next=result(s,true,tip.alternative.id,fixture.enemy);
+    assert.equal(next.phase,'board');assert.equal(next.turn,E.OTHER[a.side]);assert(C.kingLostNext(next,a.side));
+    assert.equal(tip.alternative.kingRisk,true,'本轮换血较好仍须揭示战后取将风险');
+    const attacker=next.pieces.find(p=>p.side!==a.side&&p.kind==='king'),king=next.pieces.find(p=>p.side===a.side&&p.kind==='king');
+    E.move(next,attacker.id,king.x,king.y);
+    for(const reply of C.choices(next,king,next.duel))assert.equal(result(next,true,'strike',reply).winner,attacker.side);
+    // 移开远处的敌将后飞将威胁解除，不能仅因结束交战就警告。
+    E.get(s,s.pieces.find(p=>p.side!==a.side&&p.kind==='king').id).x=4;
+    const safe=reviewed(s,true,fixture.actual,fixture.enemy);assert(safe);assert(!safe.alternative.kingRisk);
+  }
+  const review=box.analyzeMatch(fixture.commands),end=replay(fixture.commands);
+  assert.equal(review.ply,end.ply);assert.equal(review.winner,end.winner);
+  assert(review.battles.find(b=>b.ply===fixture.ply).tips.black.alternative.kingRisk);
+});
+
 test('普通交战与三种残局的替代按真实规则核对，查看不改输入',()=>{
   for(const scenario of ['tactics','challenge-support','challenge-relay','challenge-tempo'])for(const round of [1,6])for(const force of [0,2])for(const hp of [[1,3],[4,5],[18,18]]){
     const s=E.create(scenario);E.move(s,'hero',4,4);s.duel.round=round;s.duel.forceA=force;s.duel.forceD=force;
