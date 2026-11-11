@@ -448,4 +448,65 @@ for(const ending of ['healthy','win','draw']){
   assert(bad.risks.some(t=>t.includes('将帅漏防风险')&&t.includes('两轮内')));assert(bad.note.includes('不预测暗招'));
   assert(!good.risks.some(t=>t.includes('将帅漏防风险')));assert.equal(JSON.stringify(s),before);
 }
-console.log('配牌条件、支援、本轮生命预估与残局回应、吃子漏防、兵卒底线、行动终局、落点首轮风险与两轮胜局预览：27 组检查通过。');
+{
+  const fixture=require('./opening-followup-fixture.json'),C=box.YiwuComputer;
+  const scene=(rotated=false)=>{
+    let state;
+    for(const [op,...args]of fixture.commands){if(op==='create')state=E.create(...args);else E[op](state,...args);}
+    assert.equal(state.phase,'board');assert.equal(state.ply,14);
+    if(rotated){state.turn=E.OTHER[state.turn];state.repetitions={};for(const p of state.pieces){p.side=E.OTHER[p.side];p.x=8-p.x;p.y=9-p.y;}}
+    box.state=state;vm.runInContext('s=state',box);return state;
+  };
+  const query=state=>box.openingAdvice(E.context(state,E.get(state,fixture.attacker),E.get(state,fixture.target)));
+  for(const rotated of [false,true]){
+    const state=scene(rotated),a=E.get(state,fixture.attacker),d=E.get(state,fixture.target),enemy=E.get(state,fixture.threat),ctx=E.context(state,a,d),before=JSON.stringify([state,ctx]);
+    Object.defineProperty(box,'fightUI',{configurable:true,get(){throw new Error('预览不得读取暗招');}});
+    try{
+      const advice=box.openingAdvice(ctx);
+      assert(advice.reason.includes('并保住进攻子'));assert.equal(advice.risk,'');
+      assert(advice.followUp?.includes('吃子后将帅受攻'));
+      assert(advice.followUp.includes(E.label(enemy)+'（'+(enemy.x+1)+'路'+(10-enemy.y)+'线）'));
+      assert(advice.followUp.includes('能发起武斗不等于必胜'));
+      const action={type:'move',id:a.id,x:d.x,y:d.y};
+      assert(box.boardAdvice(action).risks.includes(advice.followUp));
+      box.aId=a.id;box.dId=d.id;const preview=vm.runInContext('selected=aId;preview=dId;previewHTML()',box);
+      assert(preview.includes(advice.followUp));
+      for(const id of C.battleOutlook(state,ctx).finishes)for(const reply of C.choices(state,d,ctx)){
+        const next=JSON.parse(JSON.stringify(state));E.move(next,a.id,d.x,d.y);E.resolve(next,id,reply);
+        assert.equal(next.phase,'board');assert(!E.get(next,d.id));assert(E.get(next,a.id).hp>0);
+        const king=next.pieces.find(p=>p.side===a.side&&p.kind==='king'),threat=E.get(next,enemy.id);
+        assert(E.canMove(next,threat,king.x,king.y));assert(!C.kingLostNext(next,a.side));
+        assert.equal(C.battleOutlook(next,E.context(next,threat,king)).counters.length,0);
+      }
+      assert.equal(JSON.stringify([state,ctx]),before);
+    }finally{delete box.fightUI;}
+  }
+  for(const variant of ['removed','blocked','counter','no-finish','duel','win','draw','certain-loss','challenge']){
+    const state=scene(),a=E.get(state,fixture.attacker),d=E.get(state,fixture.target);
+    if(variant==='removed')state.pieces=state.pieces.filter(p=>p.id!==fixture.threat);
+    if(variant==='blocked')state.pieces.push(E.piece('blocker',a.side,'pawn',3,7));
+    if(variant==='counter')E.get(state,fixture.threat).hp=1;
+    if(variant==='no-finish')d.hp=18;
+    if(variant==='duel')E.move(state,a.id,d.x,d.y);
+    if(variant==='win'){state.pieces=state.pieces.filter(p=>p.side===a.side||p.kind!=='king');d.kind='king';d.learned=[];d.exhausted=[];}
+    if(variant==='draw'){
+      const ctx=E.context(state,a,d);
+      for(const id of C.battleOutlook(state,ctx).finishes)for(const reply of C.choices(state,d,ctx)){
+        const next=JSON.parse(JSON.stringify(state));E.move(next,a.id,d.x,d.y);E.resolve(next,id,reply);
+        state.repetitions[E.key(next)]=E.DRAW.repetitions-1;
+      }
+    }
+    if(variant==='certain-loss')state.pieces.find(p=>p.side===a.side&&p.kind==='king').hp=1;
+    if(variant==='challenge')state.scenario='challenge-tempo';
+    const before=JSON.stringify(state),advice=query(state);
+    assert(!advice.followUp,variant+'不应叠加一般受攻提示');
+    if(variant==='certain-loss')assert(advice.risk.includes('将帅漏防风险'));
+    assert.equal(JSON.stringify(state),before);
+  }
+  const state=scene(),a=E.get(state,fixture.attacker),d=E.get(state,fixture.target),next=JSON.parse(JSON.stringify(state));
+  E.move(next,a.id,d.x,d.y);E.resolve(next,'strike','strike');state.repetitions[E.key(next)]=E.DRAW.repetitions-1;
+  const before=JSON.stringify(state),advice=query(state);
+  assert(advice.followUp.includes('守方「'+E.BASE.guard.name+'」'),'首个回应判和后，仍需核对其他回应');
+  assert.equal(JSON.stringify(state),before);
+}
+console.log('配牌条件、支援、本轮生命预估与残局回应、吃子漏防、兵卒底线、行动终局、落点首轮风险、两轮胜局预览与吃子后将帅受攻：28 组检查通过。');

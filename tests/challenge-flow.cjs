@@ -898,4 +898,17 @@ function mirroredSetup(state) {
   assert.equal(p.ui.state.ply, 2); assert.equal(p.ui.state.turn, 'red'); assert.equal(p.timerCount(), 0);
   assert.equal(JSON.parse(p.saved.getItem('yiwu.autosave')).commands.length, JSON.parse(saved).commands.length + 1);
 }
-console.log('残局流程、走棋反馈与武斗确认：38 项检查通过；教学键盘入口与续局：2 组、教学完成衔接：2 组、武斗滚动：3 组、武斗焦点：3 组、默认配牌与旧续局：3 组、两轮预览续局隔离：1 组、棋盘操作焦点：3 组、规则窗口：2 组检查通过。');
+{
+  const fixture=require('./opening-followup-fixture.json'),saved=storage();
+  saved.setItem('yiwu.autosave',JSON.stringify({version:1,commands:fixture.commands,ui:{opponent:'local',difficulty:'standard',selected:fixture.attacker,preview:fixture.target,setupSide:'red',focusIndex:61,lesson:null,fight:null}}));
+  const p=page(saved);p.node('resume').onclick();const before=JSON.stringify(p.ui.state),preview=p.node('preview-content').innerHTML;
+  assert(p.node('preview').open);assert(preview.includes('吃子后将帅受攻'));assert(preview.includes('能发起武斗不等于必胜'));
+  assert.deepEqual(JSON.parse(saved.getItem('yiwu.autosave')).commands,fixture.commands);
+  const restored=page(saved);restored.node('resume').onclick();
+  assert(restored.node('preview').open);assert.equal(restored.node('preview-content').innerHTML,preview);
+  assert.equal(JSON.stringify(restored.ui.state),before);assert.equal(restored.timerCount(),0);
+  restored.action('cancel-preview');assert(!restored.node('preview').open);
+  assert.equal(JSON.stringify(restored.ui.state),before);
+  assert.deepEqual(JSON.parse(saved.getItem('yiwu.autosave')).commands,fixture.commands);
+}
+console.log('残局流程、走棋反馈与武斗确认：38 项检查通过；教学键盘入口与续局：2 组、教学完成衔接：2 组、武斗滚动：3 组、武斗焦点：3 组、默认配牌与旧续局：3 组、两轮预览续局隔离：1 组、棋盘操作焦点：3 组、规则窗口：2 组、吃子受攻预览续局：1 组检查通过。');
