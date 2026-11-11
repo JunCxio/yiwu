@@ -75,4 +75,51 @@ test('撤回说明与实际胜负、判和及已结算状态一致，查看不�
   const s=ordinary(),reason=C.explain('retreat','practice',s);
   assert(reason.includes('伤势')&&reason.includes('气势清零'));assert(!reason.includes('直接结束本局'));
 });
-console.log('撤回决策：'+passed+' / 6 项检查通过。');
+function lastRound(rotated=false){
+  const fixture=require('./computer-last-round-fixture.json');let s;
+  for(const [op,...args]of fixture.commands){if(op==='create')s=E.create(...args);else E[op](s,...args);}
+  if(rotated){
+    s.turn=E.OTHER[s.turn];for(const p of s.pieces){p.side=E.OTHER[p.side];p.x=8-p.x;p.y=9-p.y;}
+    for(const p of [s.duel.origin,s.duel.target]){p.x=8-p.x;p.y=9-p.y;}
+  }
+  return s;
+}
+
+test('合法末轮残血进攻子不再为即将清零的蓄势承伤，红黑对称',()=>{
+  for(const rotated of [false,true]){
+    const s=lastRound(rotated),a=E.get(s,s.duel.a),d=E.get(s,s.duel.d),next=copy(s);
+    assert.equal(s.duel.round,6);assert.equal(a.hp,1);assert.equal(d.hp,4);assert.equal(C.choices(s,d,s.duel).length,4);
+    E.resolve(next,'focus','strike');assert(!E.get(next,a.id));assert.equal(E.get(next,d.id).hp,d.hp);
+    const exit=copy(s);E.retreat(exit);assert.equal(exit.phase,'board');assert(!C.kingLostNext(exit,a.side));
+    assert.deepEqual(checkedPlan(s,a.side),[{id:'retreat',weight:1}]);
+    for(const roll of [0,.2,.5,.9,.999999])assert.equal(C.combat(s,a.side,()=>roll),'retreat');
+  }
+});
+
+test('提前蓄势、诱使耗牌、保留判和选择和无伤计数均不套用末轮止损',()=>{
+  for(const kind of ['earlier','card','draw','quiet']){
+    const s=lastRound(),a=E.get(s,s.duel.a),d=E.get(s,s.duel.d);
+    if(kind==='earlier')s.duel.round=5;
+    else if(kind==='card'){d.learned=['pawn_advance'];assert(C.choices(s,d,s.duel).includes('pawn_advance'));}
+    else if(kind==='draw'){const next=copy(s);E.retreat(next);s.repetitions[E.key(next)]=E.DRAW.repetitions-1;const exit=copy(s);E.retreat(exit);assert.equal(exit.winner,'draw');}
+    else s.duel.totalDamage=0;
+    assert(checkedPlan(s,a.side).some(p=>p.id==='focus'&&p.weight>0),kind);
+  }
+});
+
+test('撤回后存在确定取将风险时，不以末轮蓄势为由强行撤回',()=>{
+  const fixture=require('./review-followup-fixture.json');let s;
+  for(const [op,...args]of fixture.commands.slice(0,fixture.beforeCommand)){if(op==='create')s=E.create(...args);else E[op](s,...args);}
+  s.duel.round=6;const a=E.get(s,s.duel.a),next=copy(s);E.retreat(next);assert(C.kingLostNext(next,a.side));
+  assert(checkedPlan(s,a.side).some(p=>p.id==='focus'&&p.weight>0));
+});
+
+test('末轮止损先完成省牌，不把可省下的培养蓄势牌留在计划中',()=>{
+  const fixture=require('./computer-last-round-fixture.json');let s;
+  for(const [op,...args]of fixture.cardOrderCommands){if(op==='create')s=E.create(...args);else E[op](s,...args);}
+  const a=E.get(s,s.duel.a);assert.equal(s.duel.round,6);assert(C.choices(s,a,s.duel).includes('elephant_store'));
+  const plan=checkedPlan(s,a.side);assert(!plan.some(p=>p.id==='focus'));assert(!plan.some(p=>p.id==='elephant_store'));
+  assert(plan.some(p=>p.id==='retreat'&&p.weight>0));
+});
+
+console.log('撤回决策：'+passed+' / 10 项检查通过。');
