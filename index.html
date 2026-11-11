@@ -133,7 +133,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.101 · 追将收益与对局节奏</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.102 · 电脑走棋与稳定评分</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -727,6 +727,8 @@ globalThis.YiwuComputer = (() => {
     }
     return score;
   }
+  // 统一比较精度，避免浮点尾差改变同分顺序和近分边界。
+  function scoreUnits(action){return Math.round(action.score*1e9);}
   function rankedActions(s){
     const side=s.turn,base=position(s,side);
     const own=new Set(s.pieces.filter(p=>p.side===side).map(p=>p.id)),visits=new Map();
@@ -795,13 +797,14 @@ globalThis.YiwuComputer = (() => {
         if(kingLostNext(next,side))score-=1000;
       }
       return {...action,score:score-repeated*3};
-    }).sort((a,b)=>b.score-a.score);
+    }).sort((a,b)=>scoreUnits(b)-scoreUnits(a));
   }
   function board(s,rng=Math.random,difficulty='standard'){
     if(s.phase!=='board')throw new Error('当前不能走棋');
     const ranked=rankedActions(s);
     if(!ranked.length)return {type:'pass'};
-    const near=difficulty==='practice'?ranked.filter(a=>a.score>=ranked[0].score-1.2).slice(0,3):ranked.filter(a=>a.score>=ranked[0].score-.06);
+    let near=ranked.filter(a=>scoreUnits(ranked[0])-scoreUnits(a)<=(difficulty==='practice'?1200000000:60000000));
+    if(difficulty==='practice')near=near.slice(0,3);
     return near[Math.min(near.length-1,Math.floor(rng()*near.length))];
   }
   return {actions,choices,twoRoundWinningChoices,battleOutlook,captureLosesKing,kingLostNext,combatOutcome,combatPlan,practicePlan,combat,explain,rankedActions,board};
@@ -828,9 +831,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.101',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.102',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.101-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.102-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
