@@ -8,7 +8,7 @@ const scripts = [...html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].map(m =
 const box = vm.createContext({});
 vm.runInContext(scripts[0], box);
 vm.runInContext(scripts[1], box);
-const helpers = ['cardUnavailable', 'supportDetailsHTML', 'combatForecastHTML', 'combatRepliesHTML', 'combatFollowUpRisk', 'openingAdvice', 'pawnEndRankRisk', 'firstRoundLossRisk', 'previewBoardAction', 'actionOutcomeRisk', 'boardAdvice', 'challengeCombatHTML', 'previewHTML'].map(name => {
+const helpers = ['cardUnavailable', 'supportDetailsHTML', 'combatForecastHTML', 'combatRepliesHTML', 'combatFollowUpRisk', 'openingAdvice', 'pawnEndRankRisk', 'firstRoundLossRisk', 'previewBoardAction', 'actionOutcomeRisk', 'adviceHTML', 'boardAdvice', 'challengeCombatHTML', 'previewHTML'].map(name => {
   const source = scripts[2].match(new RegExp('  function ' + name + '\\([\\s\\S]*?\\n  \\}'));
   assert(source, '缺少界面函数：' + name);
   return source[0];
@@ -521,4 +521,24 @@ for(const ending of ['healthy','win','draw']){
   const ctx=E.context(s,E.get(s,'hero'),E.get(s,'target')),strike=E.roundDamage(ctx,'strike','strike'),guard=E.roundDamage(ctx,'guard','guard');
   assert.equal(strike.toD-strike.toA,1);assert.equal(guard.toA,0);assert.equal(guard.toD,0);assert.equal(JSON.stringify(s),before);
 }
-console.log('配牌条件、支援、本轮生命预估与残局回应、吃子漏防、兵卒底线、行动终局、落点首轮风险、两轮胜局预览、吃子后将帅受攻与预览信息层级：29 组检查通过。');
+{
+  const s=load('quick');E.auto(s,'red');E.auto(s,'black');E.start(s);
+  const p=s.pieces.find(p=>p.side==='red'&&p.kind==='cannon'),before=JSON.stringify(s),action={type:'move',id:p.id,x:4,y:p.y};
+  const advice=box.boardAdvice(action),h=box.adviceHTML(advice),scope=h.match(/<details class="advice-details"[^>]*>[\s\S]*?<\/details>/);
+  assert(scope,'通用判断范围应按需展开');assert(!/^<details[^>]*\sopen(?:\s|>)/.test(scope[0]));
+  assert(scope[0].includes('判断范围与限制'));assert(scope[0].includes('依据当前站位、生命、可用牌和重复阵形推荐'));assert(scope[0].includes('不预知暗招或更长序列'));
+  const visible=h.replace(scope[0],'');assert(visible.includes('不预知暗招'));assert(visible.includes('不保证武斗或整局获胜'));
+  for(const text of [...advice.reasons,...advice.risks])assert(visible.includes(text),'当前依据与风险不能折叠');
+  assert(advice.note.length<80);assert.equal(JSON.stringify(s),before);
+  const preview=box.adviceHTML(box.boardAdvice(action,true),true);assert(!preview.includes('advice-details'));assert(preview.includes('当前尚未移动，不消耗行动'));
+  s.quiet=79;const ended=box.adviceHTML(box.boardAdvice(action));assert(!ended.includes('advice-details'));assert(ended.includes('尚未执行，不消耗行动或修改续局'));
+  const challenge=load('challenge-support'),goal=E.get(challenge,'target'),specific=box.adviceHTML(box.boardAdvice({type:'move',id:'hero',x:goal.x,y:goal.y}));
+  assert(!specific.includes('advice-details'));assert(specific.includes('残局提示优先指定目标'));
+}
+{
+  const advice={title:'<棋子>',reasons:['<依据>'],risks:['<风险>'],note:'<说明>',details:'<范围>'},before=JSON.stringify(advice),h=box.adviceHTML(advice);
+  for(const text of ['棋子','依据','风险','说明','范围']){assert(!h.includes('<'+text+'>'));assert(h.includes('&lt;'+text+'&gt;'));}
+  assert.equal(JSON.stringify(advice),before);assert(!box.adviceHTML({...advice,details:''}).includes('advice-details'));
+  assert(!box.adviceHTML('暂无可用建议').includes('advice-details'));
+}
+console.log('配牌条件、支援、本轮生命预估与残局回应、吃子漏防、兵卒底线、行动终局、落点首轮风险、两轮胜局预览、吃子后将帅受攻、预览与提示信息层级：31 组检查通过。');

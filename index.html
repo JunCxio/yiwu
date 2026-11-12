@@ -35,6 +35,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 @media(max-width:760px){.home-page{margin:28px auto;gap:28px;grid-template-columns:minmax(0,1fr) minmax(280px,1fr)}.home-intro h2{font-size:50px}.home-settings{padding:22px}.home-intro>p{font-size:13px}.home-steps{gap:14px}#game-setting{max-width:180px}}
 @media(max-width:650px){.home-page{display:block;max-width:420px;margin:24px auto}.home-intro{margin-bottom:24px}.home-intro h2{font-size:43px;letter-spacing:5px;line-height:1.2;margin:10px 0}.home-intro h2 br{display:none}.home-intro>p{margin-bottom:0}.home-steps{display:none}.home-settings{padding:20px}.home-field>label{margin-top:13px}.home-eyebrow{font-size:11px;letter-spacing:2px}.mode-description{min-height:0}#game-tools{width:100%;justify-content:space-between}#game-setting{max-width:none;text-align:left}.fight-header .modal-head{gap:6px}.fight-header .round-badge{font-size:11px;padding:2px 7px}.fight-header .modal-head h2{font-size:18px!important}.fight-home{font-size:11px;padding:4px 6px}}
 .save-warning{color:#f4c69b!important}#save-status{max-width:750px}#home-save-note{line-height:1.8}
+.advice-details{margin-top:8px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}.advice-details summary{min-height:44px;padding:10px 0;cursor:pointer;scroll-margin-block:8px;color:var(--gold)}.advice-details p{margin:0 0 4px;line-height:1.7}
 .advice{border:1px solid #a28e5d;border-left:3px solid var(--gold);border-radius:5px;background:#e5c9830c;padding:12px;margin:0 0 16px;font-size:13px;overflow-wrap:anywhere}.advice h3{font-size:16px;color:#f2dcac;margin:0 0 7px}.advice h4{font-size:12px;color:#d7d8bb;margin:10px 0 3px}.advice ul{padding-left:18px;margin:0}.advice li{margin:5px 0}.advice .advice-risks{color:#f1c3ad}.advice .advice-note{font-size:12px;color:var(--muted);line-height:1.7;margin:10px 0 0}.pick-review .advice{margin:0 0 12px}.pick-review .advice h3{font-size:16px}#notice button{margin-left:8px;min-height:44px}
 #review{width:900px;max-width:min(900px,calc(100vw - 28px))}.endgame-actions{display:flex;gap:9px;flex-wrap:wrap}.review-intro{color:#d5d6bd;font-size:13px;line-height:1.8}.review-teams{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}.review-team{border:1px solid #a46b5f;background:#49312f;padding:12px;border-radius:6px}.review-team.black{border-color:#6884a2;background:#263647}.review-team h3{color:#ffd1c4}.review-team.black h3{color:#d4e8ff}.review-team p{font-size:13px;margin:5px 0}.review-battle{border:1px solid var(--line);border-radius:6px;padding:15px;margin-top:14px;overflow-wrap:anywhere}.review-battle h3{color:var(--gold)}.review-battle>p{font-size:13px}.review-losses{display:grid;grid-template-columns:1fr 1fr;gap:9px;font-size:13px}.review-losses>div{border-left:3px solid #bc796b;padding-left:10px}.review-losses>.black{border-color:#9cb5d3}.review-losses b,.review-losses span{display:block}.review-losses span{color:var(--muted)}.review-tip{margin-top:13px;padding-top:12px;border-top:1px solid var(--line)}.review-tip h4{margin:0 0 8px;font-size:13px}.review-compare{display:grid;grid-template-columns:1fr 1fr;gap:8px}.review-compare>div{padding:9px;background:#112a24;border:1px solid transparent;border-radius:4px;font-size:12px;min-width:0}.review-compare>div:last-child{border-color:#8c8057;background:#283e2d}.review-compare strong,.review-compare b,.review-compare small{display:block}.review-compare strong{font-size:11px;color:var(--muted);margin-bottom:5px}.review-compare span{font-size:15px;color:var(--gold)}.review-compare b{margin:5px 0;font-size:13px}.review-compare small{color:var(--muted)}#review button{min-height:44px}@media(max-width:480px){.review-teams,.review-losses,.review-compare{grid-template-columns:1fr}.review-battle{padding:12px}.endgame-actions{width:100%}.endgame-actions button{flex:1}.review-teams{gap:8px}.review-team{padding:10px}}
 .card .card-plan{padding:9px 10px;background:#dfca8a12;border-left:3px solid #cfb774;color:#dedec1}.card-plan b{display:block;color:#eed69a;font-size:12px;margin-bottom:3px}.card-plan span{display:block;margin-top:5px;color:#bfcfbe}
@@ -134,7 +135,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.115 · 交战预览</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.116 · 走棋提示</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -902,9 +903,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.115',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.116',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.115-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.116-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -1614,17 +1615,17 @@ globalThis.YiwuComputer = (() => {
   }
   function adviceHTML(advice,forMove=false){
     if(typeof advice==='string')return '<div class="coach"><p role="status">'+esc(advice)+'</p></div>';
-    return `<section class="advice" tabindex="-1" aria-label="${forMove?'落点变化与风险':'推荐理由与风险'}" role="status"><h3>${forMove?'落点预览 · ':''}${esc(advice.title)}</h3><h4>${forMove?'站位变化':'推荐依据'}</h4><ul>${advice.reasons.map(t=>'<li>'+esc(t)+'</li>').join('')}</ul><h4>风险与代价</h4><ul class="advice-risks">${advice.risks.map(t=>'<li>'+esc(t)+'</li>').join('')}</ul><p class="advice-note">${esc(advice.note)}</p></section>`;
+    return `<section class="advice" tabindex="-1" aria-label="${forMove?'落点变化与风险':'推荐理由与风险'}" role="status"><h3>${forMove?'落点预览 · ':''}${esc(advice.title)}</h3><h4>${forMove?'站位变化':'推荐依据'}</h4><ul>${advice.reasons.map(t=>'<li>'+esc(t)+'</li>').join('')}</ul><h4>风险与代价</h4><ul class="advice-risks">${advice.risks.map(t=>'<li>'+esc(t)+'</li>').join('')}</ul><p class="advice-note">${esc(advice.note)}</p>${advice.details?'<details class="advice-details"><summary>判断范围与限制</summary><p>'+esc(advice.details)+'</p></details>':''}</section>`;
   }
   function boardAdvice(action,forMove=false){
-    const advice={title:'走棋建议',reasons:[],risks:[],note:forMove?'按移动后的公开站位检查支援、对手首轮吃子机会与将帅两轮漏防；不预测暗招或更长序列。当前尚未移动，不消耗行动。':'依据当前站位、生命、可用牌和重复阵形推荐，并说明移动或整备后的首轮吃子风险；评分还会核对移动、整备及可确保存活的首轮吃子后的将帅漏防（对手下一次行动的武斗前两轮）。对手有安全空位退路时，降低追将收益；还会检查对手下一手调子后，将帅受攻且全部安全空位退路被封住的风险，包含建立炮架或解除挡线；不等于判定将死，尚未推演其他棋子救援；未找到可靠吃子方案时，普通交战还按平均伤害估计战后站位，检查新增逼帅风险；估计可能与实际武斗不同。这不代表后续胜负。一般评分不保证武斗获胜；进攻将帅时另核对两轮确定胜局，进攻普通残血目标时另核对两轮存活吃子，不预知暗招或更长序列。'};
+    const advice={title:'走棋建议',reasons:[],risks:[],note:forMove?'按移动后的公开站位检查支援、对手首轮吃子机会与将帅两轮漏防；不预测暗招或更长序列。当前尚未移动，不消耗行动。':'依据当前公开局面推荐，不预知暗招，也不保证武斗或整局获胜。',details:forMove?'':'依据当前站位、生命、可用牌和重复阵形推荐，并说明移动或整备后的首轮吃子风险；评分还会核对移动、整备及可确保存活的首轮吃子后的将帅漏防（对手下一次行动的武斗前两轮）。对手有安全空位退路时，降低追将收益；还会检查对手下一手调子后，将帅受攻且全部安全空位退路被封住的风险，包含建立炮架或解除挡线；不等于判定将死，尚未推演其他棋子救援；未找到可靠吃子方案时，普通交战还按平均伤害估计战后站位，检查新增逼帅风险；估计可能与实际武斗不同。这不代表后续胜负。一般评分不保证武斗获胜；进攻将帅时另核对两轮确定胜局，进攻普通残血目标时另核对两轮存活吃子，不预知暗招或更长序列。'};
     const next=previewBoardAction(action),risk=actionOutcomeRisk(action,next);if(risk)advice.risks.push(risk);
     if(action.type==='pass')advice.reasons.push('当前没有合法移动或可整备招式，只能跳过受阻回合。');
     if(next?.phase==='ended'){
       advice.title=next.winner==='draw'?'此步将直接判和':E.CHALLENGES[s.scenario]?'此步将结束挑战':'此步后'+E.SIDE[next.winner]+'获胜';
       advice.reasons.push('本次'+(action.type==='rest'?'整备':action.type==='pass'?'跳过受阻回合':'移动')+'计入棋盘行动；结算后本局立即结束，不再有后续走棋或武斗。');
       if(action.type==='rest')advice.reasons.push('整备恢复的招式在本局不再有使用机会，生命不会恢复。');
-      advice.note='按当前棋局和实际规则预演本次行动的结果。当前尚未执行，不消耗行动或修改续局。';
+      advice.note='按当前棋局和实际规则预演本次行动的结果。当前尚未执行，不消耗行动或修改续局。';advice.details='';
       return advice;
     }
     if(action.type==='pass'){
@@ -1653,7 +1654,7 @@ globalThis.YiwuComputer = (() => {
       advice.title=E.label(p)+'进攻'+E.label(target);
       if(E.CHALLENGES[s.scenario]&&p.id==='hero'&&target.id==='target'){
         advice.reasons.push('优先尝试本关指定目标：'+E.CHALLENGES[s.scenario].goal);
-        advice.note='残局提示优先指定目标；未搜索对手后续回应，不代表武斗必胜。';
+        advice.note='残局提示优先指定目标；未搜索对手后续回应，不代表武斗必胜。';advice.details='';
       }
       advice.reasons.push('交战输出为 '+E.power(ctx,true)+' 对 '+E.power(ctx,false)+'；双方有效支援为 '+Math.min(2,ctx.supportA.length)+' / '+Math.min(2,ctx.supportD.length)+' 名。','进攻方首轮有效伤害额外加 1；目标剩余生命 '+target.hp+'。');
       const ready=p.learned.filter(id=>!E.availability(s,p,id,ctx));
