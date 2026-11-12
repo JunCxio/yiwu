@@ -1,0 +1,121 @@
+{
+  "version": "0.6.130",
+  "sourceCommit": "235a5d8b5d5f559632ea77ea57368c49686ab635",
+  "baselineSHA256": "2c097f24376cfd5e830de1a1a5bbfba6d77ef923edf2005d9a97376f7ac5695d",
+  "releaseSHA256": "fbda847f99f33e42e12530ab0940569f7f9adbb9942fdb5fc6d03b8b4ded50f8",
+  "scope": "仅补首页难度说明与无障碍关联，规则、电脑脚本和CSS逐字不变，存档格式1不变。",
+  "diagnostics": {
+    "source": "balance-0.6.129.json",
+    "dataSHA256": "e16fd3824f6ae4575c5e7fdd3487cb7310b2ded64d00d91804bc24d4d546bea1",
+    "quietMoveAudit": {
+      "games": 25,
+      "kingAttackEntries": 33,
+      "chosenQuietWithThreat": 31,
+      "withSafeQuiet": 0,
+      "withSafeQuietInNear": 0,
+      "avoidableGuaranteedRoundDeaths": 0
+    },
+    "earlierQuietMoveAudit": {
+      "games": 25,
+      "rows": []
+    },
+    "duelBranches": {
+      "scope": "只替换同一武斗的守将出招，保持入口和随机根；不是完整对局胜率或更强电脑证明。",
+      "games": 25,
+      "decisionsVerified": 1030,
+      "duels": 33,
+      "controlKingDeaths": 25,
+      "standardKingDeaths": 7,
+      "kingHPImproved": 23,
+      "kingHPWorsened": 2
+    },
+    "limits": "诊断不含交战救援及全部多步策略；同入口武斗分支不是整局胜率，未据此修改策略或培养。"
+  },
+  "checks": {
+    "targeted": 5,
+    "existingUI": 143,
+    "pendingAutosave": 9,
+    "challengeLog": "残局流程、走棋反馈与武斗确认：38 项检查通过；教学键盘入口与续局：2 组、教学完成衔接：2 组、武斗滚动：3 组、武斗焦点：3 组、默认配牌与旧续局：3 组、两轮预览续局隔离：1 组、棋盘操作焦点：3 组、规则窗口：2 组、吃子受攻预览续局：1 组、普通两轮吃子预览续局：1 组、落点及整备终局焦点与续局：3 组检查通过。",
+    "rulesAndComputerIdentical": true,
+    "cssIdentical": true,
+    "existingTestsUnmodified": true
+  },
+  "browser": [
+    {
+      "width": 1366,
+      "height": 768,
+      "settings": 8,
+      "descriptionFits": true,
+      "noButtonOverlap": true,
+      "noHorizontalOverflow": true,
+      "loadReachable": true,
+      "existingPracticeGamePreserved": true,
+      "pendingAndHiddenChoicePreserved": true,
+      "refreshPreserved": true,
+      "errors": []
+    },
+    {
+      "width": 1024,
+      "height": 640,
+      "settings": 8,
+      "descriptionFits": true,
+      "noButtonOverlap": true,
+      "noHorizontalOverflow": true,
+      "loadReachable": true,
+      "existingPracticeGamePreserved": true,
+      "pendingAndHiddenChoicePreserved": true,
+      "refreshPreserved": true,
+      "errors": []
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "settings": 8,
+      "descriptionFits": true,
+      "noButtonOverlap": true,
+      "noHorizontalOverflow": true,
+      "loadReachable": true,
+      "existingPracticeGamePreserved": true,
+      "pendingAndHiddenChoicePreserved": true,
+      "refreshPreserved": true,
+      "errors": []
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "settings": 8,
+      "descriptionFits": true,
+      "noButtonOverlap": true,
+      "noHorizontalOverflow": true,
+      "loadReachable": true,
+      "existingPracticeGamePreserved": true,
+      "pendingAndHiddenChoicePreserved": true,
+      "refreshPreserved": true,
+      "errors": []
+    },
+    {
+      "width": 760,
+      "height": 480,
+      "settings": 8,
+      "descriptionFits": true,
+      "noButtonOverlap": true,
+      "noHorizontalOverflow": true,
+      "loadReachable": true,
+      "existingPracticeGamePreserved": true,
+      "pendingAndHiddenChoicePreserved": true,
+      "refreshPreserved": true,
+      "errors": []
+    }
+  ],
+  "unverified": [
+    "真人对局",
+    "实体手机",
+    "屏幕阅读器",
+    "本轮未重复完整规则与电脑回归、性能基准或培养矩阵"
+  ],
+  "remainingRisks": [
+    "单子主导",
+    "长局",
+    "高和棋比例"
+  ]
+}

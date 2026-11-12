@@ -89,10 +89,11 @@
 
 ## 复核与限制
 
-在仓库目录运行：
+在仓库目录下载本报告指定的历史源码并运行；Windows PowerShell 中将 `curl` 写为 `curl.exe`：
 
 ```sh
-node docs/data/verify-balance-0.6.129.cjs
+curl -fL https://raw.githubusercontent.com/JunCxio/yiwu/235a5d8b5d5f559632ea77ea57368c49686ab635/index.html -o yiwu-0.6.129.html
+node docs/data/verify-balance-0.6.129.cjs yiwu-0.6.129.html
 ```
 
 后续版本可从上述Git提交取出index.html，作为第二参数传入。脚本独立生成计划、配牌、真实规则重放与实际损血，并核对逐子活动、合法支援来源、角色分类、完整终局哈希、方案与对手统计、先后手和节奏。主批共370,592条命令，追加复测183,592条命令通过。它另重算四份旧控制及主批、追加复测各组最长局，共10场、5,192条命令、4,275次棋盘选择与1,389次出招选择；没有独立重算全部1,648场的电脑选择。传入错误版本源码及篡改逐子损血数据时均被拒绝。
