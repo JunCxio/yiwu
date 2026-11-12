@@ -55,6 +55,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 .choice-return{display:block;width:100%;min-height:44px;margin-top:12px}
 @media(max-width:480px){.endgame-actions [data-action="next-challenge"]{flex-basis:100%}}
 .support-sources{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:5px}.support-sources li{display:flex;justify-content:space-between;flex-wrap:wrap;gap:3px 12px;padding:5px 8px;border-left:2px solid #a5b8cc;background:#183129;font-size:12px}.support-sources strong{font-weight:500}.support-sources span{color:var(--muted);font-variant-numeric:tabular-nums}
+.preview-bonus{margin:10px 0;padding:9px 11px;border-left:3px solid var(--gold);background:#294438}.preview-bonus strong{font-size:14px;color:var(--gold)}.preview-bonus p{margin:3px 0 0;font-size:12px;color:var(--muted)}.preview-scope{border-top:1px solid var(--line);margin-top:8px}.preview-scope summary{min-height:44px;padding:10px 0;font-size:12px;color:var(--gold);cursor:pointer}.preview-scope .tip{margin:0 0 6px}.preview-support{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.preview-support>.card{min-width:0;margin:0}.preview-support .support-sources li{overflow-wrap:anywhere}@media(max-width:400px){.preview-support{grid-template-columns:1fr;gap:8px}}
 .challenge-check{margin:10px 0;padding:10px 12px;border-left:3px solid #a6bc8c;background:#243e30;overflow-wrap:anywhere}.challenge-check strong,.challenge-check summary{font-size:13px;font-weight:700;color:#e0e9c6}.challenge-check p{font-size:13px;line-height:1.6;margin:4px 0}.challenge-check small{display:block;color:#c5d2bd;font-size:12px;line-height:1.6}.challenge-check.risk{border-color:#e3ab81;background:#49382e}.challenge-check.risk strong,.challenge-check.risk summary{color:#ffd0a8}details.challenge-check{padding:0 12px}details.challenge-check summary{min-height:44px;padding:10px 0;cursor:pointer}details.challenge-check small{padding-bottom:10px}
 #fight:is([data-step="pickA"],[data-step="pickD"]) .combat-scene{min-height:0;padding:5px 9px;grid-template-columns:minmax(0,1fr) 8px minmax(0,1fr)}
 #fight:is([data-step="pickA"],[data-step="pickD"]) .combat-scene:before,
@@ -133,7 +134,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.114 · 战斗生命反馈</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.115 · 交战预览</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -901,9 +902,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.114',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.115',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.114-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.115-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -1277,7 +1278,13 @@ globalThis.YiwuComputer = (() => {
       const p=E.get(s,selected);
       const d=E.get(s,preview),ctx=E.context(s,p,d),opening=openingAdvice(ctx);
       const risk=actionOutcomeRisk({type:'move',id:p.id,x:d.x,y:d.y}),edgeRisk=pawnEndRankRisk(p,d.y,true);
-      return `<div class="preview-header"><h2 id="preview-title">交战预览</h2><p>${E.label(p)} 进攻 ${E.label(d)}</p></div><div class="preview-body">${challengeCombatHTML(ctx)}${risk?'<p class="draw-warning" role="status">'+esc(risk)+'</p>':''}${edgeRisk?'<p class="preview-risk">'+esc(edgeRisk)+'</p>':''}<div class="stats"><div><b>${p.hp}</b><small>进攻方生命</small></div><div><b>${d.hp}</b><small>守方生命</small></div><div><b>6</b><small>最多轮数</small></div></div><div class="card"><h3>进攻方输出 ${E.power(ctx,true)}</h3>${supportDetailsHTML(ctx,true)}</div><div class="card"><h3>守方输出 ${E.power(ctx,false)}</h3>${supportDetailsHTML(ctx,false)}</div><div class="card"><h3>${opening.capture?'两轮内吃子判断':opening.twoRound?'两轮内胜局判断':'首轮判断'}</h3>${opening.reason?'<p>'+esc(opening.reason)+'</p>':''}${opening.risk?'<p class="preview-risk">'+esc(opening.risk)+'</p>':''}${opening.followUp?'<p class="preview-risk">'+esc(opening.followUp)+'</p>':''}${!opening.reason&&!opening.risk?'<p>未发现可确保首轮击倒的招式。双方仍需按克制选择。</p>':''}<p class="tip">首轮判断覆盖双方全部可用招式；进攻将帅另核对两轮确定胜局，进攻普通残血目标另核对两轮存活吃子。后者不增加当前将帅受攻程度，并排除吃子后下一手的两轮确定丢将。漏防检查只延伸到吃子后的对手下一手（武斗前两轮），不预测暗招或更长序列。</p></div>${E.power(ctx,true)<E.power(ctx,false)?'<p class="preview-risk">对方支援更多：输出 '+E.power(ctx,true)+' 对 '+E.power(ctx,false)+'。'+(opening.twoRound||opening.capture?'上述两轮判断已计入支援影响。':'可先调动友军支援，或换一个交战目标。')+'</p>':''}<p class="tip">进攻方首轮有效伤害加 1。支援关系在开战时固定；伤势和招式消耗保留。</p></div><div class="preview-actions"><button class="quiet" data-action="cancel-preview">取消进攻</button>${lesson?.stage==='support-preview'?'<button class="primary lesson-target" data-action="lesson-finish">完成教学</button>':'<button class="primary'+(lesson?' lesson-target':'')+'" data-action="attack">发起武斗</button>'}</div>`;
+      return `<div class="preview-header"><h2 id="preview-title">交战预览</h2><p>${E.label(p)} 进攻 ${E.label(d)}</p></div><div class="preview-body">${challengeCombatHTML(ctx)}${risk?'<p class="draw-warning" role="status">'+esc(risk)+'</p>':''}${edgeRisk?'<p class="preview-risk">'+esc(edgeRisk)+'</p>':''}
+        <div class="stats"><div><b>${p.hp}</b><small>进攻方生命</small></div><div><b>${d.hp}</b><small>守方生命</small></div><div><b>6</b><small>最多轮数</small></div></div>
+        <div class="preview-bonus"><strong>首轮突袭 +1</strong><p>进攻方仅在首轮出击时加成。双方不出击时不会额外扣血。</p></div>
+        <div class="card"><h3>${opening.capture?'两轮内吃子判断':opening.twoRound?'两轮内胜局判断':'首轮判断'}</h3>${opening.reason?'<p>'+esc(opening.reason)+'</p>':''}${opening.risk?'<p class="preview-risk">'+esc(opening.risk)+'</p>':''}${opening.followUp?'<p class="preview-risk">'+esc(opening.followUp)+'</p>':''}${!opening.reason&&!opening.risk?'<p>未发现可确保首轮击倒的招式。双方仍需按克制选择。</p>':''}<p class="tip">有限推演，不预知暗招，不能保证后续安全。</p><details class="preview-scope"><summary>判断范围与限制</summary><p class="tip">首轮判断覆盖双方全部可用招式；进攻将帅另核对两轮确定胜局，进攻普通残血目标另核对两轮存活吃子。后者不增加当前将帅受攻程度，并排除吃子后下一手的两轮确定丢将。漏防检查只延伸到吃子后的对手下一手（武斗前两轮），不预测暗招或更长序列。</p></details></div>
+        ${E.power(ctx,true)<E.power(ctx,false)?'<p class="preview-risk">对方支援更多：输出 '+E.power(ctx,true)+' 对 '+E.power(ctx,false)+'。'+(opening.twoRound||opening.capture?'上述两轮判断已计入支援影响。':'可先调动友军支援，或换一个交战目标。')+'</p>':''}
+        <div class="preview-support"><div class="card"><h3>进攻方输出 ${E.power(ctx,true)}</h3>${supportDetailsHTML(ctx,true)}</div><div class="card"><h3>守方输出 ${E.power(ctx,false)}</h3>${supportDetailsHTML(ctx,false)}</div></div>
+        <p class="tip">输出由基础与支援构成，不是最终损血。实际损血还受招式、克制、气势和减伤影响。</p><p class="tip">支援关系在开战时固定；伤势和招式消耗保留。</p></div><div class="preview-actions"><button class="quiet" data-action="cancel-preview" autofocus>取消进攻</button>${lesson?.stage==='support-preview'?'<button class="primary lesson-target" data-action="lesson-finish">完成教学</button>':'<button class="primary'+(lesson?' lesson-target':'')+'" data-action="attack">发起武斗</button>'}</div>`;
   }
   function cardTargets(p,id){
     const targets=s.pieces.filter(q=>q.side!==p.side&&E.canMove(s,p,q.x,q.y));

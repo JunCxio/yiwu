@@ -509,4 +509,16 @@ for(const ending of ['healthy','win','draw']){
   assert(advice.followUp.includes('守方「'+E.BASE.guard.name+'」'),'首个回应判和后，仍需核对其他回应');
   assert.equal(JSON.stringify(state),before);
 }
-console.log('配牌条件、支援、本轮生命预估与残局回应、吃子漏防、兵卒底线、行动终局、落点首轮风险、两轮胜局预览与吃子后将帅受攻：28 组检查通过。');
+{
+  const s=load('tactics');vm.runInContext('selected="hero";preview="target"',box);
+  const before=JSON.stringify(s),h=box.previewHTML(),scope=h.match(/<details class="preview-scope"[^>]*>[\s\S]*?<\/details>/);
+  assert(scope,'详细判断范围应按需展开');assert(!/^<details[^>]*\sopen(?:\s|>)/.test(scope[0]));
+  assert(scope[0].includes('首轮判断覆盖双方全部可用招式'));assert(scope[0].includes('不预测暗招或更长序列'));
+  const visible=h.replace(scope[0],'');assert(visible.includes('有限推演，不预知暗招，不能保证后续安全。'));
+  assert(visible.includes('首轮突袭 +1'));assert(visible.includes('双方不出击时不会额外扣血。'));assert(visible.includes('不是最终损血'));
+  assert(h.indexOf('首轮突袭 +1')<h.indexOf('首轮判断'));assert(h.indexOf('首轮判断')<h.indexOf('进攻方输出'));
+  assert(h.includes('data-action="cancel-preview" autofocus'));assert(h.includes('class="preview-support"'));
+  const ctx=E.context(s,E.get(s,'hero'),E.get(s,'target')),strike=E.roundDamage(ctx,'strike','strike'),guard=E.roundDamage(ctx,'guard','guard');
+  assert.equal(strike.toD-strike.toA,1);assert.equal(guard.toA,0);assert.equal(guard.toD,0);assert.equal(JSON.stringify(s),before);
+}
+console.log('配牌条件、支援、本轮生命预估与残局回应、吃子漏防、兵卒底线、行动终局、落点首轮风险、两轮胜局预览、吃子后将帅受攻与预览信息层级：29 组检查通过。');
