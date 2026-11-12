@@ -920,4 +920,31 @@ function mirroredSetup(state) {
   const restored=page(saved);restored.node('resume').onclick();assert.equal(restored.node('preview-content').innerHTML,preview);assert.equal(JSON.stringify(restored.ui.state),before);
   restored.action('cancel-preview');assert(!restored.node('preview').open);assert.equal(JSON.stringify(restored.ui.state),before);assert.deepEqual(JSON.parse(saved.getItem('yiwu.autosave')).commands,fixture.commands);
 }
-console.log('残局流程、走棋反馈与武斗确认：38 项检查通过；教学键盘入口与续局：2 组、教学完成衔接：2 组、武斗滚动：3 组、武斗焦点：3 组、默认配牌与旧续局：3 组、两轮预览续局隔离：1 组、棋盘操作焦点：3 组、规则窗口：2 组、吃子受攻预览续局：1 组、普通两轮吃子预览续局：1 组检查通过。');
+{
+  const fixture=require('./board-terminal-fixture.json');
+  for(const operation of ['move','rest','cancel']){
+    const saved=storage(),ui={opponent:'local',difficulty:'standard',selected:fixture.piece,preview:null,setupSide:'red',focusIndex:0,lesson:null,fight:null};
+    saved.setItem('yiwu.autosave',JSON.stringify({version:1,commands:fixture.commands,ui}));
+    const p=page(saved);p.node('resume').onclick();const before=JSON.stringify(p.ui.state);
+    assert.equal(p.ui.state.ply,150);assert.equal(p.ui.state.quiet,79);assert.equal(p.ui.state.phase,'board');
+    const cell=p.node('test-board-cell');p.node('grid').children=Array(90).fill(cell);
+    if(operation==='rest'){
+      p.ui.requestRest(fixture.piece,fixture.rest,false);assert(p.node('rest-confirm').open);
+      assert.equal(JSON.stringify(p.ui.state),before);p.node('confirm-rest').onclick();
+    }else{
+      p.action('scout');p.cell(fixture.move.x,fixture.move.y);assert.equal(JSON.stringify(p.ui.state),before);
+      p.action(operation==='move'?'confirm-move':'cancel-move');
+    }
+    if(operation==='cancel'){
+      assert.equal(JSON.stringify(p.ui.state),before);assert.equal(p.active(),cell);
+      assert.deepEqual(JSON.parse(saved.getItem('yiwu.autosave')).commands,fixture.commands);
+    }else{
+      assert.equal(p.ui.state.phase,'ended');assert.equal(p.ui.state.winner,'draw');assert.equal(p.ui.state.ply,151);
+      assert.equal(p.active(),p.node('endgame-title'),operation+' 触发终局后不能覆盖结果标题焦点');
+      const expected=[...fixture.commands,operation==='move'?['move',fixture.piece,fixture.move.x,fixture.move.y]:['rest',fixture.piece,fixture.rest]];
+      assert.deepEqual(JSON.parse(saved.getItem('yiwu.autosave')).commands,expected);
+      const restored=page(saved);restored.node('resume').onclick();assert.equal(JSON.stringify(restored.ui.state),JSON.stringify(p.ui.state));assert.equal(restored.active(),restored.node('endgame-title'));
+    }
+  }
+}
+console.log('残局流程、走棋反馈与武斗确认：38 项检查通过；教学键盘入口与续局：2 组、教学完成衔接：2 组、武斗滚动：3 组、武斗焦点：3 组、默认配牌与旧续局：3 组、两轮预览续局隔离：1 组、棋盘操作焦点：3 组、规则窗口：2 组、吃子受攻预览续局：1 组、普通两轮吃子预览续局：1 组、落点及整备终局焦点与续局：3 组检查通过。');

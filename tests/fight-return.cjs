@@ -2,6 +2,7 @@ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),asse
 const html=fs.readFileSync(process.argv[2]||path.join(__dirname,'..','index.html'),'utf8');
 const scripts=[...html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].map(match=>match[1]);
 const helper=scripts[2].match(/  function returnFromFight\(\)\{[\s\S]*?\n  \}/)?.[0];assert(helper);
+const focus=scripts[2].match(/  function focusGame\(\)\{[\s\S]*?\n  \}/)?.[0];assert(focus);
 const start=scripts[2].indexOf("  $('fight-content').addEventListener('click',e=>{");
 const end=scripts[2].indexOf("  fight.addEventListener('cancel'",start);assert(start>=0&&end>start);
 function page(disabled=false){
@@ -10,7 +11,7 @@ function page(disabled=false){
   const box=vm.createContext({screen:'game',lesson:null,selected:null,preview:null,focusIndex:40,notice:'',$:node,
     fight:{close(){closes++;}},render(){assert.equal(box.fightUI,null);renders++;node('grid').children=Array.from({length:90},()=>({disabled,focus:node('cell').focus}));}});
   vm.runInContext(scripts[0],box);box.E=box.Yiwu;
-  vm.runInContext(helper+'\n'+scripts[2].slice(start,end),box);
+  vm.runInContext(focus+'\n'+helper+'\n'+scripts[2].slice(start,end),box);
   return {box,node,get active(){return active;},get closes(){return closes;},get renders(){return renders;},next(){handler({target:{closest:()=>({dataset:{fight:'next'},disabled:false})}});}};
 }
 function retreat(p,mode='tactics'){
