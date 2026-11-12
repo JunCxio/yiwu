@@ -136,7 +136,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.125 · 终局操作衔接</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.126 · 末轮守方选招</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -694,6 +694,23 @@ globalThis.YiwuComputer = (() => {
       const idle=kept.find(x=>x.id==='focus'),exit=kept.find(x=>x.id==='retreat');
       if(idle&&exit){exit.weight+=idle.weight;kept=kept.filter(x=>x.id!=='focus');}
     }
+    if(!isA&&ctx.round===6&&!E.CHALLENGES[s.scenario]){
+      const idle=kept.find(x=>x.id==='focus'),guard=kept.find(x=>x.id==='guard');
+      // 末轮气势归零；逐个核对真实离场结果，保留蓄势独有的判和机会。
+      if(idle&&guard&&repliesNotWorse()){
+        guard.weight+=idle.weight;kept=kept.filter(x=>x.id!=='focus');
+      }
+      function repliesNotWorse(){return choices(s,a,ctx).every(id=>{
+        const focused=JSON.parse(JSON.stringify({...s,repetitions:null})),guarded=JSON.parse(JSON.stringify({...s,repetitions:null}));
+        focused.repetitions={...s.repetitions};guarded.repetitions={...s.repetitions};E.resolve(focused,id,'focus');E.resolve(guarded,id,'guard');
+        if(guarded.phase==='ended')return guarded.winner===side||focused.phase==='ended'&&(guarded.winner===focused.winner||guarded.winner==='draw'&&focused.winner===E.OTHER[side]);
+        if(focused.phase==='ended')return focused.winner===E.OTHER[side];
+        const shape=next=>E.key({...next,pieces:next.pieces.map(p=>({...p,hp:0}))});
+        return shape(focused)===shape(guarded)&&guarded.quiet===focused.quiet
+          &&guarded.pieces.every(p=>p.side===side?p.hp>=E.get(focused,p.id).hp:p.hp<=E.get(focused,p.id).hp)
+          &&(guarded.repetitions[E.key(guarded)]||0)<=(focused.repetitions[E.key(focused)]||0);
+      });}
+    }
     if(kept.length&&kept.length<plan.length){const total=kept.reduce((n,x)=>n+x.weight,0);return kept.map(x=>({id:x.id,weight:total?x.weight/total:1/kept.length}));}
     return plan;
   }
@@ -917,9 +934,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.125',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.126',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.125-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.126-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
