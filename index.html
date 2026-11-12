@@ -54,7 +54,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 .combat-scene.is-playing .is-fallen .pixel-impact{animation:pixel-fall .65s steps(4,end)}@keyframes pixel-fall{0%,25%{transform:translateY(0) rotate(0) scale(1);opacity:1;filter:none}45%{transform:translateY(0) rotate(0) scale(.78);opacity:1;filter:none}90%{transform:translateY(0) rotate(calc(78deg*var(--toward))) scale(.78);opacity:.65;filter:saturate(.25)}100%{transform:translateY(10%) rotate(calc(78deg*var(--toward))) scale(.78);opacity:.65;filter:saturate(.25)}}@media(prefers-reduced-motion:reduce){.combat-scene.is-playing .is-fallen .pixel-impact{animation:none}}
 .combat-history{border:1px solid #637461;border-radius:7px;margin:0 0 14px;padding:0 12px;background:#203b32;font-size:12px;color:#d9e2d4}.combat-history>summary{cursor:pointer;min-height:48px;padding:9px 0;line-height:1.6}.combat-history>summary strong{font-size:13px;color:#f1dfad}.combat-history>summary>span{display:block;margin-left:17px;color:#c5d2bd;font-variant-numeric:tabular-nums}.combat-history>p{font-size:11px;color:var(--muted);margin:3px 0 10px}.combat-history>ol{list-style:none;margin:0;padding:0;max-height:none}.combat-history>ol>li{padding:11px 0;border-top:1px solid #4f6654}.combat-round-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 10px;margin-bottom:8px}.combat-round-head>span{color:#e8d7a7}.combat-round-pair{display:grid;grid-template-columns:1fr 1fr;gap:8px}.combat-round-side{min-width:0;padding:8px 10px;border-left:3px solid #cf8a77;background:#49342f;color:#f1d5c6;overflow-wrap:anywhere}.combat-round-side.black{border-color:#9bb9d8;background:#293c4b;color:#d9e9f7}.combat-round-side>div{display:flex;flex-wrap:wrap;justify-content:space-between;gap:3px 10px}.combat-round-side p{margin:5px 0;font-variant-numeric:tabular-nums}.combat-round-side p span{display:block}.combat-round-side small{display:block;line-height:1.6}.combat-history .damage-history-pair{margin-top:5px}@media(max-width:480px){.combat-round-pair{grid-template-columns:1fr}.combat-history{padding:0 10px}.combat-history>summary>span{font-size:11px}}
 [data-action="export"]{min-height:44px}@media(max-width:480px){.header-tools{width:100%}.header-tools #game-setting{flex-basis:100%;max-width:none;text-align:left}.fight-header .modal-head{display:grid;grid-template-columns:1fr auto auto;gap:6px}.fight-header .modal-head h2{grid-column:1/3;grid-row:1;white-space:nowrap}.fight-header .round-badge{grid-column:3;grid-row:1;margin-left:0}.fight-header [data-action="home"]{grid-column:2;grid-row:2}.fight-header [data-action="export"]{grid-column:3;grid-row:2}}
-.choice-return{display:block;width:100%;min-height:44px;margin-top:12px}
+.choice-return{display:block;width:100%;min-height:44px;margin-top:12px}.confirm-jump{display:none}@media(max-height:500px),(max-width:760px) and (max-height:700px){.confirm-jump{display:block}}
 @media(max-width:480px){.endgame-actions [data-action="next-challenge"]{flex-basis:100%}}
 .support-sources{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:5px}.support-sources li{display:flex;justify-content:space-between;flex-wrap:wrap;gap:3px 12px;padding:5px 8px;border-left:2px solid #a5b8cc;background:#183129;font-size:12px}.support-sources strong{font-weight:500}.support-sources span{color:var(--muted);font-variant-numeric:tabular-nums}
 .preview-bonus{margin:10px 0;padding:9px 11px;border-left:3px solid var(--gold);background:#294438}.preview-bonus strong{font-size:14px;color:var(--gold)}.preview-bonus p{margin:3px 0 0;font-size:12px;color:var(--muted)}.preview-scope{border-top:1px solid var(--line);margin-top:8px}.preview-scope summary{min-height:44px;padding:10px 0;font-size:12px;color:var(--gold);cursor:pointer}.preview-scope[open]>summary{margin-bottom:8px}.preview-scope .tip{margin:0 0 6px}.preview-support{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.preview-support>.card{min-width:0;margin:0}.preview-support .support-sources li{overflow-wrap:anywhere}@media(max-width:400px){.preview-support{grid-template-columns:1fr;gap:8px}}
@@ -139,7 +139,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.128 · 武斗三轮取将</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.129 · 短屏确认导航</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -949,9 +949,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.128',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.129',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.128-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.129-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -1923,7 +1923,7 @@ globalThis.YiwuComputer = (() => {
       }
     }else if(lesson?.stage==='retreat')html+='<div class="review-head"><h3>先查看撤回后果</h3></div><div class="review-empty"><p>点击底部高亮的「红方主动撤回」，查看并确认。本课不需要选择招式。</p></div>';
     else html+='<div class="review-head"><h3>先选招，再锁定</h3>'+publicJump+'</div><div class="review-empty">'+(lesson?'<p>点击本课高亮的招式，查看对手固定出招对应的伤害和生命变化。</p><p>查看不会耗牌；锁定并揭示后才结算本轮。</p>':'<p>点选招式，查看面对不同招式时会造成多少伤害、损失多少生命。</p><p>选错可以更换，锁定前不会耗牌。也可先点「选招建议」。</p>')+'</div>';
-    return html+(lesson?'':'<button class="quiet choice-return" data-fight="choices">返回选择招式</button>')+'</aside>';
+    return html+(c&&!lesson?'<button class="quiet choice-return confirm-jump" data-fight="confirm-area">前往确认</button>':'')+(lesson?'':'<button class="quiet choice-return" data-fight="choices">返回选择招式</button>')+'</aside>';
   }
   function combatForecastHTML(who,id){
     if(!id||lesson)return '';
@@ -2077,10 +2077,11 @@ globalThis.YiwuComputer = (() => {
         $('combat-scene').outerHTML=combatSceneHTML(true);
         $('fight-content').querySelector('.fight-body')?.scrollTo(0,0);fight.scrollTop=0;$('fight-title').focus({preventScroll:true});return;
       }
-      if(['review','public-cards','choices'].includes(button.dataset.fight)){
+      if(['review','public-cards','choices','confirm-area'].includes(button.dataset.fight)){
         if(!['pickA','pickD'].includes(fightUI.step))return;
-        const target=button.dataset.fight==='choices'?$('fight-content').querySelector('.pick-options .chosen')||$('fight-content').querySelector('.pick-options [data-choice]:not(:disabled)'):$('fight-content').querySelector(button.dataset.fight==='review'?'.pick-review':'.public-cards');
-        target?.scrollIntoView({block:'start'});target?.focus({preventScroll:true});return;
+        const target=button.dataset.fight==='confirm-area'?$('fight-content').querySelector('.fight-controls [data-fight="commit"]:not(:disabled)'):button.dataset.fight==='choices'?$('fight-content').querySelector('.pick-options .chosen')||$('fight-content').querySelector('.pick-options [data-choice]:not(:disabled)'):$('fight-content').querySelector(button.dataset.fight==='review'?'.pick-review':'.public-cards');
+        const scrollTarget=button.dataset.fight==='confirm-area'?target?.closest('.fight-footer'):target;
+        scrollTarget?.scrollIntoView({block:button.dataset.fight==='confirm-area'?'end':'start'});target?.focus({preventScroll:true});return;
       }
       if(button.dataset.fight==='ready'){
         if(!['handoffA','handoffD'].includes(fightUI.step))return;

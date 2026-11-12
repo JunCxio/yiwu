@@ -1,0 +1,607 @@
+{
+  "version": "0.6.129",
+  "sourceCommit": "dc94cf311a2eb062600924236224b98b1bcc5525",
+  "sourceSHA256": {
+    "baseline": "ccbf3a1d21fb7b9c5df93cbc279dd79ff4823f52aa111c0d9e37c79fd97ddde2",
+    "candidate": "e8e4cf3bf9f90c987e2b9472f654c3e1ced71637ae78697f8dc39d6c0cd3a84c"
+  },
+  "releaseSHA256": "2c097f24376cfd5e830de1a1a5bbfba6d77ef923edf2005d9a97376f7ac5695d",
+  "rulesAndComputerIdentical": true,
+  "regressionScripts": 50,
+  "existingAssertionsChanged": false,
+  "targeted": {
+    "passed": 4,
+    "failures": []
+  },
+  "browser": [
+    {
+      "width": 1366,
+      "height": 768,
+      "opponent": "computer",
+      "natural": false,
+      "selectedSides": [
+        "red"
+      ],
+      "navigationPreservesPendingAndHiddenChoice": true,
+      "refreshPreservesPendingAndLockedFirst": true,
+      "confirmationFocusAndForecastVisible": false,
+      "rounds": 1,
+      "noHorizontalOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 1366,
+      "height": 768,
+      "opponent": "local",
+      "natural": false,
+      "selectedSides": [
+        "red",
+        "black"
+      ],
+      "navigationPreservesPendingAndHiddenChoice": true,
+      "refreshPreservesPendingAndLockedFirst": true,
+      "confirmationFocusAndForecastVisible": false,
+      "rounds": 1,
+      "noHorizontalOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 1024,
+      "height": 640,
+      "opponent": "computer",
+      "natural": false,
+      "selectedSides": [
+        "red"
+      ],
+      "navigationPreservesPendingAndHiddenChoice": true,
+      "refreshPreservesPendingAndLockedFirst": true,
+      "confirmationFocusAndForecastVisible": false,
+      "rounds": 1,
+      "noHorizontalOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 1024,
+      "height": 640,
+      "opponent": "local",
+      "natural": false,
+      "selectedSides": [
+        "red",
+        "black"
+      ],
+      "navigationPreservesPendingAndHiddenChoice": true,
+      "refreshPreservesPendingAndLockedFirst": true,
+      "confirmationFocusAndForecastVisible": false,
+      "rounds": 1,
+      "noHorizontalOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "opponent": "computer",
+      "natural": false,
+      "selectedSides": [
+        "red"
+      ],
+      "navigationPreservesPendingAndHiddenChoice": true,
+      "refreshPreservesPendingAndLockedFirst": true,
+      "confirmationFocusAndForecastVisible": false,
+      "rounds": 1,
+      "noHorizontalOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "opponent": "local",
+      "natural": false,
+      "selectedSides": [
+        "red",
+        "black"
+      ],
+      "navigationPreservesPendingAndHiddenChoice": true,
+      "refreshPreservesPendingAndLockedFirst": true,
+      "confirmationFocusAndForecastVisible": false,
+      "rounds": 1,
+      "noHorizontalOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 390,
+      "height": 640,
+      "opponent": "computer",
+      "natural": true,
+      "selectedSides": [
+        "red"
+      ],
+      "navigationPreservesPendingAndHiddenChoice": true,
+      "refreshPreservesPendingAndLockedFirst": true,
+      "confirmationFocusAndForecastVisible": true,
+      "rounds": 1,
+      "noHorizontalOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 390,
+      "height": 640,
+      "opponent": "local",
+      "natural": true,
+      "selectedSides": [
+        "red",
+        "black"
+      ],
+      "navigationPreservesPendingAndHiddenChoice": true,
+      "refreshPreservesPendingAndLockedFirst": true,
+      "confirmationFocusAndForecastVisible": true,
+      "rounds": 1,
+      "noHorizontalOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "opponent": "computer",
+      "natural": true,
+      "selectedSides": [
+        "red"
+      ],
+      "navigationPreservesPendingAndHiddenChoice": true,
+      "refreshPreservesPendingAndLockedFirst": true,
+      "confirmationFocusAndForecastVisible": true,
+      "rounds": 1,
+      "noHorizontalOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "opponent": "local",
+      "natural": true,
+      "selectedSides": [
+        "red",
+        "black"
+      ],
+      "navigationPreservesPendingAndHiddenChoice": true,
+      "refreshPreservesPendingAndLockedFirst": true,
+      "confirmationFocusAndForecastVisible": true,
+      "rounds": 1,
+      "noHorizontalOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 760,
+      "height": 480,
+      "opponent": "computer",
+      "natural": true,
+      "selectedSides": [
+        "red"
+      ],
+      "navigationPreservesPendingAndHiddenChoice": true,
+      "refreshPreservesPendingAndLockedFirst": true,
+      "confirmationFocusAndForecastVisible": true,
+      "rounds": 1,
+      "noHorizontalOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 760,
+      "height": 480,
+      "opponent": "local",
+      "natural": true,
+      "selectedSides": [
+        "red",
+        "black"
+      ],
+      "navigationPreservesPendingAndHiddenChoice": true,
+      "refreshPreservesPendingAndLockedFirst": true,
+      "confirmationFocusAndForecastVisible": true,
+      "rounds": 1,
+      "noHorizontalOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 900,
+      "height": 480,
+      "opponent": "computer",
+      "natural": true,
+      "selectedSides": [
+        "red"
+      ],
+      "navigationPreservesPendingAndHiddenChoice": true,
+      "refreshPreservesPendingAndLockedFirst": true,
+      "confirmationFocusAndForecastVisible": true,
+      "rounds": 1,
+      "noHorizontalOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 900,
+      "height": 480,
+      "opponent": "local",
+      "natural": true,
+      "selectedSides": [
+        "red",
+        "black"
+      ],
+      "navigationPreservesPendingAndHiddenChoice": true,
+      "refreshPreservesPendingAndLockedFirst": true,
+      "confirmationFocusAndForecastVisible": true,
+      "rounds": 1,
+      "noHorizontalOverflow": true,
+      "errors": []
+    }
+  ],
+  "fullBalanceMatrixAdded": false,
+  "limits": [
+    "仅使用桌面Edge模拟尺寸，没有实体手机、屏幕阅读器或真人测试。",
+    "不支持整体平衡、长局节奏或电脑强度改善的结论。"
+  ],
+  "finalBrowser": [
+    {
+      "width": 1366,
+      "height": 768,
+      "opponent": "computer",
+      "natural": false,
+      "selectedSides": [
+        "red"
+      ],
+      "navigationPreservesPendingAndHiddenChoice": true,
+      "refreshPreservesPendingAndLockedFirst": true,
+      "confirmationFocusAndForecastVisible": false,
+      "rounds": 1,
+      "noHorizontalOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 1366,
+      "height": 768,
+      "opponent": "local",
+      "natural": false,
+      "selectedSides": [
+        "red",
+        "black"
+      ],
+      "navigationPreservesPendingAndHiddenChoice": true,
+      "refreshPreservesPendingAndLockedFirst": true,
+      "confirmationFocusAndForecastVisible": false,
+      "rounds": 1,
+      "noHorizontalOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 1024,
+      "height": 640,
+      "opponent": "computer",
+      "natural": false,
+      "selectedSides": [
+        "red"
+      ],
+      "navigationPreservesPendingAndHiddenChoice": true,
+      "refreshPreservesPendingAndLockedFirst": true,
+      "confirmationFocusAndForecastVisible": false,
+      "rounds": 1,
+      "noHorizontalOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 1024,
+      "height": 640,
+      "opponent": "local",
+      "natural": false,
+      "selectedSides": [
+        "red",
+        "black"
+      ],
+      "navigationPreservesPendingAndHiddenChoice": true,
+      "refreshPreservesPendingAndLockedFirst": true,
+      "confirmationFocusAndForecastVisible": false,
+      "rounds": 1,
+      "noHorizontalOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "opponent": "computer",
+      "natural": false,
+      "selectedSides": [
+        "red"
+      ],
+      "navigationPreservesPendingAndHiddenChoice": true,
+      "refreshPreservesPendingAndLockedFirst": true,
+      "confirmationFocusAndForecastVisible": false,
+      "rounds": 1,
+      "noHorizontalOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "opponent": "local",
+      "natural": false,
+      "selectedSides": [
+        "red",
+        "black"
+      ],
+      "navigationPreservesPendingAndHiddenChoice": true,
+      "refreshPreservesPendingAndLockedFirst": true,
+      "confirmationFocusAndForecastVisible": false,
+      "rounds": 1,
+      "noHorizontalOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 390,
+      "height": 640,
+      "opponent": "computer",
+      "natural": true,
+      "selectedSides": [
+        "red"
+      ],
+      "navigationPreservesPendingAndHiddenChoice": true,
+      "refreshPreservesPendingAndLockedFirst": true,
+      "confirmationFocusAndForecastVisible": true,
+      "rounds": 1,
+      "noHorizontalOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 390,
+      "height": 640,
+      "opponent": "local",
+      "natural": true,
+      "selectedSides": [
+        "red",
+        "black"
+      ],
+      "navigationPreservesPendingAndHiddenChoice": true,
+      "refreshPreservesPendingAndLockedFirst": true,
+      "confirmationFocusAndForecastVisible": true,
+      "rounds": 1,
+      "noHorizontalOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "opponent": "computer",
+      "natural": true,
+      "selectedSides": [
+        "red"
+      ],
+      "navigationPreservesPendingAndHiddenChoice": true,
+      "refreshPreservesPendingAndLockedFirst": true,
+      "confirmationFocusAndForecastVisible": true,
+      "rounds": 1,
+      "noHorizontalOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "opponent": "local",
+      "natural": true,
+      "selectedSides": [
+        "red",
+        "black"
+      ],
+      "navigationPreservesPendingAndHiddenChoice": true,
+      "refreshPreservesPendingAndLockedFirst": true,
+      "confirmationFocusAndForecastVisible": true,
+      "rounds": 1,
+      "noHorizontalOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 760,
+      "height": 480,
+      "opponent": "computer",
+      "natural": true,
+      "selectedSides": [
+        "red"
+      ],
+      "navigationPreservesPendingAndHiddenChoice": true,
+      "refreshPreservesPendingAndLockedFirst": true,
+      "confirmationFocusAndForecastVisible": true,
+      "rounds": 1,
+      "noHorizontalOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 760,
+      "height": 480,
+      "opponent": "local",
+      "natural": true,
+      "selectedSides": [
+        "red",
+        "black"
+      ],
+      "navigationPreservesPendingAndHiddenChoice": true,
+      "refreshPreservesPendingAndLockedFirst": true,
+      "confirmationFocusAndForecastVisible": true,
+      "rounds": 1,
+      "noHorizontalOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 900,
+      "height": 480,
+      "opponent": "computer",
+      "natural": true,
+      "selectedSides": [
+        "red"
+      ],
+      "navigationPreservesPendingAndHiddenChoice": true,
+      "refreshPreservesPendingAndLockedFirst": true,
+      "confirmationFocusAndForecastVisible": true,
+      "rounds": 1,
+      "noHorizontalOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 900,
+      "height": 480,
+      "opponent": "local",
+      "natural": true,
+      "selectedSides": [
+        "red",
+        "black"
+      ],
+      "navigationPreservesPendingAndHiddenChoice": true,
+      "refreshPreservesPendingAndLockedFirst": true,
+      "confirmationFocusAndForecastVisible": true,
+      "rounds": 1,
+      "noHorizontalOverflow": true,
+      "errors": []
+    }
+  ],
+  "oldCombatBrowser": [
+    {
+      "width": 1366,
+      "height": 768,
+      "fixture": "full-153",
+      "mode": "fresh",
+      "resolutions": 1,
+      "winner": "red",
+      "refreshPreservesChoiceAndCommands": true,
+      "oldPendingPreserved": false,
+      "noHorizontalOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 1366,
+      "height": 768,
+      "fixture": "full-153",
+      "mode": "pending",
+      "resolutions": 1,
+      "winner": null,
+      "refreshPreservesChoiceAndCommands": true,
+      "oldPendingPreserved": true,
+      "noHorizontalOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 1366,
+      "height": 768,
+      "fixture": "quick-115",
+      "mode": "fresh",
+      "resolutions": 1,
+      "winner": "red",
+      "refreshPreservesChoiceAndCommands": true,
+      "oldPendingPreserved": false,
+      "noHorizontalOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 1366,
+      "height": 768,
+      "fixture": "quick-115",
+      "mode": "pending",
+      "resolutions": 1,
+      "winner": null,
+      "refreshPreservesChoiceAndCommands": true,
+      "oldPendingPreserved": true,
+      "noHorizontalOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "fixture": "full-153",
+      "mode": "fresh",
+      "resolutions": 1,
+      "winner": "red",
+      "refreshPreservesChoiceAndCommands": true,
+      "oldPendingPreserved": false,
+      "noHorizontalOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "fixture": "full-153",
+      "mode": "pending",
+      "resolutions": 1,
+      "winner": null,
+      "refreshPreservesChoiceAndCommands": true,
+      "oldPendingPreserved": true,
+      "noHorizontalOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "fixture": "quick-115",
+      "mode": "fresh",
+      "resolutions": 1,
+      "winner": "red",
+      "refreshPreservesChoiceAndCommands": true,
+      "oldPendingPreserved": false,
+      "noHorizontalOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "fixture": "quick-115",
+      "mode": "pending",
+      "resolutions": 1,
+      "winner": null,
+      "refreshPreservesChoiceAndCommands": true,
+      "oldPendingPreserved": true,
+      "noHorizontalOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "fixture": "full-153",
+      "mode": "fresh",
+      "resolutions": 1,
+      "winner": "red",
+      "refreshPreservesChoiceAndCommands": true,
+      "oldPendingPreserved": false,
+      "noHorizontalOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "fixture": "full-153",
+      "mode": "pending",
+      "resolutions": 1,
+      "winner": null,
+      "refreshPreservesChoiceAndCommands": true,
+      "oldPendingPreserved": true,
+      "noHorizontalOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "fixture": "quick-115",
+      "mode": "fresh",
+      "resolutions": 1,
+      "winner": "red",
+      "refreshPreservesChoiceAndCommands": true,
+      "oldPendingPreserved": false,
+      "noHorizontalOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "fixture": "quick-115",
+      "mode": "pending",
+      "resolutions": 1,
+      "winner": null,
+      "refreshPreservesChoiceAndCommands": true,
+      "oldPendingPreserved": true,
+      "noHorizontalOverflow": true,
+      "errors": []
+    }
+  ],
+  "finalBrowserFlows": 26,
+  "finalSelectionFlows": 143
+}
