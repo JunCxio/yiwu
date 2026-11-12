@@ -135,7 +135,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.116 · 走棋提示</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.117 · 撤回风险</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -903,9 +903,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.116',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.117',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.116-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.117-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -1598,11 +1598,22 @@ globalThis.YiwuComputer = (() => {
   function retreatConsequence(next){
     return next.phase==='ended'?'撤回将直接结束本局：'+(next.winner==='draw'?'判和':E.SIDE[next.winner]+'获胜')+'。'+next.reason:'本场武斗计一次棋盘行动，撤回后轮到'+E.SIDE[next.turn]+'行动。';
   }
+  function retreatRisks(next,id){
+    if(next.phase!=='board')return [];
+    const p=E.get(next,id),risks=[],loss=firstRoundLossRisk(next,p);
+    if(loss)risks.push('撤回后，'+loss);
+    else{
+      const incoming=next.pieces.filter(q=>q.side!==p.side&&E.canMove(next,q,p.x,p.y));
+      if(incoming.length)risks.push('撤回后仍可被'+incoming.map(q=>E.label(q)+'（'+(q.x+1)+'路'+(10-q.y)+'线）').join('、')+'进攻；撤回只结束本场，不代表脱离威胁。');
+    }
+    if(!E.CHALLENGES[next.scenario]&&C.kingLostNext(next,p.side))risks.push('撤回后将帅漏防风险：对手下一次行动存在可在武斗两轮内击倒己方将帅的进攻。');
+    return risks;
+  }
   function retreatPreviewHTML(){
     const {a,d,ctx}=fightUI,next=JSON.parse(JSON.stringify(s));Yiwu.retreat(next);
     const consequence=retreatConsequence(next);
-    const challenge=E.CHALLENGES[s.scenario];
-    return '<section class="retreat-confirm combat-summary" aria-labelledby="retreat-title"><h3 id="retreat-title">确认主动撤回？</h3><p>'+E.label(a)+'停止进攻，双方留在交战前的位置；不再结算本轮伤害。</p><p class="draw-warning">'+esc(consequence)+'</p><div class="decision-facts">'+[a,d].map(p=>'<div><b>'+E.label(p)+'</b> · 生命保持 '+p.hp+' / 18 · 气势 '+(p===a?ctx.forceA:ctx.forceD)+' → 0<br>已耗尽：'+(p.exhausted.length?p.exhausted.map(id=>E.CARDS[id].name).join('、'):'无')+'</div>').join('')+'</div>'+(challenge&&next.phase!=='ended'?'<p>撤回后本关剩余 '+(challenge.limit-next.ply)+' 次棋盘行动，双方行动均计数。</p>':'')+'<p class="tip">撤回不回血、不恢复培养牌。返回选招或按 Esc 可继续考虑；取消不耗行动，也不改变已锁定暗招。</p></section>';
+    const challenge=E.CHALLENGES[s.scenario],risks=retreatRisks(next,a.id);
+    return '<section class="retreat-confirm combat-summary" aria-labelledby="retreat-title"><h3 id="retreat-title">确认主动撤回？</h3><p>'+E.label(a)+'停止进攻，双方留在交战前的位置；不再结算本轮伤害。</p><p class="draw-warning">'+esc(consequence)+'</p><div class="decision-facts">'+[a,d].map(p=>'<div><b>'+E.label(p)+'</b> · 生命保持 '+p.hp+' / 18 · 气势 '+(p===a?ctx.forceA:ctx.forceD)+' → 0<br>已耗尽：'+(p.exhausted.length?p.exhausted.map(id=>E.CARDS[id].name).join('、'):'无')+'</div>').join('')+'</div>'+(risks.length?'<aside class="challenge-check risk" aria-label="撤回后的风险"><strong>撤回后的风险</strong>'+risks.map(text=>'<p>'+esc(text)+'</p>').join('')+'<small>仅核对公开站位、首轮吃子及将帅两轮漏防，不预知暗招，也不保证更长序列安全。</small></aside>':'')+(challenge&&next.phase!=='ended'?'<p>撤回后本关剩余 '+(challenge.limit-next.ply)+' 次棋盘行动，双方行动均计数。</p>':'')+'<p class="tip">撤回不回血、不恢复培养牌。返回选招或按 Esc 可继续考虑；取消不耗行动，也不改变已锁定暗招。</p></section>';
   }
   function boardHint(){
     if(s.phase!=='board'||computerTurn())return;
@@ -1699,7 +1710,7 @@ globalThis.YiwuComputer = (() => {
     if(id==='retreat'){
       const next=JSON.parse(JSON.stringify(s));Yiwu.retreat(next);
       advice.reasons.push('撤回保留当前 '+who.hp+' 点生命，不再结算本轮伤害。',retreatConsequence(next));
-      advice.risks.push('位置不变，伤势与耗尽牌保留，气势清零。');return advice;
+      advice.risks.push('位置不变，伤势与耗尽牌保留，气势清零。',...retreatRisks(next,who.id));return advice;
     }
     const followUp=combatFollowUpRisk(who,id);
     if(followUp.length)advice.risks.push('交战后将帅漏防风险：对手本轮用「'+followUp.join('、')+'」时，交战结束后，对手下一次行动存在可在武斗两轮内确保击倒己方将帅的进攻。');
