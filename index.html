@@ -135,7 +135,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.118 · 结算按钮适配</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.119 · 协同查询提速</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -734,12 +734,24 @@ globalThis.YiwuComputer = (() => {
     return VALUE[p.kind]*(p.kind==='king'?(repeated?.07:.7):.14)*(1+Math.max(0,12-p.hp)/12)/(1+Math.min(2,guards)*.4);
   }
   function advanceTrapsKing(s,king){
+    // 静态敌子只有走法形状已覆盖将帅时，才可能因调子解除阻挡或增加炮架而形成进攻。
+    const shape=p=>p.kind==='cannon'?(p.x===king.x||p.y===king.y):E.geometry({pieces:[p,king]},p,king.x,king.y,true);
+    const aligned=s.pieces.filter(p=>{
+      if(p.side===king.side||!shape(p))return false;
+      if(p.kind==='cannon')return E.between(s,p,king.x,king.y).length<=2;
+      return !['rook','king'].includes(p.kind)||E.between(s,p,king.x,king.y).length<=1;
+    });
     return s.pieces.some(p=>{
       if(p.side===king.side)return false;
+      // 短程棋子连续移动和攻击的单轴跨度至多为 4；没有静态攻击者时可排除更远的调子。
+      if(!aligned.length&&!['rook','cannon','king'].includes(p.kind)&&(p.x<king.x-4||p.x>king.x+4||p.y<king.y-4||p.y>king.y+4))return false;
+      const stationary=aligned.filter(q=>q.id!==p.id);
       return E.moves(s,p).filter(m=>!E.at(s,m.x,m.y)).some(m=>{
-        const projected={...s,pieces:s.pieces.map(q=>q.id===p.id?{...q,x:m.x,y:m.y}:q)};
+        const moved={...p,x:m.x,y:m.y};
+        if(!stationary.length&&!shape(moved))return false;
+        const projected={...s,pieces:s.pieces.map(q=>q.id===p.id?moved:q)};
         // 调动可能给另一枚棋子建立炮架或解除挡线，攻击者不一定是移动者。
-        if(!projected.pieces.some(q=>q.side!==king.side&&E.canMove(projected,q,king.x,king.y)))return false;
+        if(![moved,...stationary].some(q=>E.canMove(projected,q,king.x,king.y)))return false;
         const next={...s,pieces:s.pieces.map(q=>({...q})),repetitions:{...s.repetitions},log:[...s.log]};
         E.move(next,p.id,m.x,m.y);
         if(next.phase!=='board'||!threatCost(next,E.get(next,king.id)))return false;
@@ -903,9 +915,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.118',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.119',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.118-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.119-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
