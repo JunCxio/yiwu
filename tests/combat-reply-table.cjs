@@ -18,14 +18,15 @@ function show(state,who,id,teaching=null){
 }
 function verify(state,who,id){
   const before=JSON.stringify(state),isA=who.id===state.duel.a,enemy=E.get(state,isA?state.duel.d:state.duel.a),rendered=show(state,who,id),table=rendered.match(/<details class="preview-scope reply-details">([^]*?)<\/details>/);
-  assert(table,'已选招式应提供逐招对照');assert(!table[0].includes(' open'),'默认折叠');assert(table[0].includes('aria-label="逐招损血对照"'));
+  assert(table,'已选招式应提供逐招对照');assert(!table[0].includes(' open'),'默认折叠');assert(table[0].includes('aria-label="逐招损血与气势对照"'));
   const ids=[...table[1].matchAll(/<tr data-reply="([^"]+)">/g)].map(m=>m[1]);assert.deepEqual(ids,Array.from(C.choices(state,enemy,state.duel)));
   for(const reply of ids){
     const next=copy(state),a=E.get(next,next.duel.a),d=E.get(next,next.duel.d),oldA=a.hp,oldD=d.hp;E.resolve(next,isA?id:reply,isA?reply:id);settlements++;
     const afterA=E.get(next,a.id)?.hp||0,afterD=E.get(next,d.id)?.hp||0,loss=isA?oldA-afterA:oldD-afterD,damage=isA?oldD-afterD:oldA-afterA;
+    const ctx=next.duel||next.lastCombat,myForce=ctx[isA?'forceA':'forceD'],enemyForce=ctx[isA?'forceD':'forceA'];
     const row=table[1].match(new RegExp('<tr data-reply="'+reply+'">([^]*?)<\\/tr>'))[1];
-    assert(row.includes('<td>'+damage+'<small>对方余血 '+(enemy.hp-damage)+'</small></td>'));
-    assert(row.includes('<td>'+loss+'<small>己方余血 '+(who.hp-loss)+'</small></td>'));
+    assert(row.includes('<td>'+damage+'<small>对方余血 '+(enemy.hp-damage)+'</small><small>气势 '+enemyForce+'/2</small></td>'));
+    assert(row.includes('<td>'+loss+'<small>己方余血 '+(who.hp-loss)+'</small><small>气势 '+myForce+'/2</small></td>'));
     assert(row.includes((E.BASE[reply]||E.CARDS[reply]).name));
   }
   assert.equal(JSON.stringify(state),before);previews++;return table[1];
@@ -51,6 +52,16 @@ test('耗尽和条件不满足的对手培养牌不出现，换招重新计算',
 test('伤害超过生命时只列实际损血，包含双方阵亡和零伤害',()=>{
   const state=replay(28);for(const p of [E.get(state,state.duel.a),E.get(state,state.duel.d)])p.hp=1;
   for(const who of [E.get(state,state.duel.a),E.get(state,state.duel.d)])for(const id of C.choices(state,who,state.duel))verify(state,who,id);
+});
+test('同样损血的韧劲与基础架势区分蓄势收益，震慑区分削势收益',()=>{
+  const state=E.create('tactics');E.move(state,'hero',4,4);const who=E.get(state,state.duel.a);
+  const row=(table,id)=>table.match(new RegExp('<tr data-reply="'+id+'">([^]*?)<\\/tr>'))[1];
+  const ordinary=row(verify(state,who,'guard'),'guard'),trained=row(verify(state,who,'pawn_grit'),'guard');
+  assert(ordinary.includes('<td>0<small>己方余血 18</small><small>气势 0/2</small>'));
+  assert(trained.includes('<td>0<small>己方余血 18</small><small>气势 1/2</small>'));
+  const pressure=replay(28),cannon=E.get(pressure,'black_cannon_5');
+  const strike=row(verify(pressure,cannon,'strike'),'focus'),suppressed=row(verify(pressure,cannon,'cannon_pressure'),'focus');
+  assert(strike.includes('气势 1/2'));assert(!suppressed.includes('气势 1/2'));
 });
 test('未选招不显示结果，教学只保留公开固定回应，不混入其他招式',()=>{
   const state=replay(28),who=E.get(state,state.duel.a);assert(!show(state,who,null).includes('reply-details'));

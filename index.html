@@ -135,7 +135,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.120 · 逐招损血对照</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.121 · 逐招气势对照</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -915,9 +915,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.120',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.121',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.120-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.121-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -1859,9 +1859,10 @@ globalThis.YiwuComputer = (() => {
       html+=`<div class="review-head"><h3>${E.SIDE[who.side]}已选「${c.name}」<span class="card-type">${E.TYPE[c.type]}</span></h3>${publicJump}</div><p class="tip">${c.text}</p>${combatRepliesHTML(who,id)}<div class="decision-facts"><span>${relation}</span><span>${forceText}</span><span>${E.CARDS[id]?'培养牌 · 使用后耗尽，需在棋盘整备。':'基础招式 · 不耗牌，可重复使用。'}</span></div><table class="preview-table"><thead><tr><th>${lesson?'对手固定出招':'对手可能出招'}</th><th>我造成伤害</th><th>我损失生命</th></tr></thead><tbody>${rows.map(row=>`<tr><td>${E.TYPE[row.type]}<small>${row.names.join('、')}</small></td><td>${range(row.damageMin,row.damageMax)}</td><td class="loss">${range(row.lossMin,row.lossMax)}</td></tr>`).join('')}</tbody></table><p class="tip">${forecastNote}</p>${lethal?'<p class="preview-risk">'+(lesson?'本课固定出招会击倒本枚棋子。':'对手的部分选择可能击倒本枚棋子。')+'双方伤害仍同时结算。</p>':''}`;
       if(!lesson){
         const replies=C.choices(s,enemy,ui.ctx);
-        html+='<details class="preview-scope reply-details"><summary>逐招对照 · '+replies.length+' 种回应</summary><p class="tip">每行对应对手一种当前可用招式，双方损血同时结算。查看不会出招或耗牌。</p><table class="preview-table" aria-label="逐招损血对照"><thead><tr><th scope="col">对手出招</th><th scope="col">我造成伤害</th><th scope="col">我损失生命</th></tr></thead><tbody>'+replies.map(reply=>{
+        html+='<details class="preview-scope reply-details"><summary>逐招对照 · '+replies.length+' 种回应</summary><p class="tip">每行对应对手一种当前可用招式，双方损血同时结算。气势按本轮后计算；交战结束时双方归零。查看不会出招或耗牌。</p><table class="preview-table" aria-label="逐招损血与气势对照"><thead><tr><th scope="col">对手出招</th><th scope="col">我造成伤害</th><th scope="col">我损失生命</th></tr></thead><tbody>'+replies.map(reply=>{
           const other=E.BASE[reply]||E.CARDS[reply],r=E.roundDamage(ui.ctx,isA?id:reply,isA?reply:id),damage=Math.min(enemy.hp,isA?r.toD:r.toA),loss=Math.min(who.hp,isA?r.toA:r.toD);
-          return '<tr data-reply="'+reply+'"><td>'+esc(other.name)+'<small>'+E.TYPE[other.type]+'</small></td><td>'+damage+'<small>对方余血 '+(enemy.hp-damage)+'</small></td><td>'+loss+'<small>己方余血 '+(who.hp-loss)+'</small></td></tr>';
+          const continues=ui.ctx.round<6&&loss<who.hp&&damage<enemy.hp,myForce=continues?(isA?r.forceAfterA:r.forceAfterD):0,enemyForce=continues?(isA?r.forceAfterD:r.forceAfterA):0;
+          return '<tr data-reply="'+reply+'"><td>'+esc(other.name)+'<small>'+E.TYPE[other.type]+'</small></td><td>'+damage+'<small>对方余血 '+(enemy.hp-damage)+'</small><small>气势 '+enemyForce+'/2</small></td><td>'+loss+'<small>己方余血 '+(who.hp-loss)+'</small><small>气势 '+myForce+'/2</small></td></tr>';
         }).join('')+'</tbody></table></details>';
       }
     }else if(lesson?.stage==='retreat')html+='<div class="review-head"><h3>先查看撤回后果</h3></div><div class="review-empty"><p>点击底部高亮的「红方主动撤回」，查看并确认。本课不需要选择招式。</p></div>';
