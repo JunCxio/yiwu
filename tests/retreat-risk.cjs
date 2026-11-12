@@ -1,7 +1,7 @@
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict'),crypto=require('node:crypto');
 const html=fs.readFileSync(process.argv[2]||path.join(__dirname,'..','index.html'),'utf8'),scripts=[...html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].map(m=>m[1]),box=vm.createContext({}),copy=x=>JSON.parse(JSON.stringify(x));
 for(const script of scripts.slice(0,2))vm.runInContext(script,box);const E=box.Yiwu,C=box.YiwuComputer;
-const helpers=['firstRoundLossRisk','retreatConsequence','retreatRisks','retreatPreviewHTML','combatAdvice','combatFollowUpRisk'].flatMap(name=>scripts[2].match(new RegExp('  function '+name+'\\([^]*?\\n  \\}'))||[]),escape=scripts[2].match(/,esc=([^\n]+);/)[1];
+const helpers=['firstRoundLossRisk','kingExposureRisk','retreatConsequence','retreatRisks','retreatPreviewHTML','combatAdvice','combatFollowUpRisk'].flatMap(name=>scripts[2].match(new RegExp('  function '+name+'\\([^]*?\\n  \\}'))||[]),escape=scripts[2].match(/,esc=([^\n]+);/)[1];
 vm.runInContext('const E=Yiwu,C=YiwuComputer,esc='+escape+';let s,lesson=null;'+helpers.join('\n'),box);
 const fixture=require('./retreat-risk-fixture.json');let original;
 for(const [op,...args]of fixture.commands){if(op==='create')original=E.create(...args);else E[op](original,...args);}

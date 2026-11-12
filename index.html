@@ -114,6 +114,9 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
   #fight{overflow-y:auto;overscroll-behavior:contain}
   #fight>.modal{max-height:none;overflow:visible}
   .fight-body{flex:none;overflow:visible}
+  #fight:has(.retreat-confirm){overflow:hidden}
+  #fight:has(.retreat-confirm)>.modal{max-height:calc(100dvh - 26px);overflow:hidden}
+  #fight:has(.retreat-confirm) .fight-body{flex:1 1 auto;overflow-y:auto}
 }
 
 </style>
@@ -136,7 +139,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.126 · 末轮守方选招</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.127 · 撤回与整备风险</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -934,9 +937,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.126',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.127',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.126-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.127-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -1302,6 +1305,13 @@ globalThis.YiwuComputer = (() => {
     }
     return '';
   }
+  function kingExposureRisk(state,side){
+    if(state.phase!=='board')return '';
+    const king=state.pieces.find(p=>p.side===side&&p.kind==='king');
+    if(!king)return '';
+    const incoming=state.pieces.filter(p=>p.side!==side&&E.canMove(state,p,king.x,king.y));
+    return incoming.length?'己方将帅受攻：'+incoming.map(p=>E.label(p)+'（'+(p.x+1)+'路'+(10-p.y)+'线）').join('、')+'仍可向'+E.label(king)+'发起武斗；能发起武斗不等于能击倒将帅。':'';
+  }
   function pawnEndRankRisk(p,y,attack=false){
     if(p.kind!=='pawn'||y!==(p.side==='red'?0:9))return '';
     return (attack?'若获胜并占位，':'移动后，')+'本兵位于对方底线，只能横移，不能后退，也不会升变。';
@@ -1388,7 +1398,8 @@ globalThis.YiwuComputer = (() => {
     const action={type:'rest',id,card},next=previewBoardAction(action);
     $('rest-target').textContent=E.label(p)+' · '+E.CARDS[card].name+' · '+(p.x+1)+' 路 '+(10-p.y)+' 线';
     $('rest-content').innerHTML='<p id="rest-cost" class="rest-cost">占用'+E.SIDE[p.side]+'本次棋盘行动，'+(next.phase==='ended'?'随后本局结束。':'并让出走棋机会。')+'</p><p>仅恢复「'+E.CARDS[card].name+'」这一张牌；生命保持 '+p.hp+' / 18，棋子留在原位。</p><p class="rest-effect"><b>招式效果：</b>'+E.CARDS[card].text+'</p><p class="tip">'+(next.phase==='ended'?'整备后本局随即结束，这张牌在本局不再有使用机会。':'恢复后仍需满足招式的使用条件。')+'返回棋盘可继续考虑，不消耗行动；刷新会关闭本次确认。</p>';
-    const risks=[actionOutcomeRisk(action,next),firstRoundLossRisk(next,E.get(next,id))].filter(Boolean);
+    const kingRisk=kingExposureRisk(next,p.side);
+    const risks=[actionOutcomeRisk(action,next),firstRoundLossRisk(next,E.get(next,id)),kingRisk?'整备后，'+kingRisk:''].filter(Boolean);
     for(const risk of risks)$('rest-content').innerHTML+='<p class="draw-warning" role="status">'+esc(risk)+'</p>';
     restDialog.showModal();$('cancel-rest').focus();
   }
@@ -1645,6 +1656,9 @@ globalThis.YiwuComputer = (() => {
       if(incoming.length)risks.push('撤回后仍可被'+incoming.map(q=>E.label(q)+'（'+(q.x+1)+'路'+(10-q.y)+'线）').join('、')+'进攻；撤回只结束本场，不代表脱离威胁。');
     }
     if(!E.CHALLENGES[next.scenario]&&C.kingLostNext(next,p.side))risks.push('撤回后将帅漏防风险：对手下一次行动存在可在武斗两轮内击倒己方将帅的进攻。');
+    else if(p.kind!=='king'){
+      const kingRisk=kingExposureRisk(next,p.side);if(kingRisk)risks.push('撤回后，'+kingRisk);
+    }
     return risks;
   }
   function retreatPreviewHTML(){
