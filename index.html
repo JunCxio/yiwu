@@ -56,7 +56,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 .choice-return{display:block;width:100%;min-height:44px;margin-top:12px}
 @media(max-width:480px){.endgame-actions [data-action="next-challenge"]{flex-basis:100%}}
 .support-sources{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:5px}.support-sources li{display:flex;justify-content:space-between;flex-wrap:wrap;gap:3px 12px;padding:5px 8px;border-left:2px solid #a5b8cc;background:#183129;font-size:12px}.support-sources strong{font-weight:500}.support-sources span{color:var(--muted);font-variant-numeric:tabular-nums}
-.preview-bonus{margin:10px 0;padding:9px 11px;border-left:3px solid var(--gold);background:#294438}.preview-bonus strong{font-size:14px;color:var(--gold)}.preview-bonus p{margin:3px 0 0;font-size:12px;color:var(--muted)}.preview-scope{border-top:1px solid var(--line);margin-top:8px}.preview-scope summary{min-height:44px;padding:10px 0;font-size:12px;color:var(--gold);cursor:pointer}.preview-scope .tip{margin:0 0 6px}.preview-support{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.preview-support>.card{min-width:0;margin:0}.preview-support .support-sources li{overflow-wrap:anywhere}@media(max-width:400px){.preview-support{grid-template-columns:1fr;gap:8px}}
+.preview-bonus{margin:10px 0;padding:9px 11px;border-left:3px solid var(--gold);background:#294438}.preview-bonus strong{font-size:14px;color:var(--gold)}.preview-bonus p{margin:3px 0 0;font-size:12px;color:var(--muted)}.preview-scope{border-top:1px solid var(--line);margin-top:8px}.preview-scope summary{min-height:44px;padding:10px 0;font-size:12px;color:var(--gold);cursor:pointer}.preview-scope[open]>summary{margin-bottom:8px}.preview-scope .tip{margin:0 0 6px}.preview-support{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.preview-support>.card{min-width:0;margin:0}.preview-support .support-sources li{overflow-wrap:anywhere}@media(max-width:400px){.preview-support{grid-template-columns:1fr;gap:8px}}
 .challenge-check{margin:10px 0;padding:10px 12px;border-left:3px solid #a6bc8c;background:#243e30;overflow-wrap:anywhere}.challenge-check strong,.challenge-check summary{font-size:13px;font-weight:700;color:#e0e9c6}.challenge-check p{font-size:13px;line-height:1.6;margin:4px 0}.challenge-check small{display:block;color:#c5d2bd;font-size:12px;line-height:1.6}.challenge-check.risk{border-color:#e3ab81;background:#49382e}.challenge-check.risk strong,.challenge-check.risk summary{color:#ffd0a8}details.challenge-check{padding:0 12px}details.challenge-check summary{min-height:44px;padding:10px 0;cursor:pointer}details.challenge-check small{padding-bottom:10px}
 #fight:is([data-step="pickA"],[data-step="pickD"]) .combat-scene{min-height:0;padding:5px 9px;grid-template-columns:minmax(0,1fr) 8px minmax(0,1fr)}
 #fight:is([data-step="pickA"],[data-step="pickD"]) .combat-scene:before,
@@ -135,7 +135,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.119 · 协同查询提速</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.120 · 逐招损血对照</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -915,9 +915,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.119',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.120',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.119-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.120-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -1850,13 +1850,20 @@ globalThis.YiwuComputer = (() => {
       const demo=lesson?E.roundDamage(ui.ctx,isA?id:ui.computerChoice,isA?ui.computerChoice:id):null;
       const rows=demo?[{type:isA?demo.dType:demo.aType,names:[isA?demo.dName:demo.aName],damageMin:Math.min(enemy.hp,isA?demo.toD:demo.toA),damageMax:Math.min(enemy.hp,isA?demo.toD:demo.toA),lossMin:Math.min(who.hp,isA?demo.toA:demo.toD),lossMax:Math.min(who.hp,isA?demo.toA:demo.toD)}]:E.preview(s,who.side,id);
       const lethal=rows.some(row=>row.lossMax>=who.hp);
-      const forecastNote=demo?'本轮后：'+E.SIDE[who.side]+'生命 '+(who.hp-rows[0].lossMin)+' · '+E.SIDE[enemy.side]+'生命 '+(enemy.hp-rows[0].damageMin)+'。教学按公开的固定出招计算，双方伤害同时结算；正式对局仍按全部合法回应显示范围。':'范围包含对方所有可用招式，已计入支援、气势和减伤，上限为剩余生命。不能据此知道对手本轮已选哪招。';
+      const forecastNote=demo?'本轮后：'+E.SIDE[who.side]+'生命 '+(who.hp-rows[0].lossMin)+' · '+E.SIDE[enemy.side]+'生命 '+(enemy.hp-rows[0].damageMin)+'。教学按公开的固定出招计算，双方伤害同时结算；正式对局仍按全部合法回应显示范围。':'范围包含对方所有可用招式，同类合并为区间；逐招对照列出每招损血。已计入支援、气势和减伤，上限为剩余生命。不能据此知道对手本轮已选哪招。';
       const force=who===ui.a?ui.ctx.forceA:ui.ctx.forceD,attacking=c.type==='strike'||c.type==='break';
       const relation={strike:'克制破势 · 受架势克制 · 可压制蓄势',break:'克制架势 · 受斩击克制 · 可压制蓄势',guard:'克制斩击 · 受破势克制 · 不攻击蓄势',focus:'本轮不攻击 · 会被斩击、破势压制'}[c.type];
       let forceText=attacking?(force?'消耗全部 '+force+' 点气势；被克制也会消耗。':'当前气势为 0，没有气势增伤。'):c.type==='focus'?'本场继续时，蓄势 +'+(1+(c.gain||0))+'，上限 2；可能被削势。':'本场继续时，现有气势保留；仍可能被对手削势。';
       if(ui.ctx.round===6)forceText=(attacking?forceText+' ':'')+'本轮后交战结束，双方气势归零。';
       else forceText+=' 本场结束时，双方气势归零。';
       html+=`<div class="review-head"><h3>${E.SIDE[who.side]}已选「${c.name}」<span class="card-type">${E.TYPE[c.type]}</span></h3>${publicJump}</div><p class="tip">${c.text}</p>${combatRepliesHTML(who,id)}<div class="decision-facts"><span>${relation}</span><span>${forceText}</span><span>${E.CARDS[id]?'培养牌 · 使用后耗尽，需在棋盘整备。':'基础招式 · 不耗牌，可重复使用。'}</span></div><table class="preview-table"><thead><tr><th>${lesson?'对手固定出招':'对手可能出招'}</th><th>我造成伤害</th><th>我损失生命</th></tr></thead><tbody>${rows.map(row=>`<tr><td>${E.TYPE[row.type]}<small>${row.names.join('、')}</small></td><td>${range(row.damageMin,row.damageMax)}</td><td class="loss">${range(row.lossMin,row.lossMax)}</td></tr>`).join('')}</tbody></table><p class="tip">${forecastNote}</p>${lethal?'<p class="preview-risk">'+(lesson?'本课固定出招会击倒本枚棋子。':'对手的部分选择可能击倒本枚棋子。')+'双方伤害仍同时结算。</p>':''}`;
+      if(!lesson){
+        const replies=C.choices(s,enemy,ui.ctx);
+        html+='<details class="preview-scope reply-details"><summary>逐招对照 · '+replies.length+' 种回应</summary><p class="tip">每行对应对手一种当前可用招式，双方损血同时结算。查看不会出招或耗牌。</p><table class="preview-table" aria-label="逐招损血对照"><thead><tr><th scope="col">对手出招</th><th scope="col">我造成伤害</th><th scope="col">我损失生命</th></tr></thead><tbody>'+replies.map(reply=>{
+          const other=E.BASE[reply]||E.CARDS[reply],r=E.roundDamage(ui.ctx,isA?id:reply,isA?reply:id),damage=Math.min(enemy.hp,isA?r.toD:r.toA),loss=Math.min(who.hp,isA?r.toA:r.toD);
+          return '<tr data-reply="'+reply+'"><td>'+esc(other.name)+'<small>'+E.TYPE[other.type]+'</small></td><td>'+damage+'<small>对方余血 '+(enemy.hp-damage)+'</small></td><td>'+loss+'<small>己方余血 '+(who.hp-loss)+'</small></td></tr>';
+        }).join('')+'</tbody></table></details>';
+      }
     }else if(lesson?.stage==='retreat')html+='<div class="review-head"><h3>先查看撤回后果</h3></div><div class="review-empty"><p>点击底部高亮的「红方主动撤回」，查看并确认。本课不需要选择招式。</p></div>';
     else html+='<div class="review-head"><h3>先选招，再锁定</h3>'+publicJump+'</div><div class="review-empty">'+(lesson?'<p>点击本课高亮的招式，查看对手固定出招对应的伤害和生命变化。</p><p>查看不会耗牌；锁定并揭示后才结算本轮。</p>':'<p>点选招式，查看面对不同招式时会造成多少伤害、损失多少生命。</p><p>选错可以更换，锁定前不会耗牌。也可先点「选招建议」。</p>')+'</div>';
     return html+(lesson?'':'<button class="quiet choice-return" data-fight="choices">返回选择招式</button>')+'</aside>';
@@ -1886,7 +1893,7 @@ globalThis.YiwuComputer = (() => {
     }).join('')}</div><div class="damage-history-pair">${order.map(p=>damageBreakdownHTML(p,p===a,r)).join('')}</div></li>`).join('')}</ol></details>`;
   }
   function renderFight(){
-    const active=document.activeElement,focusedChoice=active?.dataset.choice,focusedAction=active?.dataset.fight,previousStep=fight.dataset.step,challengeOpen=$('fight-content').querySelector('details.challenge-check')?.open,bodyScroll=$('fight-content').querySelector('.fight-body')?.scrollTop||0,dialogScroll=fight.scrollTop;
+    const active=document.activeElement,focusedChoice=active?.dataset.choice,focusedAction=active?.dataset.fight,previousStep=fight.dataset.step,challengeOpen=$('fight-content').querySelector('details.challenge-check')?.open,replyOpen=$('fight-content').querySelector('details.reply-details')?.open,bodyScroll=$('fight-content').querySelector('.fight-body')?.scrollTop||0,dialogScroll=fight.scrollTop;
     const ui=fightUI,{a,d,ctx}=ui,round=ui.result?.round||(ui.step==='retreated'?ctx.history.length:ctx.round);
     const selecting=ui.step==='pickA'||ui.step==='handoffA'?a:ui.step==='pickD'||ui.step==='handoffD'?d:null;
     const computerLocked=p=>opponent==='computer'&&p.side==='black'&&['pickA','pickD'].includes(ui.step);
@@ -1930,6 +1937,7 @@ globalThis.YiwuComputer = (() => {
     html+='</div>'+(footer?'<div class="fight-footer">'+footer+'</div>':'');
     $('fight-content').innerHTML=html;
     if(previousStep===ui.step&&challengeOpen!==undefined)$('fight-content').querySelector('details.challenge-check')?.toggleAttribute('open',challengeOpen);
+    if(previousStep===ui.step&&replyOpen)$('fight-content').querySelector('details.reply-details')?.setAttribute('open','');
     saveProgress();
     fight.dataset.acting=selecting?.side||'result';
     fight.dataset.step=ui.step;
