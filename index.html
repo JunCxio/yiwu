@@ -139,7 +139,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.127 · 撤回与整备风险</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.128 · 武斗三轮取将</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -526,6 +526,16 @@ globalThis.YiwuComputer = (() => {
       return next.phase==='ended'?next.winner===side:next.phase==='duel'&&winningChoices(next,next.duel,side).length>0;
     }));
   }
+  function threeRoundWinningChoices(s,side){
+    if(s.phase!=='duel'||!s.duel||s.duel.round>4||E.CHALLENGES[s.scenario])return [];
+    const ctx=s.duel,a=E.get(s,ctx.a),d=E.get(s,ctx.d);
+    if(a.side!==side||d.kind!=='king'||d.hp>(ctx.round===1?4:3))return [];
+    // 基础反制将每轮来伤压到 1 点，首轮另有突袭；只延伸残血将帅的同场武斗。
+    return choices(s,a,ctx).filter(id=>choices(s,d,ctx).every(reply=>{
+      const next=JSON.parse(JSON.stringify({...s,repetitions:null}));next.repetitions={...s.repetitions};E.resolve(next,id,reply);
+      return next.phase==='ended'?next.winner===side:next.phase==='duel'&&twoRoundWinningChoices(next,side).length>0;
+    }));
+  }
   function twoRoundCapturePlan(s){
     if(s.phase!=='duel'||E.CHALLENGES[s.scenario])return [];
     const ctx=s.duel,a=E.get(s,ctx.a),d=E.get(s,ctx.d);
@@ -605,6 +615,8 @@ globalThis.YiwuComputer = (() => {
     if(side===a.side&&end?.winner===side)return [{id:'retreat',weight:1}];
     const twoRound=twoRoundWinningChoices(s,side);
     if(twoRound.length)return twoRound.map(id=>({id,weight:1/twoRound.length}));
+    const threeRound=threeRoundWinningChoices(s,side);
+    if(threeRound.length)return threeRound.map(id=>({id,weight:1/threeRound.length}));
     const isA=side===a.side,loses=id=>(E.CHALLENGES[s.scenario]||(isA?a:d).kind==='king')&&id!=='retreat'&&choices(s,isA?d:a,ctx).every(other=>
       combatOutcome(s,ctx,isA?id:other,isA?other:id)?.winner===E.OTHER[side]);
     let rows=choices(s,a,ctx),retreatRisk=null;const cols=choices(s,d,ctx);
@@ -737,7 +749,7 @@ globalThis.YiwuComputer = (() => {
       return (end?'撤回直接结束本局：'+(end.winner==='draw'?'判和':E.SIDE[end.winner]+'获胜')+'。'+end.reason:'主动撤回以保留棋子和当前生命，不再结算本轮伤害。')+'伤势与耗尽牌保留，气势清零。';
     }
     const c=E.BASE[id]||E.CARDS[id];
-    return (difficulty==='practice'?'练习电脑在可用招式类型之间等概率选择，再从该类中选一招；不针对历史出招调整。':'标准电脑优先抓住可确认的获胜机会；普通棋子交战有替代时，优先避免战后将帅新增受攻或下一手被确定击倒，再比较本轮收益与已揭示历史。进攻将帅时另核对两轮确定胜局，进攻普通残血目标时核对两轮存活吃子。')+'本轮选择「'+c.name+'」：'+c.text;
+    return (difficulty==='practice'?'练习电脑在可用招式类型之间等概率选择，再从该类中选一招；不针对历史出招调整。':'标准电脑优先抓住可确认的获胜机会；普通棋子交战有替代时，优先避免战后将帅新增受攻或下一手被确定击倒，再比较本轮收益与已揭示历史。武斗内进攻将帅时另核对最多三轮确定胜局，进攻普通残血目标时核对两轮存活吃子。')+'本轮选择「'+c.name+'」：'+c.text;
   }
   function bothCanEndWithoutLosing(s,ctx){
     const a=E.get(s,ctx.a),d=E.get(s,ctx.d);
@@ -913,7 +925,7 @@ globalThis.YiwuComputer = (() => {
     if(difficulty==='practice')near=near.slice(0,3);
     return near[Math.min(near.length-1,Math.floor(rng()*near.length))];
   }
-  return {actions,choices,twoRoundCapturePlan,twoRoundWinningChoices,battleOutlook,captureLosesKing,kingLostNext,combatOutcome,combatPlan,practicePlan,combat,explain,rankedActions,board};
+  return {actions,choices,twoRoundCapturePlan,twoRoundWinningChoices,threeRoundWinningChoices,battleOutlook,captureLosesKing,kingLostNext,combatOutcome,combatPlan,practicePlan,combat,explain,rankedActions,board};
 })();
 </script>
 <script>
@@ -937,9 +949,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.127',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.128',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.127-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.128-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -1758,7 +1770,7 @@ globalThis.YiwuComputer = (() => {
   }
   function combatAdvice(who,id){
     const ctx=s.duel,isA=who.id===ctx.a,enemy=E.get(s,isA?ctx.d:ctx.a),force=isA?ctx.forceA:ctx.forceD;
-    const advice={title:id==='retreat'?'建议主动撤回':'建议「'+(E.BASE[id]||E.CARDS[id]).name+'」',reasons:[],risks:[],note:'依据本轮伤害、阵亡风险、气势、耗牌和已揭示历史综合推荐；普通棋子交战另比较离场后的将帅受攻与下一手取将风险，进攻将帅时核对两轮确定胜局。不预知暗招，不推演更长序列。'};
+    const advice={title:id==='retreat'?'建议主动撤回':'建议「'+(E.BASE[id]||E.CARDS[id]).name+'」',reasons:[],risks:[],note:'依据本轮伤害、阵亡风险、气势、耗牌和已揭示历史综合推荐；普通棋子交战另比较离场后的将帅受攻与下一手取将风险，本场武斗内进攻将帅时核对最多三轮确定胜局。不预知暗招，不推演更长序列。'};
     if(id==='retreat'){
       const next=JSON.parse(JSON.stringify(s));Yiwu.retreat(next);
       advice.reasons.push('撤回保留当前 '+who.hp+' 点生命，不再结算本轮伤害。',retreatConsequence(next));
@@ -1774,6 +1786,8 @@ globalThis.YiwuComputer = (() => {
     });
     if(!rows.every(r=>r.damage>=enemy.hp&&(who.kind!=='king'||r.loss<who.hp))&&C.twoRoundWinningChoices(s,who.side).includes(id)){
       advice.reasons.push('本招能确保至迟下一轮获胜；若本轮未结束，需按揭示后的新状态选择下一轮必胜招式。');
+    }else if(!rows.every(r=>r.damage>=enemy.hp&&(who.kind!=='king'||r.loss<who.hp))&&C.threeRoundWinningChoices(s,who.side).includes(id)){
+      advice.reasons.push('本招能确保在本场武斗的三轮内获胜；每轮揭示后，仍需按新状态重新选择可确保获胜的招式。');
     }
     if(isA&&!rows.every(r=>r.damage>=enemy.hp&&r.loss<who.hp)&&C.twoRoundCapturePlan(s).some(p=>p.id===id))advice.reasons.push('本招能在两轮内击倒目标并保住进攻子；若本轮未结束，需按揭示后的状态选择下一轮吃子招式。这不代表整局获胜。');
     const range=values=>{const lo=Math.min(...values),hi=Math.max(...values);return lo===hi?String(lo):lo+'–'+hi;};

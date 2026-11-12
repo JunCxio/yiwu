@@ -1,0 +1,280 @@
+{
+  "version": "0.6.128",
+  "sourceCommit": "507bdc77d989926fef78d94f44011c3257251819",
+  "sourceSHA256": {
+    "baseline": "6bf1ff9ffbcd58a6778c17cfe215c743869bbda2d13114b9d68abbacc48b7828",
+    "candidate": "2b04032b5a2f0b004f2d06fedcfc13f873da5753be83b897c6074c99706bf378"
+  },
+  "releaseSHA256": "ccbf3a1d21fb7b9c5df93cbc279dd79ff4823f52aa111c0d9e37c79fd97ddde2",
+  "targeted": {
+    "checks": 4,
+    "states": 130,
+    "actualSettlementBranches": 13298,
+    "inputUnchanged": true
+  },
+  "regressionScripts": 49,
+  "existingAssertionsChanged": false,
+  "primary": {
+    "summary": {
+      "standard-quick": {
+        "direct": {
+          "games": 16,
+          "wins": 2,
+          "draws": 12,
+          "losses": 2,
+          "points": 8
+        },
+        "baseline": {
+          "games": 8,
+          "meanPlies": 220.625,
+          "medianPlies": 195,
+          "maxPlies": 443,
+          "draws": 6,
+          "singleDamageWins": 0
+        },
+        "candidate": {
+          "games": 8,
+          "meanPlies": 220.625,
+          "medianPlies": 195,
+          "maxPlies": 443,
+          "draws": 6,
+          "singleDamageWins": 0
+        },
+        "passedGates": true
+      },
+      "standard-full": {
+        "direct": {
+          "games": 16,
+          "wins": 1,
+          "draws": 14,
+          "losses": 1,
+          "points": 8
+        },
+        "baseline": {
+          "games": 8,
+          "meanPlies": 326.5,
+          "medianPlies": 348.5,
+          "maxPlies": 457,
+          "draws": 7,
+          "singleDamageWins": 0
+        },
+        "candidate": {
+          "games": 8,
+          "meanPlies": 326.5,
+          "medianPlies": 348.5,
+          "maxPlies": 457,
+          "draws": 7,
+          "singleDamageWins": 0
+        },
+        "passedGates": true
+      },
+      "practice-quick": {
+        "direct": {
+          "games": 16,
+          "wins": 1,
+          "draws": 14,
+          "losses": 1,
+          "points": 8
+        },
+        "baseline": {
+          "games": 8,
+          "meanPlies": 212,
+          "medianPlies": 212,
+          "maxPlies": 326,
+          "draws": 7,
+          "singleDamageWins": 0
+        },
+        "candidate": {
+          "games": 8,
+          "meanPlies": 212,
+          "medianPlies": 212,
+          "maxPlies": 326,
+          "draws": 7,
+          "singleDamageWins": 0
+        },
+        "passedGates": true
+      },
+      "practice-full": {
+        "direct": {
+          "games": 16,
+          "wins": 1,
+          "draws": 14,
+          "losses": 1,
+          "points": 8
+        },
+        "baseline": {
+          "games": 8,
+          "meanPlies": 341.25,
+          "medianPlies": 316,
+          "maxPlies": 509,
+          "draws": 7,
+          "singleDamageWins": 0
+        },
+        "candidate": {
+          "games": 8,
+          "meanPlies": 341.25,
+          "medianPlies": 316,
+          "maxPlies": 509,
+          "draws": 7,
+          "singleDamageWins": 0
+        },
+        "passedGates": true
+      }
+    },
+    "audit": {
+      "sourceCommit": "507bdc77d989926fef78d94f44011c3257251819",
+      "sourceSHA256": {
+        "baseline": "6bf1ff9ffbcd58a6778c17cfe215c743869bbda2d13114b9d68abbacc48b7828",
+        "candidate": "2b04032b5a2f0b004f2d06fedcfc13f873da5753be83b897c6074c99706bf378"
+      },
+      "totals": {
+        "games": 136,
+        "commands": 49678,
+        "boardActions": 38380,
+        "rounds": 8156
+      },
+      "allTerminalHashesMatch": true,
+      "allActionsReplayed": true,
+      "computerChoicesRecomputed": false,
+      "changedTraces": 0,
+      "failedGates": [],
+      "allGatesPassed": true
+    }
+  },
+  "holdout": {
+    "summary": {
+      "standard-quick": {
+        "direct": {
+          "games": 16,
+          "wins": 3,
+          "draws": 10,
+          "losses": 3,
+          "points": 8
+        },
+        "baseline": {
+          "games": 8,
+          "meanPlies": 268.875,
+          "medianPlies": 279.5,
+          "maxPlies": 429,
+          "draws": 5,
+          "singleDamageWins": 0
+        },
+        "candidate": {
+          "games": 8,
+          "meanPlies": 268.875,
+          "medianPlies": 279.5,
+          "maxPlies": 429,
+          "draws": 5,
+          "singleDamageWins": 0
+        },
+        "passedGates": true
+      },
+      "standard-full": {
+        "direct": {
+          "games": 16,
+          "wins": 3,
+          "draws": 10,
+          "losses": 3,
+          "points": 8
+        },
+        "baseline": {
+          "games": 8,
+          "meanPlies": 280,
+          "medianPlies": 314,
+          "maxPlies": 384,
+          "draws": 5,
+          "singleDamageWins": 0
+        },
+        "candidate": {
+          "games": 8,
+          "meanPlies": 280,
+          "medianPlies": 314,
+          "maxPlies": 384,
+          "draws": 5,
+          "singleDamageWins": 0
+        },
+        "passedGates": true
+      },
+      "practice-quick": {
+        "direct": {
+          "games": 16,
+          "wins": 2,
+          "draws": 12,
+          "losses": 2,
+          "points": 8
+        },
+        "baseline": {
+          "games": 8,
+          "meanPlies": 280.25,
+          "medianPlies": 311,
+          "maxPlies": 441,
+          "draws": 6,
+          "singleDamageWins": 0
+        },
+        "candidate": {
+          "games": 8,
+          "meanPlies": 280.25,
+          "medianPlies": 311,
+          "maxPlies": 441,
+          "draws": 6,
+          "singleDamageWins": 0
+        },
+        "passedGates": true
+      },
+      "practice-full": {
+        "direct": {
+          "games": 16,
+          "wins": 2,
+          "draws": 12,
+          "losses": 2,
+          "points": 8
+        },
+        "baseline": {
+          "games": 8,
+          "meanPlies": 251.625,
+          "medianPlies": 284,
+          "maxPlies": 386,
+          "draws": 6,
+          "singleDamageWins": 0
+        },
+        "candidate": {
+          "games": 8,
+          "meanPlies": 251.625,
+          "medianPlies": 284,
+          "maxPlies": 386,
+          "draws": 6,
+          "singleDamageWins": 0
+        },
+        "passedGates": true
+      }
+    },
+    "audit": {
+      "sourceCommit": "507bdc77d989926fef78d94f44011c3257251819",
+      "sourceSHA256": {
+        "baseline": "6bf1ff9ffbcd58a6778c17cfe215c743869bbda2d13114b9d68abbacc48b7828",
+        "candidate": "2b04032b5a2f0b004f2d06fedcfc13f873da5753be83b897c6074c99706bf378"
+      },
+      "totals": {
+        "games": 128,
+        "commands": 45548,
+        "boardActions": 34584,
+        "rounds": 7948
+      },
+      "allTerminalHashesMatch": true,
+      "allActionsReplayed": true,
+      "computerChoicesRecomputed": false,
+      "changedTraces": 0,
+      "failedGates": [],
+      "allGatesPassed": true
+    }
+  },
+  "totals": {
+    "games": 264,
+    "commands": 95226,
+    "boardActions": 72964,
+    "rounds": 16104
+  },
+  "changedTraces": 0,
+  "browserCases": 12,
+  "rawFullGameData": "完整原始操作、计划和独立重放保存在本机实验目录；此文件仅公开汇总。"
+}
