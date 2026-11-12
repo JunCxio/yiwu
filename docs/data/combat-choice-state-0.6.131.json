@@ -1,0 +1,342 @@
+{
+  "version": "0.6.131",
+  "sourceCommit": "a3793d1f0aac27e00c57aaac1f244abbbec0a658",
+  "baselineSHA256": "fbda847f99f33e42e12530ab0940569f7f9adbb9942fdb5fc6d03b8b4ded50f8",
+  "releaseSHA256": "824a99857d3cafe56bfe14893e995543f1e69fd7b71050e3eb7c2d39e3d0644b",
+  "baseline": {
+    "selectedFocused": {
+      "focused": true,
+      "focusVisible": true,
+      "selected": "true",
+      "text": "斩击\n克制破势；释放全部气势，打出额外伤害。\n基础招式 · 不耗牌",
+      "outline": "rgb(243, 215, 143) solid 2px",
+      "outlineOffset": "1px",
+      "shadow": "none"
+    },
+    "selectedBlurred": {
+      "focused": false,
+      "focusVisible": false,
+      "selected": "true",
+      "text": "斩击\n克制破势；释放全部气势，打出额外伤害。\n基础招式 · 不耗牌",
+      "outline": "rgb(243, 215, 143) solid 2px",
+      "outlineOffset": "1px",
+      "shadow": "none"
+    },
+    "selectedFocusIndistinguishable": true
+  },
+  "checks": {
+    "targeted": 4,
+    "existingUI": 143,
+    "pendingAutosave": 9,
+    "confirmNavigation": 4,
+    "challengeLog": "残局流程、走棋反馈与武斗确认：38 项检查通过；教学键盘入口与续局：2 组、教学完成衔接：2 组、武斗滚动：3 组、武斗焦点：3 组、默认配牌与旧续局：3 组、两轮预览续局隔离：1 组、棋盘操作焦点：3 组、规则窗口：2 组、吃子受攻预览续局：1 组、普通两轮吃子预览续局：1 组、落点及整备终局焦点与续局：3 组检查通过。",
+    "rulesAndComputerIdentical": true,
+    "cssChange": "action.chosen的外框替换为牌内描边",
+    "existingTestsUnmodified": true
+  },
+  "browser": [
+    {
+      "width": 1366,
+      "height": 768,
+      "opponent": "computer",
+      "choiceChecks": 8,
+      "selectedTextFits": true,
+      "focusDistinct": true,
+      "selectionPersistsOnBlur": true,
+      "commandsAndHiddenChoicePreserved": true,
+      "refreshPreserved": true,
+      "handoffPrivate": false,
+      "resolvedOnce": true,
+      "noHorizontalOverflow": true,
+      "errors": [],
+      "focused": {
+        "focused": true,
+        "focusVisible": true,
+        "outline": "rgb(255, 240, 176) solid 3px",
+        "outlineOffset": "3px",
+        "shadow": "rgb(243, 215, 143) 0px 0px 0px 2px inset"
+      },
+      "blurred": {
+        "focused": false,
+        "focusVisible": false,
+        "outline": "rgb(237, 240, 231) none 3px",
+        "outlineOffset": "0px",
+        "shadow": "rgb(243, 215, 143) 0px 0px 0px 2px inset"
+      }
+    },
+    {
+      "width": 1366,
+      "height": 768,
+      "opponent": "local",
+      "choiceChecks": 8,
+      "selectedTextFits": true,
+      "focusDistinct": true,
+      "selectionPersistsOnBlur": true,
+      "commandsAndHiddenChoicePreserved": true,
+      "refreshPreserved": true,
+      "handoffPrivate": true,
+      "resolvedOnce": true,
+      "noHorizontalOverflow": true,
+      "errors": [],
+      "focused": {
+        "focused": true,
+        "focusVisible": true,
+        "outline": "rgb(255, 240, 176) solid 3px",
+        "outlineOffset": "3px",
+        "shadow": "rgb(243, 215, 143) 0px 0px 0px 2px inset"
+      },
+      "blurred": {
+        "focused": false,
+        "focusVisible": false,
+        "outline": "rgb(237, 240, 231) none 3px",
+        "outlineOffset": "0px",
+        "shadow": "rgb(243, 215, 143) 0px 0px 0px 2px inset"
+      }
+    },
+    {
+      "width": 1024,
+      "height": 640,
+      "opponent": "computer",
+      "choiceChecks": 8,
+      "selectedTextFits": true,
+      "focusDistinct": true,
+      "selectionPersistsOnBlur": true,
+      "commandsAndHiddenChoicePreserved": true,
+      "refreshPreserved": true,
+      "handoffPrivate": false,
+      "resolvedOnce": true,
+      "noHorizontalOverflow": true,
+      "errors": [],
+      "focused": {
+        "focused": true,
+        "focusVisible": true,
+        "outline": "rgb(255, 240, 176) solid 3px",
+        "outlineOffset": "3px",
+        "shadow": "rgb(243, 215, 143) 0px 0px 0px 2px inset"
+      },
+      "blurred": {
+        "focused": false,
+        "focusVisible": false,
+        "outline": "rgb(237, 240, 231) none 3px",
+        "outlineOffset": "0px",
+        "shadow": "rgb(243, 215, 143) 0px 0px 0px 2px inset"
+      }
+    },
+    {
+      "width": 1024,
+      "height": 640,
+      "opponent": "local",
+      "choiceChecks": 8,
+      "selectedTextFits": true,
+      "focusDistinct": true,
+      "selectionPersistsOnBlur": true,
+      "commandsAndHiddenChoicePreserved": true,
+      "refreshPreserved": true,
+      "handoffPrivate": true,
+      "resolvedOnce": true,
+      "noHorizontalOverflow": true,
+      "errors": [],
+      "focused": {
+        "focused": true,
+        "focusVisible": true,
+        "outline": "rgb(255, 240, 176) solid 3px",
+        "outlineOffset": "3px",
+        "shadow": "rgb(243, 215, 143) 0px 0px 0px 2px inset"
+      },
+      "blurred": {
+        "focused": false,
+        "focusVisible": false,
+        "outline": "rgb(237, 240, 231) none 3px",
+        "outlineOffset": "0px",
+        "shadow": "rgb(243, 215, 143) 0px 0px 0px 2px inset"
+      }
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "opponent": "computer",
+      "choiceChecks": 8,
+      "selectedTextFits": true,
+      "focusDistinct": true,
+      "selectionPersistsOnBlur": true,
+      "commandsAndHiddenChoicePreserved": true,
+      "refreshPreserved": true,
+      "handoffPrivate": false,
+      "resolvedOnce": true,
+      "noHorizontalOverflow": true,
+      "errors": [],
+      "focused": {
+        "focused": true,
+        "focusVisible": true,
+        "outline": "rgb(255, 240, 176) solid 3px",
+        "outlineOffset": "3px",
+        "shadow": "rgb(243, 215, 143) 0px 0px 0px 2px inset"
+      },
+      "blurred": {
+        "focused": false,
+        "focusVisible": false,
+        "outline": "rgb(237, 240, 231) none 3px",
+        "outlineOffset": "0px",
+        "shadow": "rgb(243, 215, 143) 0px 0px 0px 2px inset"
+      }
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "opponent": "local",
+      "choiceChecks": 8,
+      "selectedTextFits": true,
+      "focusDistinct": true,
+      "selectionPersistsOnBlur": true,
+      "commandsAndHiddenChoicePreserved": true,
+      "refreshPreserved": true,
+      "handoffPrivate": true,
+      "resolvedOnce": true,
+      "noHorizontalOverflow": true,
+      "errors": [],
+      "focused": {
+        "focused": true,
+        "focusVisible": true,
+        "outline": "rgb(255, 240, 176) solid 3px",
+        "outlineOffset": "3px",
+        "shadow": "rgb(243, 215, 143) 0px 0px 0px 2px inset"
+      },
+      "blurred": {
+        "focused": false,
+        "focusVisible": false,
+        "outline": "rgb(237, 240, 231) none 3px",
+        "outlineOffset": "0px",
+        "shadow": "rgb(243, 215, 143) 0px 0px 0px 2px inset"
+      }
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "opponent": "computer",
+      "choiceChecks": 8,
+      "selectedTextFits": true,
+      "focusDistinct": true,
+      "selectionPersistsOnBlur": true,
+      "commandsAndHiddenChoicePreserved": true,
+      "refreshPreserved": true,
+      "handoffPrivate": false,
+      "resolvedOnce": true,
+      "noHorizontalOverflow": true,
+      "errors": [],
+      "focused": {
+        "focused": true,
+        "focusVisible": true,
+        "outline": "rgb(255, 240, 176) solid 3px",
+        "outlineOffset": "3px",
+        "shadow": "rgb(243, 215, 143) 0px 0px 0px 2px inset"
+      },
+      "blurred": {
+        "focused": false,
+        "focusVisible": false,
+        "outline": "rgb(237, 240, 231) none 3px",
+        "outlineOffset": "0px",
+        "shadow": "rgb(243, 215, 143) 0px 0px 0px 2px inset"
+      }
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "opponent": "local",
+      "choiceChecks": 8,
+      "selectedTextFits": true,
+      "focusDistinct": true,
+      "selectionPersistsOnBlur": true,
+      "commandsAndHiddenChoicePreserved": true,
+      "refreshPreserved": true,
+      "handoffPrivate": true,
+      "resolvedOnce": true,
+      "noHorizontalOverflow": true,
+      "errors": [],
+      "focused": {
+        "focused": true,
+        "focusVisible": true,
+        "outline": "rgb(255, 240, 176) solid 3px",
+        "outlineOffset": "3px",
+        "shadow": "rgb(243, 215, 143) 0px 0px 0px 2px inset"
+      },
+      "blurred": {
+        "focused": false,
+        "focusVisible": false,
+        "outline": "rgb(237, 240, 231) none 3px",
+        "outlineOffset": "0px",
+        "shadow": "rgb(243, 215, 143) 0px 0px 0px 2px inset"
+      }
+    },
+    {
+      "width": 760,
+      "height": 480,
+      "opponent": "computer",
+      "choiceChecks": 8,
+      "selectedTextFits": true,
+      "focusDistinct": true,
+      "selectionPersistsOnBlur": true,
+      "commandsAndHiddenChoicePreserved": true,
+      "refreshPreserved": true,
+      "handoffPrivate": false,
+      "resolvedOnce": true,
+      "noHorizontalOverflow": true,
+      "errors": [],
+      "focused": {
+        "focused": true,
+        "focusVisible": true,
+        "outline": "rgb(255, 240, 176) solid 3px",
+        "outlineOffset": "3px",
+        "shadow": "rgb(243, 215, 143) 0px 0px 0px 2px inset"
+      },
+      "blurred": {
+        "focused": false,
+        "focusVisible": false,
+        "outline": "rgb(237, 240, 231) none 3px",
+        "outlineOffset": "0px",
+        "shadow": "rgb(243, 215, 143) 0px 0px 0px 2px inset"
+      }
+    },
+    {
+      "width": 760,
+      "height": 480,
+      "opponent": "local",
+      "choiceChecks": 8,
+      "selectedTextFits": true,
+      "focusDistinct": true,
+      "selectionPersistsOnBlur": true,
+      "commandsAndHiddenChoicePreserved": true,
+      "refreshPreserved": true,
+      "handoffPrivate": true,
+      "resolvedOnce": true,
+      "noHorizontalOverflow": true,
+      "errors": [],
+      "focused": {
+        "focused": true,
+        "focusVisible": true,
+        "outline": "rgb(255, 240, 176) solid 3px",
+        "outlineOffset": "3px",
+        "shadow": "rgb(243, 215, 143) 0px 0px 0px 2px inset"
+      },
+      "blurred": {
+        "focused": false,
+        "focusVisible": false,
+        "outline": "rgb(237, 240, 231) none 3px",
+        "outlineOffset": "0px",
+        "shadow": "rgb(243, 215, 143) 0px 0px 0px 2px inset"
+      }
+    }
+  ],
+  "unverified": [
+    "真人",
+    "实体手机",
+    "屏幕阅读器",
+    "其他浏览器",
+    "系统高对比度",
+    "本轮未重复完整规则／电脑回归、培养矩阵或性能基准"
+  ],
+  "remainingRisks": [
+    "单子主导",
+    "长局",
+    "高和棋比例"
+  ]
+}
