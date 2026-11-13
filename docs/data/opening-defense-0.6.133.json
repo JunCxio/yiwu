@@ -1,0 +1,450 @@
+{
+  "scope": {
+    "version": "0.6.133",
+    "sourceSHA256": "9ca9abe59b3a31c3cd6a409d71ea0a858dce8b0ded3cc40de57b18c297da8e07",
+    "rulesComputerCSSAndPersistenceIdentical": true,
+    "changedUIFunctions": [
+      "openingAdvice",
+      "previewHTML",
+      "boardAdvice"
+    ],
+    "existingTestsUnchanged": true,
+    "mirrorsMatch": true
+  },
+  "files": [
+    {
+      "file": "tests/opening-defense.cjs",
+      "sha256": "fa098bb3a5d9541083803a915396e8ec9119f61aa23655cce6832cd26e9be937"
+    },
+    {
+      "file": "tests/opening-defense-fixture.json",
+      "sha256": "1e76fb91a770b74ec9ca7ac67ac5acffb13a383f863679c7ffdb2a09ede8942f"
+    }
+  ],
+  "targetedChecks": 12,
+  "uiFlowChecks": 143,
+  "regression": [
+    {
+      "name": "action-king-risk.cjs",
+      "status": 0
+    },
+    {
+      "name": "autosave-pending.cjs",
+      "status": 0
+    },
+    {
+      "name": "challenge-flow.cjs",
+      "status": 0
+    },
+    {
+      "name": "combat-choice-state.cjs",
+      "status": 0
+    },
+    {
+      "name": "combat-confirm-navigation.cjs",
+      "status": 0
+    },
+    {
+      "name": "combat-followup-preview.cjs",
+      "status": 0
+    },
+    {
+      "name": "combat-force-preview.cjs",
+      "status": 0
+    },
+    {
+      "name": "combat-force-report.cjs",
+      "status": 0
+    },
+    {
+      "name": "combat-health.cjs",
+      "status": 0
+    },
+    {
+      "name": "combat-help.cjs",
+      "status": 0
+    },
+    {
+      "name": "combat-reply-table.cjs",
+      "status": 0
+    },
+    {
+      "name": "combat-terminal-preview.cjs",
+      "status": 0
+    },
+    {
+      "name": "computer-attack-pressure.cjs",
+      "status": 0
+    },
+    {
+      "name": "computer-battle-screen.cjs",
+      "status": 0
+    },
+    {
+      "name": "computer-capture-position.cjs",
+      "status": 0
+    },
+    {
+      "name": "computer-combat-line.cjs",
+      "status": 0
+    },
+    {
+      "name": "computer-combat.cjs",
+      "status": 0
+    },
+    {
+      "name": "computer-continuing-cards.cjs",
+      "status": 0
+    },
+    {
+      "name": "computer-ending-cards.cjs",
+      "status": 0
+    },
+    {
+      "name": "computer-endings.cjs",
+      "status": 0
+    },
+    {
+      "name": "computer-final-focus.cjs",
+      "status": 0
+    },
+    {
+      "name": "computer-formations.cjs",
+      "status": 0
+    },
+    {
+      "name": "computer-initiative.cjs",
+      "status": 0
+    },
+    {
+      "name": "computer-king-advance.cjs",
+      "status": 0
+    },
+    {
+      "name": "computer-king-choices.cjs",
+      "status": 0
+    },
+    {
+      "name": "computer-king-coordination.cjs",
+      "status": 0
+    },
+    {
+      "name": "computer-king-defense.cjs",
+      "status": 0
+    },
+    {
+      "name": "computer-king-multi-exit.cjs",
+      "status": 0
+    },
+    {
+      "name": "computer-king-pattern.cjs",
+      "status": 0
+    },
+    {
+      "name": "computer-king-relief.cjs",
+      "status": 0
+    },
+    {
+      "name": "computer-king-scan.cjs",
+      "status": 0
+    },
+    {
+      "name": "computer-king-space.cjs",
+      "status": 0
+    },
+    {
+      "name": "computer-king-tempo.cjs",
+      "status": 0
+    },
+    {
+      "name": "computer-king-threat-query.cjs",
+      "status": 0
+    },
+    {
+      "name": "computer-king-zero-exit.cjs",
+      "status": 0
+    },
+    {
+      "name": "computer-mutual-endings.cjs",
+      "status": 0
+    },
+    {
+      "name": "computer-opening.cjs",
+      "status": 0
+    },
+    {
+      "name": "computer-position.cjs",
+      "status": 0
+    },
+    {
+      "name": "computer-retreat.cjs",
+      "status": 0
+    },
+    {
+      "name": "computer-safety.cjs",
+      "status": 0
+    },
+    {
+      "name": "computer-score-precision.cjs",
+      "status": 0
+    },
+    {
+      "name": "computer-state.cjs",
+      "status": 0
+    },
+    {
+      "name": "computer-three-round.cjs",
+      "status": 0
+    },
+    {
+      "name": "computer-two-round-capture.cjs",
+      "status": 0
+    },
+    {
+      "name": "computer-two-round.cjs",
+      "status": 0
+    },
+    {
+      "name": "fight-return.cjs",
+      "status": 0
+    },
+    {
+      "name": "geometry.cjs",
+      "status": 0
+    },
+    {
+      "name": "home-difficulty.cjs",
+      "status": 0
+    },
+    {
+      "name": "moves.cjs",
+      "status": 0
+    },
+    {
+      "name": "opening-defense.cjs",
+      "status": 0
+    },
+    {
+      "name": "piece-panel.cjs",
+      "status": 0
+    },
+    {
+      "name": "retreat-risk.cjs",
+      "status": 0
+    },
+    {
+      "name": "review-outcome.cjs",
+      "status": 0
+    },
+    {
+      "name": "tutorial-preview.cjs",
+      "status": 0
+    },
+    {
+      "name": "test_selection.cjs",
+      "status": 0
+    }
+  ],
+  "browser": [
+    {
+      "width": 1366,
+      "height": 768,
+      "side": "black",
+      "opponent": "local",
+      "oldSaveRestored": true,
+      "hintDidNotExecute": true,
+      "threatenedAttackWarningVisible": true,
+      "safeMoveHintUnchanged": false,
+      "previewAndAdviceAgree": true,
+      "cancelPreservedCommands": true,
+      "previewAndDuelRefreshPreserved": true,
+      "hiddenChoicePreserved": true,
+      "startedOnce": true,
+      "textWithinCard": true,
+      "noPageOverflow": true,
+      "noDialogOverflow": true,
+      "buttonsVisible": true,
+      "errors": []
+    },
+    {
+      "width": 1366,
+      "height": 768,
+      "side": "red",
+      "opponent": "computer",
+      "oldSaveRestored": true,
+      "hintDidNotExecute": true,
+      "threatenedAttackWarningVisible": true,
+      "safeMoveHintUnchanged": true,
+      "previewAndAdviceAgree": false,
+      "cancelPreservedCommands": true,
+      "previewAndDuelRefreshPreserved": true,
+      "hiddenChoicePreserved": true,
+      "startedOnce": true,
+      "textWithinCard": true,
+      "noPageOverflow": true,
+      "noDialogOverflow": true,
+      "buttonsVisible": true,
+      "errors": []
+    },
+    {
+      "width": 1024,
+      "height": 640,
+      "side": "black",
+      "opponent": "local",
+      "oldSaveRestored": true,
+      "hintDidNotExecute": true,
+      "threatenedAttackWarningVisible": true,
+      "safeMoveHintUnchanged": false,
+      "previewAndAdviceAgree": true,
+      "cancelPreservedCommands": true,
+      "previewAndDuelRefreshPreserved": true,
+      "hiddenChoicePreserved": true,
+      "startedOnce": true,
+      "textWithinCard": true,
+      "noPageOverflow": true,
+      "noDialogOverflow": true,
+      "buttonsVisible": true,
+      "errors": []
+    },
+    {
+      "width": 1024,
+      "height": 640,
+      "side": "red",
+      "opponent": "computer",
+      "oldSaveRestored": true,
+      "hintDidNotExecute": true,
+      "threatenedAttackWarningVisible": true,
+      "safeMoveHintUnchanged": true,
+      "previewAndAdviceAgree": false,
+      "cancelPreservedCommands": true,
+      "previewAndDuelRefreshPreserved": true,
+      "hiddenChoicePreserved": true,
+      "startedOnce": true,
+      "textWithinCard": true,
+      "noPageOverflow": true,
+      "noDialogOverflow": true,
+      "buttonsVisible": true,
+      "errors": []
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "side": "black",
+      "opponent": "local",
+      "oldSaveRestored": true,
+      "hintDidNotExecute": true,
+      "threatenedAttackWarningVisible": true,
+      "safeMoveHintUnchanged": false,
+      "previewAndAdviceAgree": true,
+      "cancelPreservedCommands": true,
+      "previewAndDuelRefreshPreserved": true,
+      "hiddenChoicePreserved": true,
+      "startedOnce": true,
+      "textWithinCard": true,
+      "noPageOverflow": true,
+      "noDialogOverflow": true,
+      "buttonsVisible": true,
+      "errors": []
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "side": "red",
+      "opponent": "computer",
+      "oldSaveRestored": true,
+      "hintDidNotExecute": true,
+      "threatenedAttackWarningVisible": true,
+      "safeMoveHintUnchanged": true,
+      "previewAndAdviceAgree": false,
+      "cancelPreservedCommands": true,
+      "previewAndDuelRefreshPreserved": true,
+      "hiddenChoicePreserved": true,
+      "startedOnce": true,
+      "textWithinCard": true,
+      "noPageOverflow": true,
+      "noDialogOverflow": true,
+      "buttonsVisible": true,
+      "errors": []
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "side": "black",
+      "opponent": "local",
+      "oldSaveRestored": true,
+      "hintDidNotExecute": true,
+      "threatenedAttackWarningVisible": true,
+      "safeMoveHintUnchanged": false,
+      "previewAndAdviceAgree": true,
+      "cancelPreservedCommands": true,
+      "previewAndDuelRefreshPreserved": true,
+      "hiddenChoicePreserved": true,
+      "startedOnce": true,
+      "textWithinCard": true,
+      "noPageOverflow": true,
+      "noDialogOverflow": true,
+      "buttonsVisible": true,
+      "errors": []
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "side": "red",
+      "opponent": "computer",
+      "oldSaveRestored": true,
+      "hintDidNotExecute": true,
+      "threatenedAttackWarningVisible": true,
+      "safeMoveHintUnchanged": true,
+      "previewAndAdviceAgree": false,
+      "cancelPreservedCommands": true,
+      "previewAndDuelRefreshPreserved": true,
+      "hiddenChoicePreserved": true,
+      "startedOnce": true,
+      "textWithinCard": true,
+      "noPageOverflow": true,
+      "noDialogOverflow": true,
+      "buttonsVisible": true,
+      "errors": []
+    },
+    {
+      "width": 760,
+      "height": 480,
+      "side": "black",
+      "opponent": "local",
+      "oldSaveRestored": true,
+      "hintDidNotExecute": true,
+      "threatenedAttackWarningVisible": true,
+      "safeMoveHintUnchanged": false,
+      "previewAndAdviceAgree": true,
+      "cancelPreservedCommands": true,
+      "previewAndDuelRefreshPreserved": true,
+      "hiddenChoicePreserved": true,
+      "startedOnce": true,
+      "textWithinCard": true,
+      "noPageOverflow": true,
+      "noDialogOverflow": true,
+      "buttonsVisible": true,
+      "errors": []
+    },
+    {
+      "width": 760,
+      "height": 480,
+      "side": "red",
+      "opponent": "computer",
+      "oldSaveRestored": true,
+      "hintDidNotExecute": true,
+      "threatenedAttackWarningVisible": true,
+      "safeMoveHintUnchanged": true,
+      "previewAndAdviceAgree": false,
+      "cancelPreservedCommands": true,
+      "previewAndDuelRefreshPreserved": true,
+      "hiddenChoicePreserved": true,
+      "startedOnce": true,
+      "textWithinCard": true,
+      "noPageOverflow": true,
+      "noDialogOverflow": true,
+      "buttonsVisible": true,
+      "errors": []
+    }
+  ]
+}

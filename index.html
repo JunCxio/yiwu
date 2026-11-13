@@ -139,7 +139,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.132 · 防线查询提速</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.133 · 交战解围提示</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -950,9 +950,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.132',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.133',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.132-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.133-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -1289,9 +1289,14 @@ globalThis.YiwuComputer = (() => {
     }else if(!out.finishes.length&&s.phase==='board'&&a.kind!=='king'&&d.kind!=='king'&&!E.CHALLENGES[s.scenario]){
       const next=JSON.parse(JSON.stringify(s));Yiwu.move(next,a.id,d.x,d.y);captures=C.twoRoundCapturePlan(next).map(p=>p.id);
     }
+    let defense='';
+    if(!out.finishes.length&&s.phase==='board'&&a.kind!=='king'&&!E.CHALLENGES[s.scenario]){
+      const king=s.pieces.find(p=>p.side===a.side&&p.kind==='king'),incoming=s.pieces.filter(p=>p.side!==a.side&&E.canMove(s,p,king.x,king.y));
+      if(incoming.length)defense='解围尚未确认：'+incoming.map(p=>E.label(p)+'（'+(p.x+1)+'路'+(10-p.y)+'线）').join('、')+'当前仍可进攻'+E.label(king)+'；能发起武斗不等于能击倒将帅。发起本场武斗不会立即改变站位；若撤回或六轮未分胜负，仍需重新检查将帅防线。';
+    }
     return {
       reason:out.finishes.length?'首轮使用'+names(out.finishes)+'，可在守方所有合法回应下击倒目标，并保住进攻子。':twoRound.length?'首轮使用'+names(twoRound)+'，可确保至迟下一轮获胜；若本轮未结束，需按揭示后的新状态选择下一轮必胜招式。':captures.length?'首轮使用'+names(captures)+'，可在两轮内击倒目标并保住进攻子；若本轮未结束，需按揭示后的新状态选择下一轮吃子招式。这不代表整局获胜，后续局面仍需判断。':'',
-      risk,followUp,twoRound:twoRound.length>0,capture:captures.length>0
+      risk,followUp,defense,twoRound:twoRound.length>0,capture:captures.length>0
     };
   }
   function challengeCombatHTML(ctx,compact=false){
@@ -1337,7 +1342,7 @@ globalThis.YiwuComputer = (() => {
       return `<div class="preview-header"><h2 id="preview-title">交战预览</h2><p>${E.label(p)} 进攻 ${E.label(d)}</p></div><div class="preview-body">${challengeCombatHTML(ctx)}${risk?'<p class="draw-warning" role="status">'+esc(risk)+'</p>':''}${edgeRisk?'<p class="preview-risk">'+esc(edgeRisk)+'</p>':''}
         <div class="stats"><div><b>${p.hp}</b><small>进攻方生命</small></div><div><b>${d.hp}</b><small>守方生命</small></div><div><b>6</b><small>最多轮数</small></div></div>
         <div class="preview-bonus"><strong>首轮突袭 +1</strong><p>进攻方仅在首轮出击时加成。双方不出击时不会额外扣血。</p></div>
-        <div class="card"><h3>${opening.capture?'两轮内吃子判断':opening.twoRound?'两轮内胜局判断':'首轮判断'}</h3>${opening.reason?'<p>'+esc(opening.reason)+'</p>':''}${opening.risk?'<p class="preview-risk">'+esc(opening.risk)+'</p>':''}${opening.followUp?'<p class="preview-risk">'+esc(opening.followUp)+'</p>':''}${!opening.reason&&!opening.risk?'<p>未发现可确保首轮击倒的招式。双方仍需按克制选择。</p>':''}<p class="tip">有限推演，不预知暗招，不能保证后续安全。</p><details class="preview-scope"><summary>判断范围与限制</summary><p class="tip">首轮判断覆盖双方全部可用招式；进攻将帅另核对两轮确定胜局，进攻普通残血目标另核对两轮存活吃子。后者不增加当前将帅受攻程度，并排除吃子后下一手的两轮确定丢将。漏防检查只延伸到吃子后的对手下一手（武斗前两轮），不预测暗招或更长序列。</p></details></div>
+        <div class="card"><h3>${opening.capture?'两轮内吃子判断':opening.twoRound?'两轮内胜局判断':'首轮判断'}</h3>${opening.reason?'<p>'+esc(opening.reason)+'</p>':''}${opening.risk?'<p class="preview-risk">'+esc(opening.risk)+'</p>':''}${opening.followUp?'<p class="preview-risk">'+esc(opening.followUp)+'</p>':''}${opening.defense?'<p class="preview-risk">'+esc(opening.defense)+'</p>':''}${!opening.reason&&!opening.risk?'<p>未发现可确保首轮击倒的招式。双方仍需按克制选择。</p>':''}<p class="tip">有限推演，不预知暗招，不能保证后续安全。</p><details class="preview-scope"><summary>判断范围与限制</summary><p class="tip">首轮判断覆盖双方全部可用招式；进攻将帅另核对两轮确定胜局，进攻普通残血目标另核对两轮存活吃子。后者不增加当前将帅受攻程度，并排除吃子后下一手的两轮确定丢将。漏防检查只延伸到吃子后的对手下一手（武斗前两轮），不预测暗招或更长序列。</p></details></div>
         ${E.power(ctx,true)<E.power(ctx,false)?'<p class="preview-risk">对方支援更多：输出 '+E.power(ctx,true)+' 对 '+E.power(ctx,false)+'。'+(opening.twoRound||opening.capture?'上述两轮判断已计入支援影响。':'可先调动友军支援，或换一个交战目标。')+'</p>':''}
         <div class="preview-support"><div class="card"><h3>进攻方输出 ${E.power(ctx,true)}</h3>${supportDetailsHTML(ctx,true)}</div><div class="card"><h3>守方输出 ${E.power(ctx,false)}</h3>${supportDetailsHTML(ctx,false)}</div></div>
         <p class="tip">输出由基础与支援构成，不是最终损血。实际损血还受招式、克制、气势和减伤影响。</p><p class="tip">支援关系在开战时固定；伤势和招式消耗保留。</p></div><div class="preview-actions"><button class="quiet" data-action="cancel-preview" autofocus>取消进攻</button>${lesson?.stage==='support-preview'?'<button class="primary lesson-target" data-action="lesson-finish">完成教学</button>':'<button class="primary'+(lesson?' lesson-target':'')+'" data-action="attack">发起武斗</button>'}</div>`;
@@ -1728,6 +1733,7 @@ globalThis.YiwuComputer = (() => {
       if(opening.reason)advice.reasons.push(opening.reason);
       if(opening.risk)advice.risks.push(opening.risk);
       if(opening.followUp)advice.risks.push(opening.followUp);
+      if(opening.defense)advice.risks.push(opening.defense);
       advice.title=E.label(p)+'进攻'+E.label(target);
       if(E.CHALLENGES[s.scenario]&&p.id==='hero'&&target.id==='target'){
         advice.reasons.push('优先尝试本关指定目标：'+E.CHALLENGES[s.scenario].goal);
