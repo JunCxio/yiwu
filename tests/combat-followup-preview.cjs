@@ -7,7 +7,7 @@ vm.runInContext('Object.defineProperty(globalThis,"fightUI",{get(){throw new Err
 const E=box.Yiwu,C=box.YiwuComputer,copy=value=>JSON.parse(JSON.stringify(value));let checks=0,settlements=0,inputs=0;
 const test=(name,run)=>{run();checks++;console.log('通过：'+name);};
 function replay(){let s;for(const [op,...args]of require('./combat-followup-fixture.json').commands){if(op==='create')s=E.create(...args);else E[op](s,...args);}return s;}
-function forcedLoss(next,side){
+function forcedLoss(next,side,rounds=3){
   if(next.phase!=='board'||next.turn!==E.OTHER[side])return false;
   const king=next.pieces.find(p=>p.side===side&&p.kind==='king');
   function wins(state,attacker,defender,left){
@@ -17,14 +17,15 @@ function forcedLoss(next,side){
     }));
   }
   return next.pieces.filter(p=>p.side!==side&&E.canMove(next,p,king.x,king.y)).some(p=>{
-    const battle=copy(next);E.move(battle,p.id,king.x,king.y);return wins(battle,p.id,king.id,2);
+    const battle=copy(next);E.move(battle,p.id,king.x,king.y);return wins(battle,p.id,king.id,rounds);
   });
 }
 function verify(state,who,id){
-  const before=JSON.stringify(state),isA=who.id===state.duel.a,enemy=E.get(state,isA?state.duel.d:state.duel.a),expected=[];
+  const before=JSON.stringify(state),isA=who.id===state.duel.a,enemy=E.get(state,isA?state.duel.d:state.duel.a),expected=[],expectedTwo=[];
   for(const reply of C.choices(state,enemy,state.duel)){
     const next=copy(state);E.resolve(next,isA?id:reply,isA?reply:id);settlements++;
     if(forcedLoss(next,who.side))expected.push((E.BASE[reply]||E.CARDS[reply]).name);
+    if(forcedLoss(next,who.side,2))expectedTwo.push((E.BASE[reply]||E.CARDS[reply]).name);
   }
   box.input=state;box.whoId=who.id;box.choice=id;
   const result=vm.runInContext('s=input;({forecast:combatForecastHTML(E.get(s,whoId),choice),details:combatRepliesHTML(E.get(s,whoId),choice),advice:combatAdvice(E.get(s,whoId),choice)})',box);
@@ -33,7 +34,7 @@ function verify(state,who,id){
   assert.equal(result.advice.risks.some(text=>text.includes('交战后将帅漏防风险')),expected.length>0);
   if(expected.length){
     const names=expected.join('、');assert(result.details.includes('对手本轮用「'+names+'」'));assert(result.advice.risks.some(text=>text.includes('「'+names+'」')));
-    assert(result.details.includes('武斗两轮内'));assert(result.details.includes('不预知暗招'));assert(result.forecast.includes('pick-forecast danger'));
+    assert(expectedTwo.every(name=>expected.includes(name)));assert(result.details.includes('武斗'+(expectedTwo.length===expected.length?'两':'三')+'轮内'));assert(result.details.includes('不预知暗招'));assert(result.forecast.includes('pick-forecast danger'));
   }
   assert.equal(JSON.stringify(state),before);inputs++;return {expected,...result};
 }

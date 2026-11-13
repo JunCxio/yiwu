@@ -258,7 +258,7 @@ for (const rotated of [false, true]) {
   E.move(next, action.id, action.x, action.y);
   const hero = E.get(next, 'hero'), enemy = E.get(next, 'enemy'), ctx = E.context(next, enemy, hero), finishes = box.YiwuComputer.battleOutlook(next, ctx).finishes;
   assert(finishes.length); assert(advice.risks.some(text => text.includes('首轮吃子风险') && text.includes('不代表对手已决定')));
-  assert(advice.note.includes('将帅两轮漏防'));assert(advice.note.includes('不预测暗招或更长序列'));
+  assert(advice.note.includes('将帅最多三轮漏防'));assert(advice.note.includes('不预测暗招或更长序列'));
   for (const attack of finishes) for (const defense of box.YiwuComputer.choices(next, hero, ctx)) {
     const result = JSON.parse(JSON.stringify(next)); E.move(result, enemy.id, hero.x, hero.y); E.resolve(result, attack, defense);
     assert(!E.get(result, hero.id)); assert(E.get(result, enemy.id)?.hp > 0);
@@ -394,8 +394,17 @@ for(const rotated of [false,true])for(const kingHp of [9,10]){
   const ctx=E.context(s,a,d),before=JSON.stringify([s,ctx]),out=box.YiwuComputer.battleOutlook(s,ctx),advice=box.openingAdvice(ctx);
   assert.deepEqual([...out.finishes],['strike','break']);
   assert(advice.reason.includes('并保住进攻子'));assert(advice.risk.includes('吃子后漏防风险'));
-  assert(advice.risk.includes('「破势」'));assert(advice.risk.includes('两轮内'));
-  if(kingHp===10){assert(advice.risk.includes('「奋进」'));assert(advice.risk.includes('「斩击」在守方全部合法回应后，未发现这种下一手漏防'));}
+  const expected=out.finishes.map(id=>{
+    for(const reply of box.YiwuComputer.choices(s,d,ctx)){
+      const next=JSON.parse(JSON.stringify(s));E.move(next,a.id,d.x,d.y);E.resolve(next,id,reply);
+      if(actualFollowUpLoss(next,a.side,3))return {id,reply,rounds:actualFollowUpLoss(next,a.side,2)?'两':'三'};
+    }
+  }).filter(Boolean);
+  assert(expected.length);assert(advice.risk.includes(expected[0].rounds+'轮内'));
+  for(const row of expected)assert(advice.risk.includes('「'+(E.BASE[row.id]||E.CARDS[row.id]).name+'」'));
+  assert(advice.risk.includes('遇到守方「'+(E.BASE[expected[0].reply]||E.CARDS[expected[0].reply]).name+'」'));
+  const safe=out.finishes.filter(id=>!expected.some(row=>row.id===id));
+  if(safe.length)assert(advice.risk.includes(safe.map(id=>'「'+(E.BASE[id]||E.CARDS[id]).name+'」').join('或')+'在守方全部合法回应后，未发现这种下一手漏防'));
   else{assert(advice.risk.includes('上述可吃子的招式均存在这样的回应'));assert(!advice.risk.includes('未发现这种下一手漏防'));}
   const danger=JSON.parse(JSON.stringify(s));E.move(danger,a.id,d.x,d.y);E.resolve(danger,'break','pawn_advance');assert.equal(E.get(danger,a.id).hp,kingHp-8);assert(!E.get(danger,d.id));assert(actualFollowUpLoss(danger,a.side));
   let twoRoundDanger=false;
