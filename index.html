@@ -119,6 +119,13 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
   #fight:has(.retreat-confirm) .fight-body{flex:1 1 auto;overflow-y:auto}
 }
 
+
+@media(min-width:1101px) and (min-height:650px){
+  #game-page:has(>#endgame[hidden]):has(>#lesson[hidden]):has(>#challenge-info[hidden]) :is(.left-panel,.detail-panel){max-height:calc(100dvh - 200px);overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable}
+  #game-page:has(>#endgame[hidden]):has(>#lesson[hidden]):has(>#challenge-info[hidden]) .board-frame{max-width:min(100%,max(390px,calc((100dvh - 395px)*.9 + 36px)));margin-inline:auto}
+  #game-page:has(>#endgame[hidden]):has(>#lesson[hidden]):has(>#challenge-info[hidden]) .board{container-type:inline-size}
+  #game-page:has(>#endgame[hidden]):has(>#lesson[hidden]):has(>#challenge-info[hidden]) .piece{font-size:clamp(18px,6.5cqw,31px)}
+}
 </style>
 </head>
 <body>
@@ -139,7 +146,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.138 · 走法查询提速</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.139 · 桌面对局布局</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -999,9 +1006,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.138',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.139',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.138-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.139-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
