@@ -139,7 +139,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.133 · 交战解围提示</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.134 · 电脑查询提速</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -449,6 +449,22 @@ globalThis.Yiwu = (() => {
 globalThis.YiwuComputer = (() => {
   'use strict';
   const E=Yiwu,VALUE={king:60,rook:9,cannon:8,horse:8,pawn:6,guard:6,elephant:6};
+  const damageIds=new Map(Object.keys(E.BASE).concat(Object.keys(E.CARDS)).map((id,i)=>[id,i])),damageSpan=damageIds.size;
+  const isArray=Array.isArray,isInteger=Number.isInteger;
+  let damageCache=null,outlookCache=null;
+  function damage(ctx,a,d){
+    if(!damageCache)return E.roundDamage(ctx,a,d);
+    const ai=damageIds.get(a),di=damageIds.get(d),fa=ctx?.forceA||0,fd=ctx?.forceD||0;
+    if(ai===undefined||di===undefined||!isArray(ctx?.supportA)||!isArray(ctx?.supportD)||!isInteger(fa)||!isInteger(fd)||fa<0||fa>2||fd<0||fd>2)return E.roundDamage(ctx,a,d);
+    const sa=ctx.supportA.length>2?2:ctx.supportA.length,sd=ctx.supportD.length>2?2:ctx.supportD.length;
+    const key=(((((sa*3+sd)*3+fa)*3+fd)*2+(ctx.round===1?1:0))*damageSpan+ai)*damageSpan+di,cached=damageCache.get(key);
+    if(cached!==undefined)return cached;
+    const result=E.roundDamage(ctx,a,d);damageCache.set(key,result);return result;
+  }
+  function rankedQuery(s){
+    const previous=damageCache,previousOutlook=outlookCache;damageCache=new Map();outlookCache=new Map();
+    try{return rankedActions(s);}finally{damageCache=previous;outlookCache=previousOutlook;}
+  }
   const formations={red:new WeakMap(),black:new WeakMap()};
   function actions(s){
     if(s.phase!=='board')return [];
@@ -462,17 +478,19 @@ globalThis.YiwuComputer = (() => {
   function choices(s,p,ctx){return Object.keys(E.BASE).concat(p.learned).filter(id=>!E.availability(s,p,id,ctx));}
   function battleOutlook(s,ctx){
     const a=E.get(s,ctx.a),d=E.get(s,ctx.d),rows=choices(s,a,ctx),cols=choices(s,d,ctx);
-    const matrix=rows.map(id=>cols.map(reply=>E.roundDamage(ctx,id,reply)));
+    const key=outlookCache&&JSON.stringify([a.kind,a.hp,d.kind,d.hp,rows,cols,ctx.supportA.length>2?2:ctx.supportA.length,ctx.supportD.length>2?2:ctx.supportD.length,ctx.forceA||0,ctx.forceD||0,ctx.round===1]);
+    if(outlookCache?.has(key))return outlookCache.get(key);
+    const matrix=rows.map(id=>cols.map(reply=>damage(ctx,id,reply)));
     const finishes=rows.filter((_,i)=>matrix[i].every(r=>r.toD>=d.hp&&r.toA<a.hp));
     const counters=cols.filter((_,j)=>matrix.every(row=>row[j].toA>=a.hp&&row[j].toD<d.hp));
     // 确定首轮终结的交换按实际损血和存活价值计算，与站位评分的生命权重一致。
     const score=Math.max(...matrix.map(row=>Math.min(...row.map(r=>
       (Math.min(d.hp,r.toD)*VALUE[d.kind]-Math.min(a.hp,r.toA)*VALUE[a.kind])/36+.8
       +(r.toD>=d.hp?VALUE[d.kind]*.5:0)-(r.toA>=a.hp?VALUE[a.kind]*.5:0)))));
-    return {finishes,counters,score};
+    const result={finishes,counters,score};if(outlookCache)outlookCache.set(key,result);return result;
   }
   function combatOutcome(s,ctx,aId,dId){
-    const a=E.get(s,ctx.a),d=E.get(s,ctx.d),r=E.roundDamage(ctx,aId,dId);
+    const a=E.get(s,ctx.a),d=E.get(s,ctx.d),r=damage(ctx,aId,dId);
     if(ctx.round<6&&r.toA<a.hp&&r.toD<d.hp)return null;
     // 重复局面只保存数字计数，单独复制可避免反复序列化长键。
     const next=JSON.parse(JSON.stringify({...s,phase:'duel',duel:ctx,repetitions:null}));
@@ -485,7 +503,7 @@ globalThis.YiwuComputer = (() => {
     const replies=choices(s,enemy,ctx);
     return choices(s,mine,ctx).filter(id=>replies.every(other=>{
       if(E.CHALLENGES[s.scenario])return combatOutcome(s,ctx,isA?id:other,isA?other:id)?.winner===side;
-      const r=E.roundDamage(ctx,isA?id:other,isA?other:id);
+      const r=damage(ctx,isA?id:other,isA?other:id);
       return (isA?r.toD:r.toA)>=enemy.hp&&(mine.kind!=='king'||(isA?r.toA:r.toD)<mine.hp);
     }));
   }
@@ -541,8 +559,10 @@ globalThis.YiwuComputer = (() => {
     const ctx=s.duel,a=E.get(s,ctx.a),d=E.get(s,ctx.d);
     // shortcut: 只搜索普通残血目标的当前及下一轮；更高生命的完整武斗仍需扩展搜索。
     if(a.kind==='king'||d.kind==='king'||d.hp>(ctx.round===1?3:2))return [];
-    const side=a.side,king=s.pieces.find(p=>p.side===side&&p.kind==='king'),base=position(s,side);
+    const side=a.side,king=s.pieces.find(p=>p.side===side&&p.kind==='king'),base=position(s,side),searched=new Map(),terminals=new Map();
     function search(state,left){
+      const key=JSON.stringify([E.key(state),state.duel.round,state.duel.forceA,state.duel.forceD,state.duel.totalDamage>0,left]);
+      if(searched.has(key))return searched.get(key);
       const plans=[],context=state.duel,risk=threatCost(state,E.get(state,king.id));
       for(const id of choices(state,E.get(state,a.id),context)){
         const outcomes=[];
@@ -550,8 +570,13 @@ globalThis.YiwuComputer = (() => {
           const next=JSON.parse(JSON.stringify({...state,repetitions:null}));next.repetitions={...state.repetitions};E.resolve(next,id,reply);
           if(E.get(next,a.id)&&!E.get(next,d.id)){
             if(next.phase==='ended'){if(next.winner===E.OTHER[side])break;outcomes.push({score:next.winner==='draw'?-base:1000,rounds:1});}
-            else if(!kingLostNext(next,side)&&threatCost(next,E.get(next,king.id))<=risk)outcomes.push({score:position(next,side)-base+.8,rounds:1});
-            else break;
+            else{
+              // 同次武斗的离场历史仅更新一次，相同战后局面可共享风险和站位判断。
+              const key=E.key(next);let terminal=terminals.get(key);
+              if(!terminal){const lost=kingLostNext(next,side);terminal={lost,risk:lost?0:threatCost(next,E.get(next,king.id))};terminals.set(key,terminal);}
+              if(terminal.lost||terminal.risk>risk)break;
+              terminal.score??=position(next,side)-base+.8;outcomes.push({score:terminal.score,rounds:1});
+            }
           }else if(left>1&&next.phase==='duel'){
             const second=search(next,left-1);if(!second.length)break;
             outcomes.push({score:Math.max(...second.map(p=>p.score)),rounds:2});
@@ -560,7 +585,7 @@ globalThis.YiwuComputer = (() => {
         if(outcomes.length===choices(state,E.get(state,d.id),context).length)plans.push({id,score:Math.min(...outcomes.map(p=>p.score)),rounds:Math.max(...outcomes.map(p=>p.rounds))});
       }
       // 已可稳妥结束时直接吃子，保证第二轮兑现首轮找到的计划。
-      return plans.some(p=>p.rounds===1)?plans.filter(p=>p.rounds===1):plans;
+      const result=plans.some(p=>p.rounds===1)?plans.filter(p=>p.rounds===1):plans;searched.set(key,result);return result;
     }
     return search(s,Math.min(2,7-ctx.round));
   }
@@ -568,7 +593,7 @@ globalThis.YiwuComputer = (() => {
     const a=E.get(s,ctx.a),d=E.get(s,ctx.d);
     const end=combatOutcome(s,ctx,aId,dId);
     if(end)return end.winner==='draw'?0:end.winner===a.side?1000:-1000;
-    const r=E.roundDamage(ctx,aId,dId),wa=a.kind==='king'?3:1,wd=d.kind==='king'?3:1;
+    const r=damage(ctx,aId,dId),wa=a.kind==='king'?3:1,wd=d.kind==='king'?3:1;
     const deadA=r.toA>=a.hp,deadD=r.toD>=d.hp;
     const casualty=(p,dead)=>dead?(p.kind==='king'?1000:8):0;
     return Math.min(d.hp,r.toD)*wd-Math.min(a.hp,r.toA)*wa+casualty(d,deadD)-casualty(a,deadA)
@@ -582,7 +607,7 @@ globalThis.YiwuComputer = (() => {
     const ctx=s.duel,a=E.get(s,ctx.a),d=E.get(s,ctx.d),isA=a.side===side,mine=isA?a:d,enemy=isA?d:a,replies=choices(s,enemy,ctx),cache=new Map();
     function outcomes(id){
       if(!cache.has(id))cache.set(id,replies.map(reply=>{
-        const r=E.roundDamage(ctx,isA?id:reply,isA?reply:id);
+        const r=damage(ctx,isA?id:reply,isA?reply:id);
         if((isA?r.toA:r.toD)>=mine.hp||ctx.round<6&&(isA?r.toD:r.toA)<enemy.hp)return null;
         const next=JSON.parse(JSON.stringify({...s,repetitions:null}));next.repetitions={...s.repetitions};
         E.resolve(next,isA?id:reply,isA?reply:id);
@@ -594,7 +619,7 @@ globalThis.YiwuComputer = (() => {
     // 省牌须逐个核对合法回应，不能只比较单个伤害分数。
     for(const id of ids.filter(id=>E.CARDS[id])){
       const base=bases.find(base=>ctx.round<6&&E.BASE[base].type===E.CARDS[id].type&&replies.every(reply=>{
-        const ordinary=E.roundDamage(ctx,isA?base:reply,isA?reply:base),trained=E.roundDamage(ctx,isA?id:reply,isA?reply:id);
+        const ordinary=damage(ctx,isA?base:reply,isA?reply:base),trained=damage(ctx,isA?id:reply,isA?reply:id);
         // 持续交战时，仅省去对双方生命、气势均无影响且招式类型相同的牌。
         return ordinary.toA<a.hp&&ordinary.toD<d.hp&&['toA','toD','forceAfterA','forceAfterD'].every(key=>ordinary[key]===trained[key]);
       })||outcomes(base).every((next,i)=>{
@@ -625,7 +650,7 @@ globalThis.YiwuComputer = (() => {
       // 有替代时先避开离场后的确定败局，再避免新增将帅受攻。
       const king=s.pieces.find(p=>p.side===a.side&&p.kind==='king'),before=threatCost(s,king);
       const risks=rows.map(id=>Math.max(...(id==='retreat'?[null]:cols).map(reply=>{
-        const r=id==='retreat'?null:E.roundDamage(ctx,id,reply);
+        const r=id==='retreat'?null:damage(ctx,id,reply);
         if(r&&ctx.round<6&&r.toA<a.hp&&r.toD<d.hp)return 0;
         const next=JSON.parse(JSON.stringify({...s,repetitions:null}));next.repetitions={...s.repetitions};
         if(id==='retreat')E.retreat(next);else E.resolve(next,id,reply);
@@ -685,7 +710,7 @@ globalThis.YiwuComputer = (() => {
           // 守将本轮有不判负的选择时，再避开会留下下一轮确定败局的招式。
           const protectedChoices=kept.filter(x=>replies.every(other=>{
             // 下一轮没有突袭，基础克制招可将来伤压到 1 点；只试算会剩 1 血的分支。
-            if(E.roundDamage(ctx,other,x.id).toD!==d.hp-1)return true;
+            if(damage(ctx,other,x.id).toD!==d.hp-1)return true;
             const next=JSON.parse(JSON.stringify({...s,repetitions:null}));next.repetitions={...s.repetitions};
             E.resolve(next,other,x.id);
             return next.phase!=='duel'||!winningChoices(next,next.duel,a.side).length;
@@ -769,6 +794,8 @@ globalThis.YiwuComputer = (() => {
     return VALUE[p.kind]*(p.kind==='king'?(repeated?.07:.7):.14)*(1+Math.max(0,12-p.hp)/12)/(1+Math.min(2,guards)*.4);
   }
   function advanceTrapsKing(s,king){
+    if(!s.pieces.some(p=>p.side===E.OTHER[king.side]&&p.kind==='king'))return false;
+    const repeats=Object.values(s.repetitions).some(n=>n>=E.DRAW.repetitions-1);
     // 静态敌子只有走法形状已覆盖将帅时，才可能因调子解除阻挡或增加炮架而形成进攻。
     const shape=p=>p.kind==='cannon'?(p.x===king.x||p.y===king.y):E.geometry({pieces:[p,king]},p,king.x,king.y,true);
     const aligned=s.pieces.filter(p=>{
@@ -787,14 +814,13 @@ globalThis.YiwuComputer = (() => {
         const projected={...s,pieces:s.pieces.map(q=>q.id===p.id?moved:q)};
         // 调动可能给另一枚棋子建立炮架或解除挡线，攻击者不一定是移动者。
         if(![moved,...stationary].some(q=>E.canMove(projected,q,king.x,king.y)))return false;
-        const next={...s,pieces:s.pieces.map(q=>({...q})),repetitions:{...s.repetitions},log:[...s.log]};
-        E.move(next,p.id,m.x,m.y);
-        if(next.phase!=='board'||!threatCost(next,E.get(next,king.id)))return false;
+        // 两次空位移动的行动方不同，不会互相累计重复次数；只核对原历史和无伤害判和。
+        const next={...projected,turn:E.OTHER[s.turn],ply:s.ply+1,quiet:s.quiet+1};
+        if(next.quiet>=E.DRAW.quiet||repeats&&(s.repetitions[E.key(next)]||0)>=E.DRAW.repetitions-1||!threatCost(next,E.get(next,king.id)))return false;
         const defender=E.get(next,king.id);
         return E.moves(next,defender).filter(exit=>!E.at(next,exit.x,exit.y)).every(exit=>{
-          const escaped={...next,pieces:next.pieces.map(q=>({...q})),repetitions:{...next.repetitions},log:[...next.log]};
-          E.move(escaped,king.id,exit.x,exit.y);
-          return escaped.phase==='board'&&threatCost(escaped,E.get(escaped,king.id))>0;
+          const escaped={...next,turn:s.turn,ply:s.ply+2,quiet:s.quiet+2,pieces:next.pieces.map(q=>q.id===king.id?{...q,x:exit.x,y:exit.y}:q)};
+          return escaped.quiet<E.DRAW.quiet&&(!repeats||(s.repetitions[E.key(escaped)]||0)<E.DRAW.repetitions-1)&&threatCost(escaped,E.get(escaped,king.id))>0;
         });
       });
     });
@@ -843,15 +869,13 @@ globalThis.YiwuComputer = (() => {
     const signature=JSON.stringify([...own].sort());
     let cached=formations[side].get(s.repetitions);
     if(cached?.signature!==signature){cached={signature,keys:new Map()};formations[side].set(s.repetitions,cached);}
-    const formation=key=>{
-      const [turn,pieces]=JSON.parse(key);
-      return JSON.stringify([turn,pieces.map(([id,x,y,...state])=>own.has(id)?[id,x,y,...state]:[id,...state])]);
-    };
+    const formation=(turn,pieces)=>JSON.stringify([turn,pieces.map(([id,x,y,...state])=>own.has(id)?[id,x,y,...state]:[id,...state])]);
+    const turnPrefix='['+JSON.stringify(E.OTHER[side])+',';
     // 仅缓存已有历史的阵形解析，次数实时读取；试算落点不进入缓存。
     for(const [key,count] of Object.entries(s.repetitions)){
       let k=cached.keys.get(key);
-      if(k===undefined){k=formation(key);cached.keys.set(key,k);}
-      visits.set(k,(visits.get(k)||0)+count);
+      if(k===undefined){const [turn,pieces]=JSON.parse(key);k=formation(turn,pieces);cached.keys.set(key,k);}
+      if(k.startsWith(turnPrefix))visits.set(k,(visits.get(k)||0)+count);
     }
     return actions(s).map(action=>{
       const p=E.get(s,action.id),next={...s,pieces:s.pieces.map(q=>({...q})),repetitions:{...s.repetitions},log:[...s.log]};
@@ -887,11 +911,13 @@ globalThis.YiwuComputer = (() => {
             }
           }
           if(outlook.finishes.length&&!E.CHALLENGES[s.scenario]){
-            const replies=choices(s,target,ctx);
+            const replies=choices(s,target,ctx),positions=new Map();
             score=Math.max(...outlook.finishes.map(id=>Math.min(...replies.map(reply=>{
               const result=JSON.parse(JSON.stringify({...s,repetitions:null}));result.repetitions={...s.repetitions};
               E.move(result,p.id,target.x,target.y);E.resolve(result,id,reply);
-              return result.phase==='ended'?(result.winner==='draw'?-base:result.winner===side?1000:-1000):position(result,side)-base+.8;
+              const key=E.key(result);
+              if(!positions.has(key))positions.set(key,result.phase==='ended'?(result.winner==='draw'?-base:result.winner===side?1000:-1000):position(result,side)-base+.8);
+              return positions.get(key);
             }))));
           }
           if(!outlook.finishes.length&&p.kind!=='king'&&target.kind!=='king'&&target.hp<=3&&!E.CHALLENGES[s.scenario]){
@@ -910,7 +936,7 @@ globalThis.YiwuComputer = (() => {
         }
       }
       if(!battle&&next.phase==='ended')return {...action,score:next.winner==='draw'?-base:next.winner===side?1000:-1000};
-      const repeated=battle?0:Math.min(2,visits.get(formation(E.key(next)))||0);
+      const repeated=battle||!visits.size?0:Math.min(2,visits.get(formation(next.turn,next.pieces.map(p=>[p.id,p.x,p.y,p.hp,[...p.learned].sort(),[...p.exhausted].sort()]).sort((a,b)=>a[0].localeCompare(b[0]))))||0);
       if(!battle){
         score=position(next,side,repeated>0)-base+(action.type==='rest'?.05:0);
         if(kingLostNext(next,side))score-=1000;
@@ -920,13 +946,14 @@ globalThis.YiwuComputer = (() => {
   }
   function board(s,rng=Math.random,difficulty='standard'){
     if(s.phase!=='board')throw new Error('当前不能走棋');
+    const rankedActions=rankedQuery;
     const ranked=rankedActions(s);
     if(!ranked.length)return {type:'pass'};
     let near=ranked.filter(a=>scoreUnits(ranked[0])-scoreUnits(a)<=(difficulty==='practice'?1200000000:60000000));
     if(difficulty==='practice')near=near.slice(0,3);
     return near[Math.min(near.length-1,Math.floor(rng()*near.length))];
   }
-  return {actions,choices,twoRoundCapturePlan,twoRoundWinningChoices,threeRoundWinningChoices,battleOutlook,captureLosesKing,kingLostNext,combatOutcome,combatPlan,practicePlan,combat,explain,rankedActions,board};
+  return {actions,choices,twoRoundCapturePlan,twoRoundWinningChoices,threeRoundWinningChoices,battleOutlook,captureLosesKing,kingLostNext,combatOutcome,combatPlan,practicePlan,combat,explain,rankedActions:rankedQuery,board};
 })();
 </script>
 <script>
@@ -950,9 +977,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.133',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.134',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.133-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.134-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
