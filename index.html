@@ -139,7 +139,7 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.136 · 将帅查询提速</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.137 · 重复阵形提示</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
@@ -865,9 +865,8 @@ globalThis.YiwuComputer = (() => {
   }
   // 统一比较精度，避免浮点尾差改变同分顺序和近分边界。
   function scoreUnits(action){return Math.round(action.score*1e9);}
-  function rankedActions(s){
-    const side=s.turn,base=position(s,side);let kingCanEscape;
-    const own=new Set(s.pieces.filter(p=>p.side===side).map(p=>p.id)),visits=new Map();
+  function formationHistory(s){
+    const side=s.turn,own=new Set(s.pieces.filter(p=>p.side===side).map(p=>p.id)),visits=new Map();
     const signature=JSON.stringify([...own].sort());
     let cached=formations[side].get(s.repetitions);
     if(cached?.signature!==signature){cached={signature,keys:new Map()};formations[side].set(s.repetitions,cached);}
@@ -879,6 +878,14 @@ globalThis.YiwuComputer = (() => {
       if(k===undefined){const [turn,pieces]=JSON.parse(key);k=formation(turn,pieces);cached.keys.set(key,k);}
       if(k.startsWith(turnPrefix))visits.set(k,(visits.get(k)||0)+count);
     }
+    return next=>visits.size?visits.get(formation(next.turn,next.pieces.map(p=>[p.id,p.x,p.y,p.hp,[...p.learned].sort(),[...p.exhausted].sort()]).sort((a,b)=>a[0].localeCompare(b[0]))))||0:0;
+  }
+  function formationRepeats(s,next){
+    if(s.phase!=='board'||next?.phase!=='board'||next.turn!==E.OTHER[s.turn])return 0;
+    return formationHistory(s)(next);
+  }
+  function rankedActions(s){
+    const side=s.turn,base=position(s,side),visits=formationHistory(s);let kingCanEscape;
     return actions(s).map(action=>{
       const p=E.get(s,action.id),next={...s,pieces:s.pieces.map(q=>({...q})),repetitions:{...s.repetitions},log:[...s.log]};
       let score,battle=false;
@@ -938,7 +945,7 @@ globalThis.YiwuComputer = (() => {
         }
       }
       if(!battle&&next.phase==='ended')return {...action,score:next.winner==='draw'?-base:next.winner===side?1000:-1000};
-      const repeated=battle||!visits.size?0:Math.min(2,visits.get(formation(next.turn,next.pieces.map(p=>[p.id,p.x,p.y,p.hp,[...p.learned].sort(),[...p.exhausted].sort()]).sort((a,b)=>a[0].localeCompare(b[0]))))||0);
+      const repeated=battle?0:Math.min(2,visits(next));
       if(!battle){
         score=position(next,side,repeated>0)-base+(action.type==='rest'?.05:0);
         if(kingLostNext(next,side,3))score-=1000;
@@ -955,7 +962,7 @@ globalThis.YiwuComputer = (() => {
     if(difficulty==='practice')near=near.slice(0,3);
     return near[Math.min(near.length-1,Math.floor(rng()*near.length))];
   }
-  return {actions,choices,twoRoundCapturePlan,twoRoundWinningChoices,threeRoundWinningChoices,battleOutlook,captureLosesKing,kingLostNext,combatOutcome,combatPlan,practicePlan,combat,explain,rankedActions:rankedQuery,board};
+  return {actions,choices,twoRoundCapturePlan,twoRoundWinningChoices,threeRoundWinningChoices,battleOutlook,captureLosesKing,kingLostNext,combatOutcome,combatPlan,practicePlan,combat,explain,formationRepeats,rankedActions:rankedQuery,board};
 })();
 </script>
 <script>
@@ -979,9 +986,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.136',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.137',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.136-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.137-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -1747,6 +1754,8 @@ globalThis.YiwuComputer = (() => {
       advice.risks.push('行动交给对手；仍计入重复局面与无伤行动判和。');return advice;
     }
     const p=E.get(s,action.id),target=action.type==='move'?E.at(s,action.x,action.y):null;
+    const repeated=next?.phase==='board'&&!s.repetitions[E.key(next)]?C.formationRepeats(s,next):0;
+    if(repeated)advice.risks.push('此步会回到己方曾出现过的阵形（此前 '+repeated+' 次），继续往返仍会累计无伤行动。对手位置可能不同，完整局面判和仍按双方全部状态判断。');
     if(next?.phase==='board'&&C.kingLostNext(next,p.side,3))advice.risks.push('将帅漏防风险：对手下一次行动存在可确保在武斗'+(C.kingLostNext(next,p.side)?'两':'三')+'轮内击倒己方将帅的进攻，请先处理防线。');
     const edgeRisk=action.type==='move'?pawnEndRankRisk(p,action.y,!!target):'';if(edgeRisk)advice.risks.push(edgeRisk);
     const names=ps=>ps.map(q=>E.label(q)+'（'+(q.x+1)+'路'+(10-q.y)+'线）').join('、');
