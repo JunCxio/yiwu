@@ -20,6 +20,22 @@ function emptyEscapes(s,side){
     return next.phase==='board'&&!next.pieces.some(p=>p.side!==side&&E.canMove(next,p,m.x,m.y)&&!C.battleOutlook(next,E.context(next,p,E.get(next,king.id))).counters.length);
   });
 }
+const verifiedBattles=new Set(),battleChecks={fights:0,states:0,endings:0};
+function checkBattle(start,side){
+  const signature=JSON.stringify([E.key(start),start.duel.a,start.duel.d]);if(verifiedBattles.has(signature))return;verifiedBattles.add(signature);battleChecks.fights++;
+  const seen=new Set(),pending=[copy(start)];
+  while(pending.length){
+    const state=pending.pop(),ctx=state.duel,key=JSON.stringify([state.phase,E.key(state),state.quiet,ctx?.round,ctx?.forceA,ctx?.forceD,ctx?.totalDamage>0]);if(seen.has(key))continue;seen.add(key);battleChecks.states++;
+    if(state.phase!=='duel'){assert.equal(state.phase,'board');assert(emptyEscapes(state,side).length>0);assert(!C.kingLostNext(state,side));battleChecks.endings++;continue;}
+    const a=E.get(state,ctx.a),d=E.get(state,ctx.d);assert(a.kind!=='king'&&d.kind!=='king');
+    const rows=C.practicePlan(state,a.side),cols=C.practicePlan(state,d.side);
+    for(const plan of [rows,cols]){assert(plan.length);assert(plan.every(p=>p.weight>0));assert(Math.abs(plan.reduce((sum,p)=>sum+p.weight,0)-1)<1e-12);}
+    for(const row of rows){
+      if(row.id==='retreat'){const next=copy(state);E.retreat(next);pending.push(next);continue;}
+      for(const col of cols){const next=copy(state);E.resolve(next,row.id,col.id);pending.push(next);}
+    }
+  }
+}
 for(const row of fixture.cases)for(const rotated of [false,true]){
   const s=state(row,rotated),before=JSON.stringify(s),side=s.turn,bad=rotate(row.danger,rotated),good=rotate(row.safe,rotated);
   const trapped=copy(s);E.move(trapped,bad.id,bad.x,bad.y);assert.equal(trapped.phase,'board');assert.equal(emptyEscapes(trapped,side).length,0);
@@ -27,7 +43,8 @@ for(const row of fixture.cases)for(const rotated of [false,true]){
   const ranked=copy(C.rankedActions(s));assert(ranked.find(a=>same(a,bad)).score<ranked.find(a=>same(a,good)).score-.06);
   for(const difficulty of ['standard','practice'])for(const roll of [0,.25,.5,.75,.999999]){
     const action=C.board(s,()=>roll,difficulty),next=copy(s);E.move(next,action.id,action.x,action.y);
-    assert.equal(next.phase,'board');assert(emptyEscapes(next,side).length>0);assert(!C.kingLostNext(next,side));
+    if(next.phase==='duel'){assert.equal(difficulty,'practice');checkBattle(next,side);}
+    else{assert.equal(next.phase,'board');assert(emptyEscapes(next,side).length>0);assert(!C.kingLostNext(next,side));}
     if(difficulty==='standard')assert(same(action,good));
   }
   assert.equal(JSON.stringify(s),before);assert.deepEqual(copy(C.rankedActions(s)),ranked);
@@ -51,4 +68,14 @@ for(const row of fixture.cases){
     assert.equal(JSON.stringify(s),before);
   }
 }
+for(const rotated of [false,true]){
+  const s=state(fixture.cases[0],rotated),before=JSON.stringify(s);
+  for(const move of [{id:'black_cannon_5',x:2,y:9},{id:'black_rook_3',x:4,y:9}]){
+    const duel=copy(s),attack=rotate(move,rotated);E.move(duel,attack.id,attack.x,attack.y);assert.equal(duel.phase,'duel');checkBattle(duel,s.turn);
+  }
+  assert.equal(JSON.stringify(s),before);
+}
+assert(battleChecks.fights>=4&&battleChecks.endings>0);
 console.log('将帅退路：两份完整合法局面及红黑旋转、全部合法行动评分、两种难度各五个选步、三血将帅挡线与输入不变检查通过。');
+
+console.log(JSON.stringify(battleChecks));
