@@ -147,14 +147,14 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span class="footer-links"><span>平衡试验版 0.6.143</span><a class="feedback-link" href="https://github.com/JunCxio/yiwu/issues/new?template=feedback.md" target="_blank" rel="noopener noreferrer">试玩反馈（新标签页）</a></span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span class="footer-links"><span>平衡试验版 0.6.144</span><a class="feedback-link" href="https://github.com/JunCxio/yiwu/issues/new?template=feedback.md" target="_blank" rel="noopener noreferrer">试玩反馈（新标签页）</a></span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
 <dialog id="review" aria-labelledby="review-title"><div class="modal" id="review-content"></div></dialog>
 <dialog id="rest-confirm" aria-labelledby="rest-title" aria-describedby="rest-target rest-cost"><div class="rest-modal"><div class="preview-header"><h2 id="rest-title">整备这张招式？</h2><p id="rest-target"></p></div><div class="preview-body" id="rest-content"></div><div class="preview-actions"><button id="cancel-rest" class="quiet">返回棋盘</button><button id="confirm-rest" class="primary">整备，消耗一次行动</button></div></div></dialog>
 <dialog id="rules" aria-labelledby="rules-title"><div class="modal rules"><div class="modal-head"><h2 id="rules-title">先布局，再交锋</h2><button id="close-rules" class="small">关闭玩法</button></div>
-<p>推荐在首页选择「分步教学」，完成克制、气势、撤回、支援四课。教学公开固定出招并限制操作，退出不会改变正式规则。快速对局与标准棋局均按将帅阵亡判胜负，伤害规则相同。练习电脑按可用招式类型等概率选择，不根据出招历史反制，走棋从评分靠前的三个候选中选择；标准电脑沿用混合策略。走棋建议与电脑会检查空位移动或整备后，对手下一次行动是否存在三轮内确定击倒己方将帅的进攻；不预知暗招，也不保证更长序列安全。双方生命与伤害不因难度改变，揭示后可查看电脑选招说明。普通对局的武斗结束后，会按真实落位列出仍可进攻将帅的敌子，并说明接下来轮到谁行动；能发起武斗不等于能击倒将帅。首页选择对战方式、电脑难度与棋局，点击「开始游戏」后进入配牌或教学。返回首页保留本局并暂停电脑；修改选项只影响下一局，点击「开始新局」并确认后才重置。</p><p>默认电脑对战：你执红，电脑执黑。红方先行，电脑自动走棋、整备和选招。武斗每轮在你选招前锁定电脑决定，不读取你的暗牌。先点选招式，查看面对各类招式时的伤害与损血范围，再点击「锁定并揭示」；点选阶段可更换，不会耗牌。锁定区会显示本轮结束后双方生命范围及己方阵亡风险，按全部合法回应计算，不预知暗招。「提示一步」和「选招建议」依据公开局面，不预知电脑的招式。也可选择同机双人，选招时另一方请暂时移开视线。用鼠标点选；棋盘也支持方向键移动焦点，Enter 选择。正式对局中，选子会标出交战目标、威胁来源或互攻关系；点棋子信息中的列表可查看对应棋子，不消耗行动。标记仅按当前站位与走法计算，不表示能击倒对手，也不预测下一步。可开启「落点预览」，点合法空位先看移动后的支援、交战目标、威胁和将帅暴露，再确认移动；关闭后恢复直接走棋。预览不消耗行动，返回首页或刷新会关闭。</p>
+<p>推荐在首页选择「分步教学」，完成克制、气势、撤回、支援四课。教学公开固定出招并限制操作，退出不会改变正式规则。快速对局与标准棋局均按将帅阵亡判胜负，伤害规则相同。练习电脑在普通对局的将帅交战中，有安全应招时避开本轮败局风险，再按剩余招式类型等概率选择；不根据出招历史反制，走棋从评分靠前的三个候选中选择；标准电脑沿用混合策略。走棋建议与电脑会检查空位移动或整备后，对手下一次行动是否存在三轮内确定击倒己方将帅的进攻；不预知暗招，也不保证更长序列安全。双方生命与伤害不因难度改变，揭示后可查看电脑选招说明。普通对局的武斗结束后，会按真实落位列出仍可进攻将帅的敌子，并说明接下来轮到谁行动；能发起武斗不等于能击倒将帅。首页选择对战方式、电脑难度与棋局，点击「开始游戏」后进入配牌或教学。返回首页保留本局并暂停电脑；修改选项只影响下一局，点击「开始新局」并确认后才重置。</p><p>默认电脑对战：你执红，电脑执黑。红方先行，电脑自动走棋、整备和选招。武斗每轮在你选招前锁定电脑决定，不读取你的暗牌。先点选招式，查看面对各类招式时的伤害与损血范围，再点击「锁定并揭示」；点选阶段可更换，不会耗牌。锁定区会显示本轮结束后双方生命范围及己方阵亡风险，按全部合法回应计算，不预知暗招。「提示一步」和「选招建议」依据公开局面，不预知电脑的招式。也可选择同机双人，选招时另一方请暂时移开视线。用鼠标点选；棋盘也支持方向键移动焦点，Enter 选择。正式对局中，选子会标出交战目标、威胁来源或互攻关系；点棋子信息中的列表可查看对应棋子，不消耗行动。标记仅按当前站位与走法计算，不表示能击倒对手，也不预测下一步。可开启「落点预览」，点合法空位先看移动后的支援、交战目标、威胁和将帅暴露，再确认移动；关闭后恢复直接走棋。预览不消耗行动，返回首页或刷新会关闭。</p>
 <p>遇到问题时，可点击「导出试玩记录」下载本局 JSON 文件，再自行附到反馈中。文件包含版本、模式、配牌及已执行操作，不含尚未揭示的招式，也不包含浏览器身份和其他网站数据；不会自动上传。该文件用于排查问题，当前不支持导入续局。</p>
 <p><a class="feedback-link" href="https://github.com/JunCxio/yiwu/issues/new?template=feedback.md" target="_blank" rel="noopener noreferrer">前往 GitHub 填写反馈（新标签页）</a><br>需要登录 GitHub；请自行填写并提交，游戏不会自动发送记录。</p>
 <ol>
@@ -800,7 +800,13 @@ globalThis.YiwuComputer = (() => {
       const end=retreatOutcome(s);
       if(end?.winner===side||p.hp<=4&&end?.winner!==d.side)return [{id:'retreat',weight:1}];
     }
-    const ids=choices(s,p,ctx),types=[...new Set(ids.map(id=>(E.BASE[id]||E.CARDS[id]).type))];
+    let ids=choices(s,p,ctx);
+    if(p.kind==='king'&&!E.CHALLENGES[s.scenario]){
+      const enemy=p===a?d:a,replies=choices(s,enemy,ctx);
+      const safe=ids.filter(id=>replies.every(reply=>combatOutcome(s,ctx,p===a?id:reply,p===a?reply:id)?.winner!==E.OTHER[side]));
+      if(safe.length)ids=safe;
+    }
+    const types=[...new Set(ids.map(id=>(E.BASE[id]||E.CARDS[id]).type))];
     return ids.map(id=>({id,weight:1/types.length/ids.filter(other=>(E.BASE[other]||E.CARDS[other]).type===(E.BASE[id]||E.CARDS[id]).type).length}));
   }
   function combat(s,side,rng=Math.random,difficulty='standard'){return sample(difficulty==='practice'?practicePlan(s,side):combatPlan(s,side),rng);}
@@ -810,7 +816,7 @@ globalThis.YiwuComputer = (() => {
       return (end?'撤回直接结束本局：'+(end.winner==='draw'?'判和':E.SIDE[end.winner]+'获胜')+'。'+end.reason:'主动撤回以保留棋子和当前生命，不再结算本轮伤害。')+'伤势与耗尽牌保留，气势清零。';
     }
     const c=E.BASE[id]||E.CARDS[id];
-    return (difficulty==='practice'?'练习电脑在可用招式类型之间等概率选择，再从该类中选一招；不针对历史出招调整。':'标准电脑优先抓住可确认的获胜机会；普通棋子进攻时，有替代则先避开战后将帅新增受攻或下一手确定败局。守方比较对手全部合法招式，并计入实际离场后下一手最多三轮确定取将的机会；其余比较本轮收益与已揭示历史。进攻将帅另核对最多三轮确定胜局，进攻普通残血目标核对两轮存活吃子。')+'本轮选择「'+c.name+'」：'+c.text;
+    return (difficulty==='practice'?'练习电脑在普通对局的将帅交战中，有安全应招时先避开本轮败局风险；再在剩余招式类型之间等概率选择，并从该类中选一招，不针对历史出招调整。':'标准电脑优先抓住可确认的获胜机会；普通棋子进攻时，有替代则先避开战后将帅新增受攻或下一手确定败局。守方比较对手全部合法招式，并计入实际离场后下一手最多三轮确定取将的机会；其余比较本轮收益与已揭示历史。进攻将帅另核对最多三轮确定胜局，进攻普通残血目标核对两轮存活吃子。')+'本轮选择「'+c.name+'」：'+c.text;
   }
   function bothCanEndWithoutLosing(s,ctx){
     const a=E.get(s,ctx.a),d=E.get(s,ctx.d);
@@ -1020,9 +1026,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.143',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.144',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.143-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.144-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -1080,7 +1086,12 @@ globalThis.YiwuComputer = (() => {
           check(f.step===(battle.a.side==='red'?'pickA':'pickD')&&validChoice(f.computerChoice)&&!Yiwu.availability(state,computer,f.computerChoice,battle.ctx));
         }
       }
-      restoredFight={...battle,step:f.step,first:f.first,pending:f.pending,computerChoice:f.computerChoice,hint:'',result:selecting?null:result,computerReason:ui.opponent==='computer'&&f.computerChoice?C.explain(f.computerChoice,ui.difficulty,state):''};
+      let computerReason=ui.opponent==='computer'&&f.computerChoice?C.explain(f.computerChoice,ui.difficulty,state):'';
+      if(ui.opponent==='computer'&&ui.difficulty==='practice'&&f.computerChoice&&f.computerChoice!=='retreat'){
+        const card=E.BASE[f.computerChoice]||E.CARDS[f.computerChoice];
+        computerReason='本轮沿用续局中已锁定的招式，刷新不重新选招。本轮选择「'+card.name+'」：'+card.text;
+      }
+      restoredFight={...battle,step:f.step,first:f.first,pending:f.pending,computerChoice:f.computerChoice,hint:'',result:selecting?null:result,computerReason};
     }else check(state.phase!=='duel');
     return {data,state,fight:restoredFight};
   }

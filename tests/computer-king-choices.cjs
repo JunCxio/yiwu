@@ -15,6 +15,10 @@ function verify(s,side){
   assert(Math.abs(plan.reduce((n,x)=>n+x.weight,0)-1)<1e-9);
   if(safe.length){safeInputs++;assert(plan.every(x=>safe.includes(x.id)),'存在本轮不判负的招式时，不能给立即败局分支分配概率');}
   else fallbackInputs++;
+  const practice=C.practicePlan(s,side),safeCombat=safe.filter(id=>id!=='retreat');
+  assert(practice.length&&practice.every(x=>ids.includes(x.id)&&Number.isFinite(x.weight)&&x.weight>0));
+  assert(Math.abs(practice.reduce((n,x)=>n+x.weight,0)-1)<1e-9);
+  if(safeCombat.length&&!practice.some(x=>x.id==='retreat'))assert(practice.every(x=>safeCombat.includes(x.id)),'练习将帅不能忽略已有的本轮安全应招');
   assert.equal(JSON.stringify(s),before);inputs++;return {plan:copy(plan),safe};
 }
 test('完整合法标准局记录：将帅三血对一血时排除残留蓄势概率',()=>{
@@ -23,9 +27,9 @@ test('完整合法标准局记录：将帅三血对一血时排除残留蓄势�
   assert.equal(s.ply,52);assert.equal(s.duel.round,1);const mine=E.get(s,s.duel.d),enemy=E.get(s,s.duel.a);
   assert.equal(mine.hp,3);assert.equal(enemy.hp,1);
   const lost=copy(s);E.resolve(lost,'strike','focus');assert.equal(lost.winner,enemy.side);
-  const {plan}=verify(s,mine.side);assert(!plan.some(x=>x.id==='focus'));
+  const {plan,safe}=verify(s,mine.side);assert(!plan.some(x=>x.id==='focus'));
   for(const roll of [0,.25,.5,.75,.999999])assert.notEqual(C.combat(s,mine.side,()=>roll),'focus');
-  assert(C.practicePlan(s,mine.side).some(x=>x.id==='focus'&&x.weight>0),'练习电脑继续保留原类型随机分布');
+  assert(C.practicePlan(s,mine.side).every(x=>safe.includes(x.id)),'练习将帅有本轮不判负的应招时排除即时败局风险');
 });
 test('红黑进守、七类对手、气势、培养、濒死、末轮及无完整安全选择的分布有效',()=>{
   for(const kind of Object.keys(E.NAMES.red))for(const defending of [false,true])for(const mirrored of [false,true])
