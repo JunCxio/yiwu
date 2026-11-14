@@ -146,14 +146,14 @@ body:has(dialog[open]){overflow:hidden}.review-jump{display:none}
 <aside class="panel detail-panel" id="detail" tabindex="0" aria-label="棋子详情与战局记录"></aside>
 </div>
 </section>
-<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.141 · 守方合法应招</span></footer>
+<footer class="footer"><span id="save-status" role="status">自动保存在本机浏览器，不联网、不上传。</span><span>平衡试验版 0.6.142 · 判断范围说明</span></footer>
 </main>
 <dialog id="fight" aria-label="武斗"><div class="modal" id="fight-content"></div></dialog>
 <dialog id="preview" aria-labelledby="preview-title"><div id="preview-content"></div></dialog>
 <dialog id="review" aria-labelledby="review-title"><div class="modal" id="review-content"></div></dialog>
 <dialog id="rest-confirm" aria-labelledby="rest-title" aria-describedby="rest-target rest-cost"><div class="rest-modal"><div class="preview-header"><h2 id="rest-title">整备这张招式？</h2><p id="rest-target"></p></div><div class="preview-body" id="rest-content"></div><div class="preview-actions"><button id="cancel-rest" class="quiet">返回棋盘</button><button id="confirm-rest" class="primary">整备，消耗一次行动</button></div></div></dialog>
 <dialog id="rules" aria-labelledby="rules-title"><div class="modal rules"><div class="modal-head"><h2 id="rules-title">先布局，再交锋</h2><button id="close-rules" class="small">关闭玩法</button></div>
-<p>推荐在首页选择「分步教学」，完成克制、气势、撤回、支援四课。教学公开固定出招并限制操作，退出不会改变正式规则。快速对局与标准棋局均按将帅阵亡判胜负，伤害规则相同。练习电脑按可用招式类型等概率选择，不根据出招历史反制，走棋从评分靠前的三个候选中选择；标准电脑沿用混合策略。走棋建议与电脑的空位移动、整备都会核对可确认的下一手将帅阵亡风险，但不推演后续多轮武斗。双方生命与伤害不因难度改变，揭示后可查看电脑选招说明。普通对局的武斗结束后，会按真实落位列出仍可进攻将帅的敌子，并说明接下来轮到谁行动；能发起武斗不等于能击倒将帅。首页选择对战方式、电脑难度与棋局，点击「开始游戏」后进入配牌或教学。返回首页保留本局并暂停电脑；修改选项只影响下一局，点击「开始新局」并确认后才重置。</p><p>默认电脑对战：你执红，电脑执黑。红方先行，电脑自动走棋、整备和选招。武斗每轮在你选招前锁定电脑决定，不读取你的暗牌。先点选招式，查看面对各类招式时的伤害与损血范围，再点击「锁定并揭示」；点选阶段可更换，不会耗牌。锁定区会显示本轮结束后双方生命范围及己方阵亡风险，按全部合法回应计算，不预知暗招。「提示一步」和「选招建议」依据公开局面，不预知电脑的招式。也可选择同机双人，选招时另一方请暂时移开视线。用鼠标点选；棋盘也支持方向键移动焦点，Enter 选择。正式对局中，选子会标出交战目标、威胁来源或互攻关系；点棋子信息中的列表可查看对应棋子，不消耗行动。标记仅按当前站位与走法计算，不表示能击倒对手，也不预测下一步。可开启「落点预览」，点合法空位先看移动后的支援、交战目标、威胁和将帅暴露，再确认移动；关闭后恢复直接走棋。预览不消耗行动，返回首页或刷新会关闭。</p>
+<p>推荐在首页选择「分步教学」，完成克制、气势、撤回、支援四课。教学公开固定出招并限制操作，退出不会改变正式规则。快速对局与标准棋局均按将帅阵亡判胜负，伤害规则相同。练习电脑按可用招式类型等概率选择，不根据出招历史反制，走棋从评分靠前的三个候选中选择；标准电脑沿用混合策略。走棋建议与电脑会检查空位移动或整备后，对手下一次行动是否存在三轮内确定击倒己方将帅的进攻；不预知暗招，也不保证更长序列安全。双方生命与伤害不因难度改变，揭示后可查看电脑选招说明。普通对局的武斗结束后，会按真实落位列出仍可进攻将帅的敌子，并说明接下来轮到谁行动；能发起武斗不等于能击倒将帅。首页选择对战方式、电脑难度与棋局，点击「开始游戏」后进入配牌或教学。返回首页保留本局并暂停电脑；修改选项只影响下一局，点击「开始新局」并确认后才重置。</p><p>默认电脑对战：你执红，电脑执黑。红方先行，电脑自动走棋、整备和选招。武斗每轮在你选招前锁定电脑决定，不读取你的暗牌。先点选招式，查看面对各类招式时的伤害与损血范围，再点击「锁定并揭示」；点选阶段可更换，不会耗牌。锁定区会显示本轮结束后双方生命范围及己方阵亡风险，按全部合法回应计算，不预知暗招。「提示一步」和「选招建议」依据公开局面，不预知电脑的招式。也可选择同机双人，选招时另一方请暂时移开视线。用鼠标点选；棋盘也支持方向键移动焦点，Enter 选择。正式对局中，选子会标出交战目标、威胁来源或互攻关系；点棋子信息中的列表可查看对应棋子，不消耗行动。标记仅按当前站位与走法计算，不表示能击倒对手，也不预测下一步。可开启「落点预览」，点合法空位先看移动后的支援、交战目标、威胁和将帅暴露，再确认移动；关闭后恢复直接走棋。预览不消耗行动，返回首页或刷新会关闭。</p>
 <p>遇到问题时，可点击「导出试玩记录」下载本局 JSON 文件，再自行附到反馈中。文件包含版本、模式、配牌及已执行操作，不含尚未揭示的招式，也不包含浏览器身份和其他网站数据；不会自动上传。该文件用于排查问题，当前不支持导入续局。</p>
 <ol>
 <li><b>伤害拆解：</b>每轮揭示后，点击红方或黑方「伤害拆解」，查看基础、有效支援、克制或压制蓄势、培养牌、气势、首轮加成与对方减伤。结算伤害是本轮招式算出的数值；实际损血最多扣到生命为 0。前轮记录也可展开核对，查看不会再次扣血或耗牌。</li>
@@ -1018,9 +1018,9 @@ globalThis.YiwuComputer = (() => {
     if(!s)return;
     let url,link;
     try{
-      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.141',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
+      const record={format:'yiwu-playtest',version:1,gameVersion:'0.6.142',rulesVersion:SAVE_VERSION,mode:{scenario:s.scenario,opponent,difficulty},progress:{phase:s.phase,turn:s.turn,ply:s.ply,round:s.duel?.round||null,winner:s.winner,reason:s.reason},commands,note:'仅含已执行操作与已揭示招式。用于排查试玩问题，不是跨设备续局文件。'};
       url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'}));
-      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.141-行动'+s.ply+'.json';document.body.append(link);link.click();
+      link=document.createElement('a');link.href=url;link.download='弈武-试玩记录-0.6.142-行动'+s.ply+'.json';document.body.append(link);link.click();
       button.textContent='已生成记录';
     }catch{button.textContent='导出失败，请重试';}
     finally{link?.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
